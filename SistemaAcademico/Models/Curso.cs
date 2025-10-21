@@ -14,7 +14,7 @@ namespace SistemaAcademico.Models
         {
             CursoCuatrimestre = new HashSet<CursoCuatrimestre>();
         }
-
+        [Key]
         public int CursoId { get; set; }
 
         [Required]

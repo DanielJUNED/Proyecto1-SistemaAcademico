@@ -14,11 +14,11 @@ namespace SistemaAcademico.Models
         {
             Evaluacion = new HashSet<Evaluacion>();
         }
-
+        [Key]
         public int EstudianteCursoId { get; set; }
-
+        [Required]
         public int EstudianteId { get; set; }
-
+        [Required]
         public int CursoCuatrimestreId { get; set; }
 
         public DateTime? Fec_Matricula { get; set; }

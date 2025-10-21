@@ -14,11 +14,11 @@ namespace SistemaAcademico.Models
         {
             EstudianteCurso = new HashSet<EstudianteCurso>();
         }
-
+        [Key]
         public int CursoCuatrimestreId { get; set; }
-
+        [Required]
         public int CursoId { get; set; }
-
+        [Required]
         public int CuatrimestreId { get; set; }
 
         [Required]

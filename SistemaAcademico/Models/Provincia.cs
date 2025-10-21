@@ -14,7 +14,7 @@ namespace SistemaAcademico.Models
         {
             Canton = new HashSet<Canton>();
         }
-
+        [Key]
         public int ProvinciaId { get; set; }
 
         [Required]

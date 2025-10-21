@@ -19,12 +19,15 @@ namespace SistemaAcademico.Models
 
         [Required]
         [StringLength(100)]
+        [Display(Name = "Nombre Distrito")]
         public string Nom_Distrito { get; set; }
 
         public int CantonId { get; set; }
 
         [Required]
         [StringLength(2)]
+
+        [Display(Name = "Estado")]
         public string Ind_Estado { get; set; }
 
         public DateTime Fec_Registro { get; set; }

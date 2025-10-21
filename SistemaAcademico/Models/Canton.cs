@@ -14,13 +14,13 @@ namespace SistemaAcademico.Models
         {
             Distrito = new HashSet<Distrito>();
         }
-
+        [Key]
         public int CantonId { get; set; }
 
         [Required]
         [StringLength(100)]
         public string Nom_Canton { get; set; }
-
+        [Required]
         public int ProvinciaId { get; set; }
 
         [Required]

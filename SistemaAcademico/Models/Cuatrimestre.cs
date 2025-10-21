@@ -14,21 +14,24 @@ namespace SistemaAcademico.Models
         {
             CursoCuatrimestre = new HashSet<CursoCuatrimestre>();
         }
-
+        [Key]
         public int CuatrimestreId { get; set; }
 
         [Required]
         [StringLength(50)]
         public string Nombre { get; set; }
-
+        [Required]
         public int Anio { get; set; }
+        [Required]
+        [Range(1, 3)]
 
         public int Numero { get; set; }
-
-        [Column(TypeName = "date")]
+        [Required]
+        [DataType(DataType.Date)]
         public DateTime Fec_Inicio { get; set; }
 
-        [Column(TypeName = "date")]
+        [Required]
+        [DataType(DataType.Date)]
         public DateTime Fec_Fin { get; set; }
 
         [Required]
