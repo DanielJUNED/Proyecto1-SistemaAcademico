@@ -14,9 +14,10 @@ using System.Web.Mvc;
 
 namespace SistemaAcademico.Controllers
 {
+    [Authorize]
     public class EstudianteController : Controller
     {
-        private AppDbContext db = new AppDbContext();
+        private ApplicationDbContext db = new ApplicationDbContext();
 
         private EstudianteRepo _dbEstudiante;
 

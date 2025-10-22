@@ -126,20 +126,13 @@
                                         <div class="form-group">
                                             <label asp-for="Email" class="font-weight-bold">
                                                 Correo Electrónico <span class="text-danger">*</span>
-                                            </label>
-                                            <div class="input-group">
-                                                <div class="input-group-prepend">
-                                                    <span class="input-group-text">
-                                                        <i class="fas fa-envelope"></i>
-                                                    </span>
-                                                </div>
-                                                <input asp-for="Email"
-                                                       type="email"
-                                                       class="form-control"
-                                                       id="email"
-                                                       placeholder="estudiante@est.uned.ac.cr"
-                                                       maxlength="100" />
-                                            </div>
+                                            </label> 
+                                            <input asp-for="Email"
+                                                    type="email"
+                                                    class="form-control"
+                                                    id="email"
+                                                    placeholder="estudiante@est.uned.ac.cr"
+                                                    maxlength="100" /> 
                                             <span class="text-danger field-validation" data-valmsg-for="Email"></span>
                                         </div>
                                     </div>

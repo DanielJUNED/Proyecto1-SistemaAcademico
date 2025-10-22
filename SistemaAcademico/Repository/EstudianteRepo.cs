@@ -11,8 +11,8 @@ namespace SistemaAcademico.Repository
 {
     public class EstudianteRepo
     {
-        private readonly AppDbContext _db;
-        public EstudianteRepo(AppDbContext db)
+        private readonly ApplicationDbContext _db;
+        public EstudianteRepo(ApplicationDbContext db)
         {
             _db = db;
         }

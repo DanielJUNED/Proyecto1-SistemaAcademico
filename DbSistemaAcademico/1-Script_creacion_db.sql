@@ -65,6 +65,9 @@ CREATE TABLE Docente (
     Email NVARCHAR(100) NOT NULL UNIQUE,
     Ind_Estado NVARCHAR(2) DEFAULT 'A' NOT NULL,
     Fec_Registro DATETIME DEFAULT GETDATE() NOT NULL,
+    UserId NVARCHAR(128) NOT NULL,
+    CONSTRAINT FK_Docente_Usuario FOREIGN KEY (UserId) 
+        REFERENCES Usuarios(Id)
 );
 
 -- =============================================
@@ -165,13 +168,94 @@ CREATE TABLE Evaluacion (
     CONSTRAINT FK_Evaluaciones_Docentes FOREIGN KEY (DocenteId) 
         REFERENCES Docente(DocenteId)
 );
+-- =============================================
+-- TABLA DE ROLES
+-- =============================================
 
+CREATE TABLE [dbo].[Roles](
+	[Id] [nvarchar](128) NOT NULL,
+	[Name] [nvarchar](256) NOT NULL,
+ CONSTRAINT [PK_dbo.Roles] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+-- =============================================
+-- TABLA DE USUARIOS
+-- =============================================
 
-INSERT INTO Provincia (Nom_Provincia) VALUES 
-('San José'),
-('Alajuela'),
-('Cartago'),
-('Heredia'),
-('Guanacaste'),
-('Puntarenas'),
-('Limón');
+CREATE TABLE [dbo].[Usuarios](
+	[Id] [nvarchar](128) NOT NULL,
+	[Email] [nvarchar](256) NULL,
+	[EmailConfirmed] [bit] NOT NULL,
+	[PasswordHash] [nvarchar](max) NULL,
+	[SecurityStamp] [nvarchar](max) NULL,
+	[PhoneNumber] [nvarchar](max) NULL,
+	[PhoneNumberConfirmed] [bit] NOT NULL,
+	[TwoFactorEnabled] [bit] NOT NULL,
+	[LockoutEndDateUtc] [datetime] NULL,
+	[LockoutEnabled] [bit] NOT NULL,
+	[AccessFailedCount] [int] NOT NULL,
+	[UserName] [nvarchar](256) NOT NULL,
+ CONSTRAINT [PK_dbo.Usuarios] PRIMARY KEY CLUSTERED 
+(
+	[Id] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
+GO
+
+-- =============================================
+-- TABLA DE RELACION USUARIO Y ROLES
+-- =============================================
+
+CREATE TABLE [dbo].[UsuarioRoles](
+	[UserId] [nvarchar](128) NOT NULL,
+	[RoleId] [nvarchar](128) NOT NULL,
+ CONSTRAINT [PK_dbo.UsuarioRoles] PRIMARY KEY CLUSTERED 
+(
+	[UserId] ASC,
+	[RoleId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[UsuarioRoles]  WITH CHECK ADD  CONSTRAINT [FK_dbo.UsuarioRoles_dbo.Roles_RoleId] FOREIGN KEY([RoleId])
+REFERENCES [dbo].[Roles] ([Id])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[UsuarioRoles] CHECK CONSTRAINT [FK_dbo.UsuarioRoles_dbo.Roles_RoleId]
+GO
+
+ALTER TABLE [dbo].[UsuarioRoles]  WITH CHECK ADD  CONSTRAINT [FK_dbo.UsuarioRoles_dbo.Usuarios_UserId] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Usuarios] ([Id])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[UsuarioRoles] CHECK CONSTRAINT [FK_dbo.UsuarioRoles_dbo.Usuarios_UserId]
+GO
+-- =============================================
+-- TABLA DE USUARIOS LOGIN
+-- ============================================= 
+
+CREATE TABLE [dbo].[UsuarioLogins](
+	[LoginProvider] [nvarchar](128) NOT NULL,
+	[ProviderKey] [nvarchar](128) NOT NULL,
+	[UserId] [nvarchar](128) NOT NULL,
+ CONSTRAINT [PK_dbo.UsuarioLogins] PRIMARY KEY CLUSTERED 
+(
+	[LoginProvider] ASC,
+	[ProviderKey] ASC,
+	[UserId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[UsuarioLogins]  WITH CHECK ADD  CONSTRAINT [FK_dbo.UsuarioLogins_dbo.Usuarios_UserId] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Usuarios] ([Id])
+ON DELETE CASCADE
+GO
+
+ALTER TABLE [dbo].[UsuarioLogins] CHECK CONSTRAINT [FK_dbo.UsuarioLogins_dbo.Usuarios_UserId]
+GO

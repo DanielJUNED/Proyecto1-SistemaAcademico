@@ -46,3 +46,10 @@ INSERT INTO Evaluacion (EstudianteCursoID, DocenteID, Nota, Observaciones, TipoP
 (3, 1, 55.00, 'Necesita reforzar conceptos básicos', 'Regular', 'Reprobado');
 
 GO
+
+
+INSERT INTO Roles (Id, Name) VALUES
+('ADMIN', 'Administrador'),
+('DOCEN', 'Docente');
+
+GO

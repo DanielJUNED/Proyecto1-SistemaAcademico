@@ -1,15 +1,21 @@
+using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
 using System.Linq;
+using System.Reflection;
 
 namespace SistemaAcademico.Models
-{
-    public partial class AppDbContext : DbContext
+{ 
+    public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
-        public AppDbContext()
-            : base("name=DefaultConnection")
+        public ApplicationDbContext()
+            : base("name=DefaultConnection", throwIfV1Schema: false)
         {
+        }
+        public static ApplicationDbContext Create()
+        {
+            return new ApplicationDbContext();
         }
 
         public virtual DbSet<Canton> Canton { get; set; }
@@ -25,6 +31,8 @@ namespace SistemaAcademico.Models
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+            base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Canton>()
                 .HasMany(e => e.Distrito)
                 .WithRequired(e => e.Canton)
@@ -73,6 +81,16 @@ namespace SistemaAcademico.Models
                 .HasMany(e => e.Canton)
                 .WithRequired(e => e.Provincia)
                 .WillCascadeOnDelete(false);
+
+            // Configurar nombres de tablas de Identity (opcional)
+            modelBuilder.Entity<ApplicationUser>().ToTable("Usuarios");
+            // Renombrar tablas de Identity (opcional) 
+            modelBuilder.Entity<IdentityRole>().ToTable("Roles");
+            modelBuilder.Entity<IdentityUserRole>().ToTable("UsuarioRoles"); 
+            modelBuilder.Entity<IdentityUserClaim>().ToTable("UsuarioClaims");
+            modelBuilder.Entity<IdentityUserLogin>().ToTable("UsuarioLogins");
+            //modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");
+            //modelBuilder.Entity<IdentityUserToken<string>>().ToTable("UsuarioTokens");
         }
     }
 }
