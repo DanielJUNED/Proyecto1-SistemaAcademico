@@ -19,6 +19,7 @@ namespace SistemaAcademico
             bundles.Add(new ScriptBundle("~/bundles/modernizr").Include(
                         "~/Scripts/modernizr-*"));
 
+            // Incluir Popper (UMD v2) antes de Bootstrap 5
             bundles.Add(new Bundle("~/bundles/bootstrap").Include(
                       "~/Scripts/bootstrap.js"));
 

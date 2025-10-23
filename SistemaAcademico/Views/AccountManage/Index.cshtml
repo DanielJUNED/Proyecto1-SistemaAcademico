@@ -1,0 +1,188 @@
+﻿@model SistemaAcademico.Models.ViewModels.ManageProfileViewModel
+@{
+    ViewBag.Title = "Mi Perfil";
+    bool esDocente = Model.Rol == "Docente";
+}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <!-- Título -->
+            <div class="d-flex align-items-center mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-user-circle text-primary"></i> Mi Perfil
+                </h2>
+            </div>
+
+            <!-- Mensaje de estado -->
+            @if (!string.IsNullOrEmpty(ViewBag.StatusMessage))
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    <i class="fas fa-check-circle"></i> @ViewBag.StatusMessage
+                    <button type="button" class="close" data-dismiss="alert">
+                        <span>&times;</span>
+                    </button>
+                </div>
+            }
+
+            <!-- Alerta dinámica -->
+            <div id="alertContainer"></div>
+
+            <!-- Card de Información Personal -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-id-card"></i> Información Personal
+                    </h5>
+                </div>
+                <div class="card-body">
+                    @using (Html.BeginForm("UpdateProfile", "Manage", FormMethod.Post, new { @id = "formUpdateProfile", @class = "needs-validation" }))
+                    {
+                        @Html.AntiForgeryToken()
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-user"></i> Nombre
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                           name="Nombre"
+                                           id="Nombre"
+                                           class="form-control"
+                                           value="@Model.Nombre"
+                                           maxlength="100"
+                                           @(esDocente ? "" : "readonly=\"readonly\"") />
+                                    <span class="text-danger field-validation" data-valmsg-for="Nombre"></span>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-user"></i> Apellidos
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <input type="text"
+                                           name="Apellidos"
+                                           id="Apellidos"
+                                           class="form-control"
+                                           value="@Model.Apellidos"
+                                           @(esDocente ? "" : "readonly=\"readonly\"") />
+                                    <span class="text-danger field-validation" data-valmsg-for="Apellidos"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-envelope"></i> Correo Electrónico
+                                    </label>
+                                    <input type="email"
+                                           class="form-control"
+                                           value="@Model.Email"
+                                           disabled
+                                           readonly />
+                                    <small class="form-text text-muted">
+                                        El correo electrónico no puede ser modificado
+                                    </small>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-user"></i> Rol
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           value="@Model.Rol"
+                                           disabled
+                                           readonly />
+                                    <small class="form-text text-muted">
+                                        El rol no puede ser modificado
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-calendar-alt"></i> Fecha de Registro
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           value="@(esDocente ? Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm") : "Sin fecha de creación")"
+                                           disabled
+                                           readonly />
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-clock"></i> Última Conexión
+                                    </label>
+                                    <input type="text"
+                                           class="form-control"
+                                           value="@(Model.UltimaConexion.HasValue ? Model.UltimaConexion.Value.ToString("dd/MM/yyyy HH:mm") : "Primera conexión")"
+                                           disabled
+                                           readonly />
+                                </div>
+                            </div>
+                        </div>
+                        @Html.Raw(esDocente
+        ? @"<div class=""text-right mt-3"">
+                <button type=""submit"" class=""btn btn-primary"" id=""btnUpdateProfile"">
+                    <i class=""fas fa-save""></i> Guardar Cambios
+                </button>
+           </div>"
+        : "")
+
+
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+    <script src="~/Content/_AppJs/manage.js"></script>
+}
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .card-header {
+            border-radius: 10px 10px 0 0 !important;
+        }
+
+        .form-control:disabled {
+            background-color: #f8f9fa;
+            cursor: not-allowed;
+        }
+
+        .field-validation {
+            display: block;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .btn {
+            transition: transform 0.2s;
+        }
+
+            .btn:hover {
+                transform: translateY(-2px);
+            }
+    </style>
+}

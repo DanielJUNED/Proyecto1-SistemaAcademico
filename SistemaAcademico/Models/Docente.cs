@@ -14,7 +14,7 @@ namespace SistemaAcademico.Models
         {
             Evaluacion = new HashSet<Evaluacion>();
         }
-
+        [Key]
         public int DocenteId { get; set; }
 
         [Required]
@@ -35,13 +35,10 @@ namespace SistemaAcademico.Models
 
         public DateTime Fec_Registro { get; set; }
 
-        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<Evaluacion> Evaluacion { get; set; }
-
-        [Required]
-        [StringLength(128)]
+         
         public string UserId { get; set; }
-
-        public virtual ApplicationUser Usuarios { get; set; }
+        [ForeignKey("UserId")]
+        public virtual ApplicationUser Usuario { get; set; }
     }
 }

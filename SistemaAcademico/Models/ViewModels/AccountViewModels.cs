@@ -40,4 +40,12 @@ namespace SistemaAcademico.Models.ViewModels
         [Compare("Password", ErrorMessage = "La contraseña y la contraseña de confirmación no coinciden.")]
         public string ConfirmPassword { get; set; }
     }
+    public class LoginResultViewModel
+    {
+        public bool Success { get; set; }
+        public string Message { get; set; }
+        public string RedirectUrl { get; set; }
+        public int? RemainingAttempts { get; set; }
+        public bool IsLockedOut { get; set; }
+    }
 }

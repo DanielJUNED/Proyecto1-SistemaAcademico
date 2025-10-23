@@ -6,6 +6,7 @@ using Microsoft.Owin.Security;
 using SistemaAcademico.Models;
 using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -27,6 +28,12 @@ namespace SistemaAcademico.App_Start
         public static ApplicationUserManager Create(IdentityFactoryOptions<ApplicationUserManager> options, IOwinContext context)
         {
             var manager = new ApplicationUserManager(new UserStore<ApplicationUser>(context.Get<ApplicationDbContext>()));
+            // Leer configuración desde Web.config
+            var maxLoginAttempts = int.Parse(
+                ConfigurationManager.AppSettings["Authentication:MaxLoginAttempts"] ?? "5");
+            var lockoutMinutes = int.Parse(
+                ConfigurationManager.AppSettings["Authentication:LockoutMinutes"] ?? "15");
+
             // Configure la lógica de validación de nombres de usuario
             manager.UserValidator = new UserValidator<ApplicationUser>(manager)
             {
@@ -37,7 +44,7 @@ namespace SistemaAcademico.App_Start
             // Configure la lógica de validación de contraseñas
             manager.PasswordValidator = new PasswordValidator
             {
-                RequiredLength = 6,
+                RequiredLength = 8,
                 RequireNonLetterOrDigit = true,
                 RequireDigit = true,
                 RequireLowercase = true,
@@ -46,8 +53,8 @@ namespace SistemaAcademico.App_Start
 
             // Configurar valores predeterminados para bloqueo de usuario
             manager.UserLockoutEnabledByDefault = true;
-            manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(5);
-            manager.MaxFailedAccessAttemptsBeforeLockout = 5; 
+            manager.DefaultAccountLockoutTimeSpan = TimeSpan.FromMinutes(lockoutMinutes);
+            manager.MaxFailedAccessAttemptsBeforeLockout = maxLoginAttempts;
 
             // Registre los proveedores de autenticación de dos factores. Esta aplicación usa el teléfono y el correo electrónico para recibir un código de verificación del usuario
             // Puede escribir su propio proveedor y conectarlo aquí.

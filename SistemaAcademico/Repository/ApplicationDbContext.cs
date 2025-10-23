@@ -1,4 +1,4 @@
-using Microsoft.AspNet.Identity.EntityFramework;
+﻿using Microsoft.AspNet.Identity.EntityFramework;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
@@ -59,10 +59,17 @@ namespace SistemaAcademico.Models
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Docente>()
-                .HasMany(e => e.Evaluacion)
+                .HasMany(d => d.Evaluacion)
                 .WithRequired(e => e.Docente)
                 .WillCascadeOnDelete(false);
 
+            // Relación Docente → ApplicationUser
+            modelBuilder.Entity<Docente>()
+                .HasRequired(d => d.Usuario)
+                .WithMany()
+                .HasForeignKey(d => d.UserId)
+                .WillCascadeOnDelete(false);
+           
             modelBuilder.Entity<Estudiante>()
                 .HasMany(e => e.EstudianteCurso)
                 .WithRequired(e => e.Estudiante)
