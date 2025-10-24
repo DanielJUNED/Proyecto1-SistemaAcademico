@@ -25,10 +25,10 @@ namespace SistemaAcademico
             {
                 AuthenticationType = DefaultAuthenticationTypes.ApplicationCookie,
                 LoginPath = new PathString("/Account/Login"),
-                //ExpireTimeSpan = TimeSpan.FromHours(2),
-                //SlidingExpiration = true,
-                //CookieHttpOnly = true,
-                //CookieSecure = CookieSecureOption.SameAsRequest,
+                ExpireTimeSpan = TimeSpan.FromHours(2),
+                SlidingExpiration = true,
+                CookieHttpOnly = true,
+                CookieSecure = CookieSecureOption.SameAsRequest,
                 Provider = new CookieAuthenticationProvider
                 {
                     // Permite a la aplicación validar la marca de seguridad cuando el usuario inicia sesión.

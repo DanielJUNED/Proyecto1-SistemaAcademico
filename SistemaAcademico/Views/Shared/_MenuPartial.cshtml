@@ -1,0 +1,28 @@
+﻿@using Microsoft.AspNet.Identity
+@using Microsoft.AspNet.Identity.Owin;
+@using SistemaAcademico.App_Start 
+@{
+    string rolPrincipal = "Sin rol"; // declarar fuera
+
+    if (Request.IsAuthenticated)
+    {
+        // UserManager desde OWIN
+        var userManager = HttpContext.Current.GetOwinContext().GetUserManager<ApplicationUserManager>();
+        var userId = User.Identity.GetUserId();
+
+        var roles = userManager.GetRoles(userId); // Devuelve IList<string>
+        rolPrincipal = roles.FirstOrDefault() ?? "Sin rol";
+         
+    }
+} 
+
+<ul class="navbar-nav flex-grow-1">
+    <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
+    @if (Request.IsAuthenticated)
+     {
+        if (rolPrincipal =="Administrador" || rolPrincipal == "Docente") {
+            <li>@Html.ActionLink("Matrícula", "Registrar", "Estudiante", new { area = "" }, new { @class = "nav-link" })</li>
+        }
+        
+     }
+</ul>

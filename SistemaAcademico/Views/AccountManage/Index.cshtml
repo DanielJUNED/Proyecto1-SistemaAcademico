@@ -35,7 +35,7 @@
                     </h5>
                 </div>
                 <div class="card-body">
-                    @using (Html.BeginForm("UpdateProfile", "Manage", FormMethod.Post, new { @id = "formUpdateProfile", @class = "needs-validation" }))
+                    @using (Html.BeginForm("UpdateProfile", "AccountManage", FormMethod.Post, new { @id = "formUpdateProfile", @class = "needs-validation" }))
                     {
                         @Html.AntiForgeryToken()
 

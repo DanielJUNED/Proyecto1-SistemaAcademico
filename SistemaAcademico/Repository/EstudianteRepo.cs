@@ -96,7 +96,7 @@ namespace SistemaAcademico.Repository
 
                     resultado.Exitoso = true;
                     resultado.Mensaje = "Estudiante registrado exitosamente";
-                    resultado.EstudianteID = estudiante.EstudianteId;
+                    resultado.PersonaID = estudiante.EstudianteId;
                 }
                 catch (DbUpdateException ex)
                 {

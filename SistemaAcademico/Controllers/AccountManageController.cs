@@ -111,22 +111,79 @@ namespace SistemaAcademico.Controllers
 
             model.Email = user.Email;  
             model.UltimaConexion = DateTime.Now;
-            model.Rol = roleNames.FirstOrDefault();
-             
-
-            /*    
-            var userId = User.Identity.GetUserId();
-            var model = new IndexViewModel
-            {
-                HasPassword = HasPassword(),
-                PhoneNumber = await UserManager.GetPhoneNumberAsync(userId),
-                TwoFactor = await UserManager.GetTwoFactorEnabledAsync(userId),
-                Logins = await UserManager.GetLoginsAsync(userId),
-                BrowserRemembered = await AuthenticationManager.TwoFactorBrowserRememberedAsync(userId)
-            };*/
+            model.Rol = roleNames.FirstOrDefault(); 
             return View(model);
 
         }
+        // =============================================
+        // POST: /Manage/UpdateProfile (AJAX)
+        // =============================================
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<JsonResult> UpdateProfile(ManageProfileViewModel model)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    var errors = ModelState.Values
+                        .SelectMany(v => v.Errors)
+                        .Select(e => e.ErrorMessage)
+                        .ToList();
+
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Datos inválidos",
+                        errors = errors
+                    });
+                }
+
+                var userId = User.Identity.GetUserId();
+                var user = await UserManager.FindByIdAsync(userId);
+
+                if (user == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Usuario no encontrado"
+                    });
+                }
+                var docente = AppDbContext.Docente
+                    .AsNoTracking()
+                                    .FirstOrDefault(d => d.UserId == userId); 
+                docente.Nombre = model.Nombre.Trim();
+                docente.Apellidos = model.Apellidos.Trim();
+                AppDbContext.Entry(docente).State = System.Data.Entity.EntityState.Modified;
+                var resultUpdateDocente = AppDbContext.SaveChanges();
+                if (resultUpdateDocente <= 0)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Error al actualizar el perfil del docente"
+                    });
+                }else
+                {
+                    return Json(new
+                    {
+                        success = true,
+                        message = "Perfil actualizado exitosamente"
+                    });
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Error inesperado: " + ex.Message
+                });
+            }
+        }
+
         // =============================================
         // GET: /Manage/ChangePassword
         // =============================================
@@ -134,7 +191,6 @@ namespace SistemaAcademico.Controllers
         {
             return View();
         }
-
         // =============================================
         // POST: /Manage/ChangePassword (AJAX)
         // =============================================

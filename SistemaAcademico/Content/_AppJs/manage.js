@@ -35,13 +35,15 @@ function actualizarPerfil() {
 
     var $btn = $('#btnUpdateProfile');
     var formData = $('#formUpdateProfile').serialize();
+    var token = $('input[name="__RequestVerificationToken"]').val();
+    var formDataTokec = formData + '&__RequestVerificationToken=' + token;
 
     // Deshabilitar botón
     $btn.prop('disabled', true)
         .html('<span class="spinner-border spinner-border-sm mr-2"></span>Guardando...');
 
     $.ajax({
-        url: '/Manage/UpdateProfile',
+        url: '/AccountManage/UpdateProfile',
         type: 'POST',
         data: formData,
         dataType: 'json',

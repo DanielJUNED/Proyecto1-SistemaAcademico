@@ -41,7 +41,7 @@
     @RenderSection("Styles", required: false)
     @Styles.Render("~/Content/css")
     @Scripts.Render("~/bundles/modernizr")
-</head> 
+</head>
 <body>
     <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-dark bg-dark">
         <div class="container">
@@ -50,13 +50,8 @@
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between">
-                <ul class="navbar-nav flex-grow-1">
-                    <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
-                    <li>@Html.ActionLink("Matrícula", "Registrar", "Estudiante", new { area = "" }, new { @class = "nav-link" })</li>
-                    <!--<li>Html.ActionLink("Acerca de", "About", "Home", new { area = "" }, new { class = "nav-link" })</li>
-         <li>Html.ActionLink("Contacto", "Contact", "Home", new { area = "" }, new { class = "nav-link" })</li>-->
-                </ul>
+            <div class="collapse navbar-collapse d-sm-inline-flex justify-content-between"> 
+                @Html.Partial("_MenuPartial")
                 @Html.Partial("_LoginPartial")
             </div>
         </div>
@@ -71,7 +66,7 @@
     <script src="~/Scripts/popper.min.js"></script>
     @Scripts.Render("~/bundles/jquery")
     @Scripts.Render("~/bundles/bootstrap")
-    @RenderSection("scripts", required: false) 
+    @RenderSection("scripts", required: false)
 
 </body>
 </html>
