@@ -9,11 +9,14 @@ namespace SistemaAcademico.Models
     [Table("Evaluacion")]
     public partial class Evaluacion
     {
+        [Key]
         public int EvaluacionId { get; set; }
-
+        [Required]
         public int EstudianteCursoId { get; set; }
-
+        [Required]
         public int DocenteId { get; set; }
+        [Required]
+        [Range(0, 100, ErrorMessage = "La nota debe estar entre 0 y 100")]
 
         public decimal Nota { get; set; }
 

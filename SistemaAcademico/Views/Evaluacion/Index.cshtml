@@ -1,0 +1,377 @@
+﻿@{
+    ViewBag.Title = "Evaluación de Estudiantes";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Título -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-clipboard-check text-primary"></i> Evaluación de Estudiantes
+                </h2>
+            </div>
+
+            <!-- Alertas -->
+            <div id="alertContainer"></div>
+
+            <!-- Card de Búsqueda -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-search"></i> Buscar Estudiante
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="form-group mb-0">
+                                <label class="font-weight-bold">
+                                    <i class="fas fa-user-search"></i> Nombre, Apellido o Identificación
+                                </label>
+                                <div class="input-group">
+                                    <div class="input-group-prepend">
+                                        <span class="input-group-text">
+                                            <i class="fas fa-search"></i>
+                                        </span>
+                                    </div>
+                                    <input type="text"
+                                           id="criterioBusqueda"
+                                           class="form-control form-control-lg"
+                                           placeholder="Ej: María González, 118230456..."
+                                           autocomplete="off" />
+                                    <div class="input-group-append">
+                                        <button class="btn btn-primary" id="btnBuscar">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                    </div>
+                                </div>
+                                <small class="form-text text-muted">
+                                    <i class="fas fa-info-circle"></i>
+                                    La búsqueda es dinámica. Ingrese al menos 2 caracteres.
+                                </small>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <label class="font-weight-bold d-block">&nbsp;</label>
+                            <button class="btn btn-outline-secondary btn-block" id="btnLimpiarBusqueda">
+                                <i class="fas fa-eraser"></i> Limpiar Búsqueda
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Resultados de Búsqueda -->
+                    <div id="resultadosBusqueda" class="mt-4" style="display: none;">
+                        <hr>
+                        <h6 class="font-weight-bold mb-3">
+                            <i class="fas fa-list"></i> Resultados de Búsqueda
+                            <span id="contadorResultados" class="badge badge-primary ml-2">0</span>
+                        </h6>
+                        <div id="listaEstudiantes"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Información del Estudiante (oculto inicialmente) -->
+            <div id="cardEstudiante" class="card shadow-sm mb-4" style="display: none;">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-user"></i> Información del Estudiante
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong><i class="fas fa-id-card text-primary"></i> Identificación:</strong>
+                                <span id="infoIdentificacion"></span>
+                            </p>
+                            <p class="mb-2">
+                                <strong><i class="fas fa-user text-primary"></i> Nombre Completo:</strong>
+                                <span id="infoNombre"></span>
+                            </p>
+                            <p class="mb-2">
+                                <strong><i class="fas fa-envelope text-primary"></i> Email:</strong>
+                                <span id="infoEmail"></span>
+                            </p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2">
+                                <strong><i class="fas fa-birthday-cake text-primary"></i> Edad:</strong>
+                                <span id="infoEdad"></span>
+                            </p>
+                            <p class="mb-2">
+                                <strong><i class="fas fa-map-marker-alt text-primary"></i> Dirección:</strong>
+                                <span id="infoDireccion"></span>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card de Cursos Matriculados (oculto inicialmente) -->
+            <div id="cardCursos" class="card shadow-sm mb-4" style="display: none;">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-book"></i> Cursos Matriculados
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div id="listaCursos"></div>
+                </div>
+            </div>
+
+            <!-- Card de Formulario de Evaluación (oculto inicialmente) -->
+            <div id="cardEvaluacion" class="card shadow-sm mb-4" style="display: none;">
+                <div class="card-header bg-warning text-dark">
+                    <h5 class="mb-0">
+                        <i class="fas fa-edit"></i>
+                        <span id="tituloFormulario">Registrar Evaluación</span>
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <form id="formEvaluacion">
+                        @Html.AntiForgeryToken()
+
+                        <input type="hidden" id="estudianteCursoId" name="EstudianteCursoID" />
+                        <input type="hidden" id="evaluacionId" name="EvaluacionID" />
+                        <input type="hidden" id="modoEdicion" value="crear" />
+
+                        <!-- Información del curso seleccionado -->
+                        <div class="alert alert-info">
+                            <h6 class="alert-heading mb-2">
+                                <i class="fas fa-graduation-cap"></i> Curso Seleccionado
+                            </h6>
+                            <p class="mb-1">
+                                <strong>Estudiante:</strong> <span id="evalEstudiante"></span>
+                            </p>
+                            <p class="mb-1">
+                                <strong>Curso:</strong> <span id="evalCurso"></span>
+                            </p>
+                            <p class="mb-0">
+                                <strong>Cuatrimestre:</strong> <span id="evalCuatrimestre"></span>
+                            </p>
+                        </div>
+
+                        <div class="row">
+                            <!-- Nota -->
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-star"></i> Nota
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <div class="input-group">
+                                        <input type="number"
+                                               id="nota"
+                                               name="Nota"
+                                               class="form-control form-control-lg text-center"
+                                               placeholder="0-100"
+                                               min="0"
+                                               max="100"
+                                               step="0.01"
+                                               required />
+                                        <div class="input-group-append">
+                                            <span class="input-group-text">/ 100</span>
+                                        </div>
+                                    </div>
+                                    <span class="text-danger field-validation" data-valmsg-for="Nota"></span>
+                                    <small class="form-text text-muted">
+                                        Nota entre 0 y 100 puntos
+                                    </small>
+                                </div>
+                            </div>
+
+                            <!-- Tipo de Participación -->
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-comments"></i> Tipo de Participación
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="tipoParticipacion"
+                                            name="TipoParticipacion"
+                                            class="form-control form-control-lg"
+                                            required>
+                                        <option value="">-- Seleccione --</option>
+                                        @foreach (var tipo in ViewBag.TiposParticipacion)
+                                        {
+                                            <option value="@tipo">@tipo</option>
+                                        }
+                                    </select>
+                                    <span class="text-danger field-validation" data-valmsg-for="TipoParticipacion"></span>
+                                </div>
+                            </div>
+
+                            <!-- Estado -->
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-check-circle"></i> Estado
+                                        <span class="text-danger">*</span>
+                                    </label>
+                                    <select id="estado"
+                                            name="Estado"
+                                            class="form-control form-control-lg"
+                                            required>
+                                        <option value="">-- Seleccione --</option>
+                                        @foreach (var estado in ViewBag.Estados)
+                                        {
+                                            <option value="@estado">@estado</option>
+                                        }
+                                    </select>
+                                    <span class="text-danger field-validation" data-valmsg-for="Estado"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Observaciones -->
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label class="font-weight-bold">
+                                        <i class="fas fa-comment-alt"></i> Observaciones
+                                    </label>
+                                    <textarea id="observaciones"
+                                              name="Observaciones"
+                                              class="form-control"
+                                              rows="4"
+                                              maxlength="1000"
+                                              placeholder="Comentarios adicionales sobre el desempeño del estudiante..."></textarea>
+                                    <small class="form-text text-muted">
+                                        <span id="contadorCaracteres">0</span> / 1000 caracteres
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn btn-secondary" id="btnCancelar">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-success" id="btnGuardarEvaluacion">
+                                    <i class="fas fa-save"></i> <span id="textoBoton">Guardar Evaluación</span>
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="modalConfirmacion" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle"></i> Evaluación Registrada
+                </h5>
+                <button type="button" class="close text-white" data-bs-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBody">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                    Cerrar
+                </button>
+                <button type="button" class="btn btn-primary" id="btnNuevaEvaluacion">
+                    <i class="fas fa-plus"></i> Evaluar Otro Estudiante
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Content/_AppJs/evaluaciones.js"></script>
+}
+
+@section Styles {
+    <style>
+        .card {
+            border-radius: 10px;
+            border: none;
+            transition: transform 0.2s;
+        }
+
+            .card:hover {
+                transform: translateY(-2px);
+            }
+
+        .estudiante-item {
+            padding: 15px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+            .estudiante-item:hover {
+                border-color: #007bff;
+                background-color: #f8f9fa;
+                transform: translateX(5px);
+            }
+
+            .estudiante-item.selected {
+                border-color: #28a745;
+                background-color: #d4edda;
+            }
+
+        .curso-card {
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+            .curso-card:hover {
+                border-color: #007bff;
+                box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            }
+
+            .curso-card.evaluado {
+                background-color: #d4edda;
+                border-color: #28a745;
+            }
+
+        .badge-xl {
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+        }
+
+        #nota {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .field-validation {
+            display: block;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+        }
+
+        .input-group-lg .form-control {
+            font-size: 1.1rem;
+        }
+
+        .alert-heading {
+            font-size: 1rem;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.2em;
+        }
+    </style>
+}

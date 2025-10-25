@@ -19,10 +19,11 @@
 <ul class="navbar-nav flex-grow-1">
     <li>@Html.ActionLink("Inicio", "Index", "Home", new { area = "" }, new { @class = "nav-link" })</li>
     @if (Request.IsAuthenticated)
-     {
-        if (rolPrincipal =="Administrador" || rolPrincipal == "Docente") {
-            <li>@Html.ActionLink("Matrícula", "Registrar", "Estudiante", new { area = "" }, new { @class = "nav-link" })</li>
+    {
+        if (rolPrincipal == "Administrador" || rolPrincipal == "Docente")
+        {
+            <li>@Html.ActionLink("Matrícula", "Registrar", "Estudiante", new { area = "" }, new { @class = "nav-link" })</li> 
+            <li>@Html.ActionLink("Evaluación", "Index", "Evaluacion", new { area = "" }, new { @class = "nav-link" })</li>
         }
-        
-     }
+    }
 </ul>
