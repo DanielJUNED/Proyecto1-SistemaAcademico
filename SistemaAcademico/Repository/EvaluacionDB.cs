@@ -90,37 +90,38 @@ namespace SistemaAcademico.Data
 
             return new BusquedaEstudianteViewModel
             {
-                EstudianteID   = estudiante.EstudianteId,
-                Identificacion = estudiante.Identificacion,
-                NombreCompleto = $"{estudiante.Nombre} {estudiante.Apellidos}",
-                Email          = estudiante.Email,
+                EstudianteID      = estudiante.EstudianteId,
+                Identificacion    = estudiante.Identificacion,
+                NombreCompleto    = $"{estudiante.Nombre} {estudiante.Apellidos}",
+                Email             = estudiante.Email,
                 DireccionCompleta = $"{estudiante.Distrito.Nom_Distrito}, {estudiante.Distrito.Canton.Nom_Canton}, {estudiante.Distrito.Canton.Provincia.Nom_Provincia}",
-                Fec_Nacimiento = estudiante.Fec_Nacimiento,
-                Edad           = CalcularEdad(estudiante.Fec_Nacimiento),
+                Fec_Nacimiento    = estudiante.Fec_Nacimiento,
+                Edad              = CalcularEdad(estudiante.Fec_Nacimiento),
                 CursosMatriculados = estudiante.EstudianteCurso
                     .Where(ec => ec.Ind_Estado == "A")
-                    .Select(ec => new CursoMatriculadoViewModel
+                    .Select(ec => new
                     {
-                        EstudianteCursoID = ec.EstudianteCursoId,
-                        CursoID = ec.CursoCuatrimestre.CursoId,
-                        CodigoCurso = ec.CursoCuatrimestre.Curso.Codigo,
-                        NombreCurso = ec.CursoCuatrimestre.Curso.Nom_Curso,
-                        NombreCuatrimestre = ec.CursoCuatrimestre.Cuatrimestre.Nombre,
-                        CuatrimestreID = ec.CursoCuatrimestre.CuatrimestreId,
-                        Creditos = ec.CursoCuatrimestre.Curso.Num_Creditos,
-                        TieneEvaluacion = _db.Evaluacion.Any(ev => ev.EstudianteCursoId == ec.EstudianteCursoId),
-                        EvaluacionId = _db.Evaluacion.Where(ev => ev.EstudianteCursoId == ec.EstudianteCursoId)
-                            .Select(ev => ev.EvaluacionId)
-                            .FirstOrDefault(),
-                        NotaActual = _db.Evaluacion
+                        ec,
+                        Evaluacion = _db.Evaluacion
                             .Where(ev => ev.EstudianteCursoId == ec.EstudianteCursoId)
-                            .Select(ev => (decimal?)ev.Nota)
-                            .FirstOrDefault(),
-                        EstadoActual = _db.Evaluacion
-                            .Where(ev => ev.EstudianteCursoId == ec.EstudianteCursoId)
-                            .Select(ev => ev.Estado)
                             .FirstOrDefault()
                     })
+                   .Select(x => new CursoMatriculadoViewModel
+                   {
+                       EstudianteCursoID  = x.ec.EstudianteCursoId,
+                       CursoID            = x.ec.CursoCuatrimestre.CursoId,
+                       CodigoCurso        = x.ec.CursoCuatrimestre.Curso.Codigo,
+                       NombreCurso        = x.ec.CursoCuatrimestre.Curso.Nom_Curso,
+                       NombreCuatrimestre = x.ec.CursoCuatrimestre.Cuatrimestre.Nombre,
+                       CuatrimestreID     = x.ec.CursoCuatrimestre.CuatrimestreId,
+                       Creditos           = x.ec.CursoCuatrimestre.Curso.Num_Creditos,
+                       TieneEvaluacion    = x.Evaluacion != null,
+                       EvaluacionId       = x.Evaluacion != null ? x.Evaluacion.EvaluacionId :(int?) null,
+                       TipoParticipacion  = x.Evaluacion != null ? x.Evaluacion.TipoParticipacion : null,
+                       Observacion        = x.Evaluacion != null ? x.Evaluacion.Observaciones : null,
+                       NotaActual         = x.Evaluacion != null ? (decimal?)x.Evaluacion.Nota : null,
+                       EstadoActual       = x.Evaluacion != null ? x.Evaluacion.Estado : null
+                   })
                     .ToList()
             };
         }

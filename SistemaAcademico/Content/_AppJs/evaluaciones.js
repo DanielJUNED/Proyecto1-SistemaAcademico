@@ -312,7 +312,8 @@ function cargarEvaluacionExistente(estudianteCursoId) {
     $('#nota').val(curso.NotaActual);
 
     $('#evaluacionId').val(curso.EvaluacionId);
-    $('#tipoParticipacion').val(''); // Se cargará con AJAX completo
+    $('#observaciones').val(curso.Observacion);
+    $('#tipoParticipacion').val(curso.TipoParticipacion); // Se cargará con AJAX completo
     $('#estado').val(curso.EstadoActual);
 
     // Aquí podrías hacer una llamada AJAX para obtener todos los detalles
