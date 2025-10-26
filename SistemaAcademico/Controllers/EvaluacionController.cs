@@ -1,4 +1,6 @@
 ﻿using Microsoft.AspNet.Identity;
+using Microsoft.AspNet.Identity.EntityFramework;
+using Microsoft.AspNet.Identity.Owin;
 using SistemaAcademico.App_Start;
 using SistemaAcademico.Data;
 using SistemaAcademico.Models;
@@ -6,7 +8,6 @@ using SistemaAcademico.Models.ViewModels;
 using SistemaAcademico.Repository;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -78,9 +79,18 @@ namespace SistemaAcademico.Controllers
         [HttpGet]
         public async Task<JsonResult> ObtenerEstudiante(int estudianteId)
         {
+            var PermiteEvaluar = false;
             try
-            {
-                var estudiante = await _dbEvaluacion.ObtenerEstudianteDetalleAsync(estudianteId);
+            { 
+                //Permiso para evaluar cursos(Habilitar btn evaluar)
+                var userId      = User.Identity.GetUserId();
+                var docenteId   = _db.Docente.AsNoTracking().FirstOrDefault(d => d.UserId == userId).DocenteId;
+
+                if (User.IsInRole("Administrador"))
+                {
+                    PermiteEvaluar = true;
+                } 
+                var estudiante = await _dbEvaluacion.ObtenerEstudianteDetalleAsync(estudianteId, docenteId); 
 
                 if (estudiante == null)
                 {
@@ -94,7 +104,8 @@ namespace SistemaAcademico.Controllers
                 return Json(new
                 {
                     success = true,
-                    data = estudiante
+                    data = estudiante,
+                    permiteEvaluar = PermiteEvaluar
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)

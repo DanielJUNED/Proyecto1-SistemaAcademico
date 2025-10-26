@@ -86,6 +86,7 @@ namespace SistemaAcademico.Models.ViewModels
         public string NombreCompleto { get; set; }
         public string Email { get; set; }
 
+        public string NombreCurso { get; set; }
         public decimal? Nota { get; set; }
         public string Estado { get; set; }
         public string TipoParticipacion { get; set; }

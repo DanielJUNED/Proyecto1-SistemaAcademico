@@ -177,7 +177,7 @@ function seleccionarEstudiante(estudianteId) {
             if (response.success) {
                 estudianteSeleccionado = response.data;
                 mostrarInformacionEstudiante(response.data);
-                mostrarCursosMatriculados(response.data.CursosMatriculados);
+                mostrarCursosMatriculados(response.data.CursosMatriculados, response.permiteEvaluar);
 
                 // Scroll a la información del estudiante
                 $('html, body').animate({
@@ -203,7 +203,7 @@ function mostrarInformacionEstudiante(estudiante) {
     $('#cardEstudiante').fadeIn();
 }
 
-function mostrarCursosMatriculados(cursos) {
+function mostrarCursosMatriculados(cursos,permiteEvaluar) {
     const $lista = $('#listaCursos');
     $lista.empty();
 
@@ -236,7 +236,8 @@ function mostrarCursosMatriculados(cursos) {
                         </h6>
                         <p class="mb-0 text-muted small">
                             <i class="fas fa-calendar"></i> ${curso.NombreCuatrimestre} | 
-                            <i class="fas fa-award"></i> ${curso.Creditos} créditos
+                            <i class="fas fa-award"></i> ${curso.Creditos} créditos | 
+                            <i class="fas fa-user"></i> ${curso.NombreDocente} Profesor
                         </p>
                         ${tieneEvaluacion ? `
                             <p class="mb-0 mt-1 small">
@@ -249,10 +250,13 @@ function mostrarCursosMatriculados(cursos) {
                     </div>
                     <div class="col-md-4 text-right">
                         ${badge}
-                        <button class="btn ${botonClass} btn-sm d-block w-100 mt-2" 
+                        ${permiteEvaluar || curso.PermisoEvaluar ? `
+                             <button class="btn ${botonClass} btn-sm d-block w-100 mt-2" 
                                 onclick="abrirFormularioEvaluacion(${curso.EstudianteCursoID}, ${tieneEvaluacion},${curso.EvaluacionId})">
-                            <i class="fas fa-${tieneEvaluacion ? 'edit' : 'plus'}"></i> ${botonTexto}
-                        </button>
+                                <i class="fas fa-${tieneEvaluacion ? 'edit' : 'plus'}"></i> ${botonTexto}
+                            </button>
+                        ` : ''}
+                       
                     </div>
                 </div>
             </div>

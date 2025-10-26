@@ -20,6 +20,8 @@ namespace SistemaAcademico.Models
         public int CursoId { get; set; }
         [Required]
         public int CuatrimestreId { get; set; }
+        //[Required]
+        public int DocenteId { get; set; }
 
         [Required]
         [StringLength(2)]
@@ -30,6 +32,8 @@ namespace SistemaAcademico.Models
         public virtual Cuatrimestre Cuatrimestre { get; set; }
 
         public virtual Curso Curso { get; set; }
+
+        public virtual Docente Docente { get; set; }
 
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<EstudianteCurso> EstudianteCurso { get; set; }

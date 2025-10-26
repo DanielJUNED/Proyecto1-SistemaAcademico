@@ -24,24 +24,35 @@ namespace SistemaAcademico.Repository
         // =============================================
         // OBTENER CUATRIMESTRES DISPONIBLES
         // =============================================
-        public async Task<List<CuatrimestreOpcionViewModel>> ObtenerCuatrimestresAsync()
-        { 
+        public async Task<List<CuatrimestreOpcionViewModel>> ObtenerCuatrimestresAsync(int? docenteId=null)
+        {
+            // Base de cuatrimestres activos
             var cuatrimestres = await _db.Cuatrimestre
-                .Where(c => c.Ind_Estado == "A")
-                .OrderByDescending(c => c.Anio)
-                .ThenByDescending(c => c.Numero)
-                .ToListAsync();
-
+                                        .Where(c => c.Ind_Estado == "A")
+                                        .OrderByDescending(c => c.Anio)
+                                        .ThenByDescending(c => c.Numero)
+                                        .ToListAsync();
             var resultado = new List<CuatrimestreOpcionViewModel>();
 
             foreach (var cuatrimestre in cuatrimestres)
             {
-                var totalCursos = await _db.CursoCuatrimestre
-                    .Where(cc => cc.CuatrimestreId == cuatrimestre.CuatrimestreId && cc.Ind_Estado == "A")
-                    .CountAsync();
+                // Cursos activos por cuatrimestre (filtrados por docente si aplica)
+                var cursosQuery = _db.CursoCuatrimestre
+                    .Where(cc => cc.CuatrimestreId == cuatrimestre.CuatrimestreId && cc.Ind_Estado == "A");
 
-                var totalEstudiantes = await _db.EstudianteCurso
-                    .Where(ec => ec.CursoCuatrimestre.CuatrimestreId == cuatrimestre.CuatrimestreId && ec.Ind_Estado == "A")
+                if (docenteId.HasValue)
+                    cursosQuery = cursosQuery.Where(cc => cc.DocenteId == docenteId.Value);
+
+                var totalCursos = await cursosQuery.CountAsync();
+
+                // Estudiantes activos en esos cursos
+                var estudiantesQuery = _db.EstudianteCurso
+                    .Where(ec => ec.CursoCuatrimestre.CuatrimestreId == cuatrimestre.CuatrimestreId && ec.Ind_Estado == "A");
+
+                if (docenteId.HasValue)
+                    estudiantesQuery = estudiantesQuery.Where(ec => ec.CursoCuatrimestre.DocenteId == docenteId.Value);
+
+                var totalEstudiantes = await estudiantesQuery
                     .Select(ec => ec.EstudianteId)
                     .Distinct()
                     .CountAsync();
@@ -64,11 +75,23 @@ namespace SistemaAcademico.Repository
         // =============================================
         // OBTENER CURSOS POR CUATRIMESTRE
         // =============================================
-        public async Task<List<CursoOpcionViewModel>> ObtenerCursosPorCuatrimestreAsync(int cuatrimestreId)
-        {
-            var cursos = await _db.Curso
-                .Where(c => c.Ind_Estado == "A" &&
-                    c.CursoCuatrimestre.Any(cc => cc.CuatrimestreId == cuatrimestreId && cc.Ind_Estado =="A"))
+        public async Task<List<CursoOpcionViewModel>> ObtenerCursosPorCuatrimestreAsync(int cuatrimestreId, int? docenteId = null)
+        { 
+            var query = _db.Curso.Where(c => c.Ind_Estado == "A" &&
+                                             c.CursoCuatrimestre.Any(cc => cc.CuatrimestreId == cuatrimestreId && 
+                                                                           cc.Ind_Estado == "A")
+                                        );
+
+            //Si se envía un docente, filtrar por él
+            if (docenteId.HasValue)
+            {
+                query = query.Where(c =>
+                    c.CursoCuatrimestre.Any(cc =>
+                        cc.CuatrimestreId == cuatrimestreId &&
+                        cc.Ind_Estado == "A" &&
+                        cc.DocenteId == docenteId.Value));
+            }
+            var cursos = await query
                 .OrderBy(c => c.Codigo)
                 .ToListAsync();
 
@@ -77,9 +100,14 @@ namespace SistemaAcademico.Repository
             foreach (var curso in cursos)
             {
                 var cursoCuatrimestre = await _db.CursoCuatrimestre
-                    .FirstOrDefaultAsync(cc => cc.CursoId == curso.CursoId &&
-                                              cc.CuatrimestreId == cuatrimestreId);
+                                                .FirstOrDefaultAsync(cc =>
+                                                    cc.CursoId == curso.CursoId &&
+                                                    cc.CuatrimestreId == cuatrimestreId &&
+                                                    cc.Ind_Estado == "A" &&
+                                                    (!docenteId.HasValue || cc.DocenteId == docenteId.Value));
 
+                if (cursoCuatrimestre == null)
+                    continue;
                 var totalEstudiantes = await _db.EstudianteCurso
                     .Where(ec => ec.CursoCuatrimestreId == cursoCuatrimestre.CursoCuatrimestreId && ec.Ind_Estado == "A")
                     .CountAsync();
@@ -105,7 +133,7 @@ namespace SistemaAcademico.Repository
         // =============================================
         // OBTENER ESTADÍSTICAS
         // =============================================
-        public async Task<EstadisticasViewModel> ObtenerEstadisticasAsync(int? cuatrimestreId, int? cursoId)
+        public async Task<EstadisticasViewModel> ObtenerEstadisticasAsync(int? cuatrimestreId, int? cursoId, int? docenteId = null)
         {
             var estadisticas = new EstadisticasViewModel
             {
@@ -131,22 +159,21 @@ namespace SistemaAcademico.Repository
             }
 
             // Query base
-            IQueryable<EstudianteCurso> query = _db.EstudianteCurso
+            var query = _db.EstudianteCurso
                 .Include(ec => ec.Estudiante)
                 .Include(ec => ec.CursoCuatrimestre.Curso)
                 .Include(ec => ec.CursoCuatrimestre.Cuatrimestre)
                 .Where(ec => ec.Ind_Estado == "A");
-
             // Aplicar filtros
             if (cuatrimestreId.HasValue)
-            {
                 query = query.Where(ec => ec.CursoCuatrimestre.CuatrimestreId == cuatrimestreId.Value);
-            }
 
             if (cursoId.HasValue)
-            {
                 query = query.Where(ec => ec.CursoCuatrimestre.CursoId == cursoId.Value);
-            }
+
+            if (docenteId.HasValue)
+                query = query.Where(ec => ec.CursoCuatrimestre.DocenteId == docenteId.Value);
+
 
             var estudiantesCursos = await query.ToListAsync();
 
@@ -158,14 +185,16 @@ namespace SistemaAcademico.Repository
                 .Count();
 
             // Obtener evaluaciones
-            var evaluaciones = await _db.Evaluacion
+            var evaluacionesQuery = _db.Evaluacion
                 .Where(e => _db.EstudianteCurso
-                    .Where(ec => ec.Ind_Estado == "A" &&
-                                 (!cuatrimestreId.HasValue || ec.CursoCuatrimestre.CuatrimestreId == cuatrimestreId.Value) &&
-                                 (!cursoId.HasValue || ec.CursoCuatrimestre.CursoId == cursoId.Value))
+                    .Where(ec => ec.Ind_Estado == "A"
+                        && (!cuatrimestreId.HasValue || ec.CursoCuatrimestre.CuatrimestreId == cuatrimestreId.Value)
+                        && (!cursoId.HasValue || ec.CursoCuatrimestre.CursoId == cursoId.Value)
+                        && (!docenteId.HasValue || ec.CursoCuatrimestre.DocenteId == docenteId.Value))
                     .Select(ec => ec.EstudianteCursoId)
-                    .Contains(e.EstudianteCursoId))
-                .ToListAsync();
+                    .Contains(e.EstudianteCursoId));
+
+            var evaluaciones = await evaluacionesQuery.ToListAsync();
 
             estadisticas.Generales.TotalEvaluaciones = evaluaciones.Count;
 
@@ -292,6 +321,7 @@ namespace SistemaAcademico.Repository
                     NombreCompleto = $"{ec.Estudiante.Nombre} {ec.Estudiante.Apellidos}",
                     Email = ec.Estudiante.Email,
                     TieneEvaluacion = evaluacion != null,
+                    NombreCurso = ec.CursoCuatrimestre.Curso.Nom_Curso,
                     Nota = evaluacion?.Nota,
                     Estado = evaluacion?.Estado,
                     TipoParticipacion = evaluacion?.TipoParticipacion,
@@ -306,9 +336,9 @@ namespace SistemaAcademico.Repository
         // =============================================
         // OBTENER COMPARATIVA DE CURSOS
         // =============================================
-        public async Task<ComparativaCursosViewModel> ObtenerComparativaCursosAsync(int cuatrimestreId)
+        public async Task<ComparativaCursosViewModel> ObtenerComparativaCursosAsync(int cuatrimestreId, int? docenteId = null)
         {
-            var cursos = await ObtenerCursosPorCuatrimestreAsync(cuatrimestreId);
+            var cursos = await ObtenerCursosPorCuatrimestreAsync(cuatrimestreId, docenteId);
             var comparativa = new ComparativaCursosViewModel
             {
                 Cursos = new List<CursoComparativoViewModel>()
@@ -316,7 +346,7 @@ namespace SistemaAcademico.Repository
 
             foreach (var curso in cursos)
             {
-                var stats = await ObtenerEstadisticasAsync(cuatrimestreId, curso.CursoID);
+                var stats = await ObtenerEstadisticasAsync(cuatrimestreId, curso.CursoID,docenteId);
 
                 comparativa.Cursos.Add(new CursoComparativoViewModel
                 {

@@ -121,14 +121,17 @@ CREATE TABLE Curso (
 CREATE TABLE CursoCuatrimestre (
     CursoCuatrimestreId INT IDENTITY(1,1) PRIMARY KEY,
     CursoId INT NOT NULL,
-    CuatrimestreId INT NOT NULL, 
+    CuatrimestreId INT NOT NULL,
+    DocenteId INT NOT NULL,
     Ind_Estado NVARCHAR(2) DEFAULT 'A' NOT NULL,
     Fec_Registro DATETIME DEFAULT GETDATE() NOT NULL,
     CONSTRAINT FK_CursoCuatrimestre_Curso FOREIGN KEY (CursoId) 
         REFERENCES Curso(CursoId),
     CONSTRAINT FK_CursoCuatrimestre_Cuatrimestre FOREIGN KEY (CuatrimestreId) 
-        REFERENCES Cuatrimestre(CuatrimestreId), 
-    CONSTRAINT UQ_CursoCuatrimestre UNIQUE (CursoId, CuatrimestreId)
+        REFERENCES Cuatrimestre(CuatrimestreId),
+    CONSTRAINT FK_CursoCuatrimestre_Docente FOREIGN KEY (DocenteId)
+        REFERENCES Docente(DocenteId),
+    CONSTRAINT UQ_CursoCuatrimestre UNIQUE (CursoId, CuatrimestreId,DocenteId)
 );
 
 -- Tabla: ESTUDIANTE_CURSO (Matrícula)

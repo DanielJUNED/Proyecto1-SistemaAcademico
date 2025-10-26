@@ -13,6 +13,7 @@ namespace SistemaAcademico.Models
         public Docente()
         {
             Evaluacion = new HashSet<Evaluacion>();
+            CursoCuatrimestre = new HashSet<CursoCuatrimestre>();
         }
         [Key]
         public int DocenteId { get; set; }
@@ -40,5 +41,6 @@ namespace SistemaAcademico.Models
         public string UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual ApplicationUser Usuario { get; set; }
+        public virtual ICollection<CursoCuatrimestre> CursoCuatrimestre { get; set; }
     }
 }

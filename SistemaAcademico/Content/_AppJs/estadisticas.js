@@ -370,7 +370,8 @@ function actualizarTablaEstudiantes(estudiantes) {
             <tr class="${!tieneEvaluacion ? 'table-warning' : ''}">
                 <td>${estudiante.Identificacion}</td>
                 <td>${estudiante.NombreCompleto}</td>
-                <td><small>${estudiante.Email}</small></td>
+                <!--<td><small>${estudiante.Email}</small></td>-->
+                <td><small>${estudiante.NombreCurso}</small></td>
                 <td class="text-center">
                     <span class="badge badge-xl badge-${colorNota}">${nota}</span>
                 </td>

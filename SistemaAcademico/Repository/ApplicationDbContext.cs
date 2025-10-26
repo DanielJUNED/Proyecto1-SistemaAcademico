@@ -63,6 +63,11 @@ namespace SistemaAcademico.Models
                 .WithRequired(e => e.Docente)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<Docente>()
+                .HasMany(d => d.CursoCuatrimestre)
+                .WithRequired(e => e.Docente)
+                .WillCascadeOnDelete(false);
+
             // Relación Docente → ApplicationUser
             modelBuilder.Entity<Docente>()
                 .HasRequired(d => d.Usuario)

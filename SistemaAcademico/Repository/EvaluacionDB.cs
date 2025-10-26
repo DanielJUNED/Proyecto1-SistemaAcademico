@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNet.Identity;
+using SistemaAcademico.App_Start;
 using SistemaAcademico.Models;
 using SistemaAcademico.Models.ViewModels;
 using System;
@@ -6,6 +7,7 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 
 namespace SistemaAcademico.Data
 {
@@ -77,13 +79,14 @@ namespace SistemaAcademico.Data
         // =============================================
         // OBTENER DETALLE DE ESTUDIANTE
         // =============================================
-        public async Task<BusquedaEstudianteViewModel> ObtenerEstudianteDetalleAsync(int estudianteId)
+        public async Task<BusquedaEstudianteViewModel> ObtenerEstudianteDetalleAsync(int estudianteId,int docenteLogin)
         {
             var estudiante = await _db.Estudiante
                 .Where(e => e.EstudianteId == estudianteId && e.Ind_Estado =="A")
                 .Include(e => e.Distrito.Canton.Provincia)
                 .Include(e => e.EstudianteCurso.Select(ec => ec.CursoCuatrimestre.Curso))
                 .Include(e => e.EstudianteCurso.Select(ec => ec.CursoCuatrimestre.Cuatrimestre))
+                .Include(e => e.EstudianteCurso.Select(ec => ec.CursoCuatrimestre.Docente)).AsNoTracking()
                 .FirstOrDefaultAsync();
 
             if (estudiante == null) return null;
@@ -115,7 +118,10 @@ namespace SistemaAcademico.Data
                        NombreCuatrimestre = x.ec.CursoCuatrimestre.Cuatrimestre.Nombre,
                        CuatrimestreID     = x.ec.CursoCuatrimestre.CuatrimestreId,
                        Creditos           = x.ec.CursoCuatrimestre.Curso.Num_Creditos,
+                       DocenteId          = x.ec.CursoCuatrimestre.Docente.DocenteId,
+                       NombreDocente      = x.ec.CursoCuatrimestre.Docente.Nombre + " " +x.ec.CursoCuatrimestre.Docente.Apellidos,
                        TieneEvaluacion    = x.Evaluacion != null,
+                       PermisoEvaluar     = VerificarPermisoEvaluar(x.ec.CursoCuatrimestreId, docenteLogin),
                        EvaluacionId       = x.Evaluacion != null ? x.Evaluacion.EvaluacionId :(int?) null,
                        TipoParticipacion  = x.Evaluacion != null ? x.Evaluacion.TipoParticipacion : null,
                        Observacion        = x.Evaluacion != null ? x.Evaluacion.Observaciones : null,
@@ -308,10 +314,18 @@ namespace SistemaAcademico.Data
         return await _db.Evaluacion
             .AnyAsync(e => e.EstudianteCursoId == estudianteCursoId);
     }
-    // =============================================
-    // HELPER: Calcular Edad
-    // =============================================
-    private int CalcularEdad(DateTime fechaNacimiento)
+    public bool VerificarPermisoEvaluar(int cursoCuatrimestreId, int docenteId)
+    {  
+            // 3. Verificar si es el docente asignado al curso
+            var valida = _db.CursoCuatrimestre
+                .Where(cc => cc.CursoCuatrimestreId == cursoCuatrimestreId && cc.DocenteId ==docenteId) 
+                .Any();
+            return valida;
+        }
+        // =============================================
+        // HELPER: Calcular Edad
+        // =============================================
+        private int CalcularEdad(DateTime fechaNacimiento)
         {
             var hoy = DateTime.Today;
             var edad = hoy.Year - fechaNacimiento.Year;

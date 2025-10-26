@@ -5,6 +5,7 @@ using SistemaAcademico.Models.ViewModels;
 using SistemaAcademico.Repository;
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -23,26 +24,23 @@ namespace SistemaAcademico.Controllers
             _db = new ApplicationDbContext();
             _dbEstadistica = new EstadisticaDB(_db);
         }
+
         // =============================================
         // GET: /Estadisticas/Index
         // =============================================
         public async Task<ActionResult> Index()
         {
 
-            var userId = User.Identity.GetUserId(); 
-            var roles = _db.Users.Where(u => u.Id == userId)
-                            .SelectMany(u => u.Roles)
-                            .ToList();
+            var (userId, docenteId, roles) = ObtenerDatosUsuario();
             var listCuatri = new List<CuatrimestreOpcionViewModel>();
-            if (User.IsInRole("Docente"))
+            if (roles.Contains("Administrador") && docenteId.HasValue)
+            {
+                docenteId = null;
+            }
+            if (roles.Contains("Administrador")|| roles.Contains("Docente"))
             {
                 // lógica para Docente
-                listCuatri = await _dbEstadistica.ObtenerCuatrimestresAsync();
-            }
-            if (User.IsInRole("Administrador"))
-            {
-                // lógica para administradores
-                listCuatri = await _dbEstadistica.ObtenerCuatrimestresAsync();
+                listCuatri = await _dbEstadistica.ObtenerCuatrimestresAsync(docenteId);
             }
             // Cargar cuatrimestres para el dropdown
             ViewBag.Cuatrimestres = listCuatri;
@@ -85,12 +83,22 @@ namespace SistemaAcademico.Controllers
         {
             try
             {
-                var cursos = await _dbEstadistica.ObtenerCursosPorCuatrimestreAsync(cuatrimestreId);
+                var (userId, docenteId, roles) = ObtenerDatosUsuario();
+                var listCurso = new List<CursoOpcionViewModel>();
+                if (roles.Contains("Administrador") && docenteId.HasValue)
+                {
+                    docenteId = null;
+                }
+                if (roles.Contains("Administrador") || roles.Contains("Docente"))
+                {
+                    // lógica para Docente o admin(docente is null)
+                    listCurso = await _dbEstadistica.ObtenerCursosPorCuatrimestreAsync(cuatrimestreId, docenteId);
+                }  
 
                 return Json(new
                 {
                     success = true,
-                    data = cursos
+                    data = listCurso
                 }, JsonRequestBehavior.AllowGet);
             }
             catch (Exception ex)
@@ -111,7 +119,7 @@ namespace SistemaAcademico.Controllers
         public async Task<JsonResult> ObtenerEstadisticas(int? cuatrimestreId, int? cursoId)
         {
             try
-            {
+            { 
                 if (!cuatrimestreId.HasValue)
                 {
                     return Json(new
@@ -120,9 +128,17 @@ namespace SistemaAcademico.Controllers
                         message = "Debe seleccionar un cuatrimestre"
                     }, JsonRequestBehavior.AllowGet);
                 }
-
-                var estadisticas = await _dbEstadistica.ObtenerEstadisticasAsync(cuatrimestreId, cursoId);
-
+                var (userId, docenteId, roles) = ObtenerDatosUsuario();
+                var estadisticas = new EstadisticasViewModel();
+                if (roles.Contains("Administrador") && docenteId.HasValue)
+                {
+                    docenteId = null;
+                }
+                if (roles.Contains("Administrador") || roles.Contains("Docente"))
+                {
+                    // lógica para Docente o admin(docente is null)
+                    estadisticas = await _dbEstadistica.ObtenerEstadisticasAsync(cuatrimestreId, cursoId, docenteId);
+                } 
                 return Json(new
                 {
                     success = true,
@@ -148,8 +164,17 @@ namespace SistemaAcademico.Controllers
         {
             try
             {
-                var comparativa = await _dbEstadistica.ObtenerComparativaCursosAsync(cuatrimestreId);
-
+                var (userId, docenteId, roles) = ObtenerDatosUsuario();
+                var comparativa = new ComparativaCursosViewModel();
+                if (roles.Contains("Administrador") && docenteId.HasValue)
+                {
+                    docenteId = null;
+                }
+                if (roles.Contains("Administrador") || roles.Contains("Docente"))
+                {
+                    // lógica para Docente o admin(docente is null)
+                    comparativa = await _dbEstadistica.ObtenerComparativaCursosAsync(cuatrimestreId, docenteId); 
+                } 
                 return Json(new
                 {
                     success = true,
@@ -177,6 +202,29 @@ namespace SistemaAcademico.Controllers
                 _db?.Dispose();
             }
             base.Dispose(disposing);
+        }
+        private (string UserId, int? DocenteId, List<string> Roles) ObtenerDatosUsuario()
+        {
+            var userId = User.Identity.GetUserId();
+
+            // Obtener roles
+            var roleIds =  _db.Users
+                .Where(u => u.Id == userId)
+                .SelectMany(u => u.Roles.Select(r => r.RoleId))
+                .ToList();
+
+            var roles = _db.Roles
+                .Where(r => roleIds.Contains(r.Id))
+                .Select(r => r.Name)
+                .ToList();
+
+            // Obtener docenteId (si aplica)
+            var docenteId = _db.Docente
+                .Where(d => d.UserId == userId)
+                .Select(d => (int?)d.DocenteId)
+                .FirstOrDefault();
+
+            return (userId, docenteId, roles);
         }
     }
 }

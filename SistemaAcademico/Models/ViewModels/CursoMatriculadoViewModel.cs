@@ -18,6 +18,7 @@ namespace SistemaAcademico.Models.ViewModels
         public string NombreDocente { get; set; }
         public int Creditos { get; set; }
         public bool TieneEvaluacion { get; set; }
+        public bool PermisoEvaluar { get; set; }
         public int? EvaluacionId { get; set; }
         public string TipoParticipacion { get; set; }
         public string Observacion { get; set; }
