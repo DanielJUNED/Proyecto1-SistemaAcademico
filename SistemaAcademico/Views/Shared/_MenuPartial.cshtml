@@ -22,7 +22,9 @@
     {
         if (rolPrincipal == "Administrador" || rolPrincipal == "Docente")
         {
-            <li>@Html.ActionLink("Matrícula", "Registrar", "Estudiante", new { area = "" }, new { @class = "nav-link" })</li> 
+            <li>@Html.ActionLink("Estadísticas", "Index", "Estadistica", new { area = "" }, new { @class = "nav-link" })</li>
+            <li>@Html.ActionLink("Matrícula", "Registrar", "Estudiante", new { area = "" }, new { @class = "nav-link" })</li>
+
             <li>@Html.ActionLink("Evaluación", "Index", "Evaluacion", new { area = "" }, new { @class = "nav-link" })</li>
         }
     }

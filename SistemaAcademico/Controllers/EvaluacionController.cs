@@ -14,7 +14,7 @@ using System.Web.Mvc;
 
 namespace SistemaAcademico.Controllers
 {
-    [Authorize(Roles = "Docente,Admin")]
+    [Authorize(Roles = "Docente,Administrador")]
     public class EvaluacionController : Controller
     {
         private ApplicationDbContext _db;
@@ -24,30 +24,6 @@ namespace SistemaAcademico.Controllers
         {
             _db = new ApplicationDbContext();
             _dbEvaluacion = new EvaluacionDB(_db);
-        }
-        private EvaluacionDB EvaluacionDB
-        {
-            get
-            {
-                if (_dbEvaluacion == null)
-                {
-                    _dbEvaluacion = new EvaluacionDB(_db);
-                }
-
-                return _dbEvaluacion;
-            }
-        }
-        private ApplicationDbContext ContextDB
-        {
-            get
-            {
-                if (_db == null)
-                {
-                    _db = new ApplicationDbContext();
-                }
-
-                return _db;
-            }
         }
         // =============================================
         // GET: /Evaluacion/Index
@@ -157,7 +133,7 @@ namespace SistemaAcademico.Controllers
                 }
 
                 var UserId = User.Identity.GetUserId();
-                var docente = ContextDB.Docente.AsNoTracking().FirstOrDefault(d => d.UserId == UserId);
+                var docente = _db.Docente.AsNoTracking().FirstOrDefault(d => d.UserId == UserId);
                 var resultado = await _dbEvaluacion.RegistrarEvaluacionAsync(modelo, docente.DocenteId);
 
                 return Json(resultado);

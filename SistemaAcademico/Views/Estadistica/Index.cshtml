@@ -1,0 +1,304 @@
+﻿@{
+    ViewBag.Title = "Panel de Estadísticas";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <!-- Título -->
+            <div class="d-flex align-items-center justify-content-between mb-4">
+                <h2 class="mb-0">
+                    <i class="fas fa-chart-bar text-primary"></i> Panel de Estadísticas Académicas
+                </h2>
+            </div>
+
+            <!-- Alertas -->
+            <div id="alertContainer"></div>
+
+            <!-- Card de Filtros -->
+            <div class="card shadow-sm mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">
+                        <i class="fas fa-filter"></i> Filtros de Consulta
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Cuatrimestre -->
+                        <div class="col-md-5">
+                            <div class="form-group mb-md-0">
+                                <label class="font-weight-bold">
+                                    <i class="fas fa-calendar"></i> Cuatrimestre
+                                    <span class="text-danger">*</span>
+                                </label>
+                                <select id="filtroCuatrimestre" class="form-control form-control-lg">
+                                    <option value="">-- Seleccione un cuatrimestre --</option>
+                                    @foreach (var cuatrimestre in ViewBag.Cuatrimestres)
+                                    {
+                                        <option value="@cuatrimestre.CuatrimestreID">
+                                            @cuatrimestre.Nombre
+                                            (@cuatrimestre.TotalCursos cursos, @cuatrimestre.TotalEstudiantes estudiantes)
+                                        </option>
+                                    }
+                                </select>
+                                <small class="form-text text-muted">
+                                    Seleccione el cuatrimestre para ver estadísticas
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Curso -->
+                        <div class="col-md-5">
+                            <div class="form-group mb-md-0">
+                                <label class="font-weight-bold">
+                                    <i class="fas fa-book"></i> Curso (Opcional)
+                                </label>
+                                <select id="filtroCurso" class="form-control form-control-lg" disabled>
+                                    <option value="">-- Todos los cursos --</option>
+                                </select>
+                                <small class="form-text text-muted">
+                                    Deje vacío para ver todos los cursos del cuatrimestre
+                                </small>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="col-md-2">
+                            <label class="font-weight-bold d-none d-md-block">&nbsp;</label>
+                            <button class="btn btn-success btn-lg btn-block" id="btnConsultar">
+                                <i class="fas fa-chart-line"></i> Consultar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Estadísticas (oculta inicialmente) -->
+            <div id="seccionEstadisticas" style="display: none;">
+
+                <!-- Encabezado de Estadísticas -->
+                <div class="card shadow-sm mb-4 border-primary">
+                    <div class="card-body bg-light">
+                        <div class="row align-items-center">
+                            <div class="col-md-8">
+                                <h4 class="mb-0">
+                                    <i class="fas fa-chart-pie text-primary"></i>
+                                    <strong id="tituloEstadisticas">Estadísticas</strong>
+                                </h4>
+                                <p class="mb-0 text-muted">
+                                    <span id="subtituloEstadisticas"></span>
+                                </p>
+                            </div>
+                            <div class="col-md-4 text-right">
+                                <button class="btn btn-outline-primary" id="btnExportar">
+                                    <i class="fas fa-download"></i> Exportar
+                                </button>
+                                <button class="btn btn-outline-secondary" id="btnComparativa">
+                                    <i class="fas fa-balance-scale"></i> Comparativa
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Indicadores Principales -->
+                <div class="row mb-4">
+                    <!-- Total Estudiantes -->
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-primary stat-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-users fa-3x text-primary mb-3"></i>
+                                <h2 class="display-4 mb-0" id="statTotalEstudiantes">0</h2>
+                                <p class="text-muted mb-0">Estudiantes</p>
+                                <small class="text-muted" id="statMatriculados"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Porcentaje Aprobación -->
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-success stat-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                                <h2 class="display-4 mb-0 text-success" id="statAprobacion">0%</h2>
+                                <p class="text-muted mb-0">Aprobación</p>
+                                <small class="text-success" id="statAprobados"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Porcentaje Reprobación -->
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-danger stat-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-times-circle fa-3x text-danger mb-3"></i>
+                                <h2 class="display-4 mb-0 text-danger" id="statReprobacion">0%</h2>
+                                <p class="text-muted mb-0">Reprobación</p>
+                                <small class="text-danger" id="statReprobados"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Promedio General -->
+                    <div class="col-md-3">
+                        <div class="card shadow-sm border-info stat-card">
+                            <div class="card-body text-center">
+                                <i class="fas fa-star fa-3x text-info mb-3"></i>
+                                <h2 class="display-4 mb-0 text-info" id="statPromedio">0</h2>
+                                <p class="text-muted mb-0">Promedio</p>
+                                <small class="text-muted" id="statParticipacion"></small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráficos -->
+                <div class="row mb-4">
+                    <!-- Gráfico de Estados -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-success text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-chart-pie"></i> Distribución por Estado
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="chartEstados" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Gráfico de Participación -->
+                    <div class="col-md-6">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-info text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-chart-bar"></i> Nivel de Participación
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="chartParticipacion" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gráfico de Distribución de Notas -->
+                <div class="row mb-4">
+                    <div class="col-md-12">
+                        <div class="card shadow-sm">
+                            <div class="card-header bg-primary text-white">
+                                <h6 class="mb-0">
+                                    <i class="fas fa-chart-line"></i> Distribución de Notas
+                                </h6>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="chartNotas" height="100"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Tabla de Estudiantes -->
+                <div class="card shadow-sm">
+                    <div class="card-header bg-secondary text-white">
+                        <h6 class="mb-0">
+                            <i class="fas fa-list"></i> Detalle de Estudiantes
+                        </h6>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped" id="tablaEstudiantes">
+                                <thead class="thead-dark">
+                                    <tr>
+                                        <th>Identificación</th>
+                                        <th>Nombre Completo</th>
+                                        <th>Email</th>
+                                        <th class="text-center">Nota</th>
+                                        <th class="text-center">Estado</th>
+                                        <th class="text-center">Participación</th>
+                                        <th class="text-center">Fecha Evaluación</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bodyEstudiantes">
+                                    <!-- Datos dinámicos -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Estado inicial -->
+            <div id="estadoInicial" class="text-center py-5">
+                <i class="fas fa-chart-bar fa-5x text-muted mb-4"></i>
+                <h4 class="text-muted">Seleccione un cuatrimestre para ver las estadísticas</h4>
+                <p class="text-muted">Use los filtros superiores para consultar el rendimiento académico</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Comparativa -->
+<div class="modal fade" id="modalComparativa" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-xl" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-balance-scale"></i> Comparativa de Cursos
+                </h5>
+                <button type="button" class="close text-white" data-bs-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body" id="modalBodyComparativa">
+                <!-- Contenido dinámico -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <script src="~/Content/_AppJs/estadisticas.js"></script>
+}
+
+@section Styles {
+    <style>
+        .stat-card {
+            transition: transform 0.3s, box-shadow 0.3s;
+            cursor: pointer;
+        }
+
+            .stat-card:hover {
+                transform: translateY(-5px);
+                box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            }
+
+        .card {
+            border-radius: 10px;
+        }
+
+        .display-4 {
+            font-size: 3rem;
+            font-weight: 700;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+
+        .table thead th {
+            border-top: none;
+        }
+
+        .badge-xl {
+            font-size: 0.9rem;
+            padding: 0.4rem 0.8rem;
+        }
+    </style>
+}

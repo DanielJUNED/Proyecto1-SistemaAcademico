@@ -14,6 +14,8 @@ namespace SistemaAcademico.Models.ViewModels
         public string NombreCurso { get; set; }
         public string NombreCuatrimestre { get; set; }
         public int CuatrimestreID { get; set; }
+        public int DocenteId { get; set; }
+        public string NombreDocente { get; set; }
         public int Creditos { get; set; }
         public bool TieneEvaluacion { get; set; }
         public int? EvaluacionId { get; set; }
