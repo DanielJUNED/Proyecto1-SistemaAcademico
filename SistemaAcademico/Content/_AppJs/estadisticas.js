@@ -35,10 +35,7 @@ function inicializarEstadisticas() {
             consultarEstadisticas();
         }
     });
-
-    // Botón exportar
-    $('#btnExportar').on('click', exportarEstadisticas);
-
+     
     // Botón comparativa
     $('#btnComparativa').on('click', mostrarComparativa);
 }
@@ -487,50 +484,7 @@ function renderizarComparativa(data) {
     html += '</tbody></table></div>';
     $('#modalBodyComparativa').html(html);
 }
-
-// =============================================
-// EXPORTAR ESTADÍSTICAS
-// =============================================
-function exportarEstadisticas() {
-    if (!datosActuales) {
-        mostrarAlerta('warning', 'No hay datos para exportar');
-        return;
-    }
-
-    // Crear CSV
-    let csv = 'Estadísticas Académicas\n\n';
-    csv += `Cuatrimestre: ${datosActuales.NombreCuatrimestre}\n`;
-    csv += `Curso: ${datosActuales.NombreCurso || 'Todos'}\n\n`;
-
-    csv += 'INDICADORES GENERALES\n';
-    csv += `Total Estudiantes,${datosActuales.Generales.TotalEstudiantes}\n`;
-    csv += `Promedio General,${datosActuales.Generales.PromedioGeneral.toFixed(2)}\n`;
-    csv += `% Aprobación,${datosActuales.Generales.PorcentajeAprobacion.toFixed(2)}%\n`;
-    csv += `% Reprobación,${datosActuales.Generales.PorcentajeReprobacion.toFixed(2)}%\n\n`;
-
-    csv += 'DETALLE DE ESTUDIANTES\n';
-    csv += 'Identificación,Nombre,Email,Nota,Estado,Participación\n';
-
-    datosActuales.Estudiantes.forEach(function (est) {
-        csv += `${est.Identificacion},"${est.NombreCompleto}",${est.Email},`;
-        csv += `${est.Nota || 'N/A'},${est.Estado || 'Sin evaluar'},${est.TipoParticipacion || 'N/A'}\n`;
-    });
-
-    // Descargar
-    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-    const link = document.createElement('a');
-    const url = URL.createObjectURL(blob);
-
-    link.setAttribute('href', url);
-    link.setAttribute('download', `estadisticas_${Date.now()}.csv`);
-    link.style.visibility = 'hidden';
-
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-
-    mostrarAlerta('success', 'Estadísticas exportadas correctamente');
-}
+ 
 
 // =============================================
 // UTILIDADES

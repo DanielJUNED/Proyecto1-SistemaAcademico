@@ -14,9 +14,6 @@ using System.Web;
 
 namespace SistemaAcademico.App_Start
 {
-    public class IdentityConfig
-    {
-    }
     // Configure el administrador de usuarios de aplicación que se usa en esta aplicación. UserManager se define en ASP.NET Identity y se usa en la aplicación.
     public class ApplicationUserManager : UserManager<ApplicationUser>
     {
@@ -87,7 +84,7 @@ namespace SistemaAcademico.App_Start
         {
         }
 
-        public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
+       public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
         {
             return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
         }

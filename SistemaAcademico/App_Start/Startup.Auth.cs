@@ -38,7 +38,7 @@ namespace SistemaAcademico
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
             });   
-            
+
         }
     }
 }
