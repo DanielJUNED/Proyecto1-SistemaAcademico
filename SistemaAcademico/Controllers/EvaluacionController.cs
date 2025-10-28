@@ -24,7 +24,7 @@ namespace SistemaAcademico.Controllers
         public EvaluacionController()
         {
             _db = new ApplicationDbContext();
-            _dbEvaluacion = new EvaluacionDB(_db);
+            _dbEvaluacion = new EvaluacionDB();
         }
         // =============================================
         // GET: /Evaluacion/Index

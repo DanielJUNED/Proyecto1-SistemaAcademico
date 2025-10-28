@@ -2,71 +2,111 @@
 using SistemaAcademico.Models.ViewModels;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
+using System.Configuration;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
 
 namespace SistemaAcademico.Repository
 {
     public class EstadisticaDB
     {
-        private readonly ApplicationDbContext _db;
+        private readonly string _connectionString;
 
-        public EstadisticaDB(ApplicationDbContext context)
+        public EstadisticaDB()
         {
-            _db = context;
+            _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
+        }
+
+        public EstadisticaDB(string connectionString)
+        {
+            _connectionString = connectionString;
         }
 
         // =============================================
         // OBTENER CUATRIMESTRES DISPONIBLES
         // =============================================
-        public async Task<List<CuatrimestreOpcionViewModel>> ObtenerCuatrimestresAsync(int? docenteId=null)
+        public async Task<List<CuatrimestreOpcionViewModel>> ObtenerCuatrimestresAsync(int? docenteId = null)
         {
-            // Base de cuatrimestres activos
-            var cuatrimestres = await _db.Cuatrimestre
-                                        .Where(c => c.Ind_Estado == "A")
-                                        .OrderByDescending(c => c.Anio)
-                                        .ThenByDescending(c => c.Numero)
-                                        .ToListAsync();
             var resultado = new List<CuatrimestreOpcionViewModel>();
 
-            foreach (var cuatrimestre in cuatrimestres)
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                // Cursos activos por cuatrimestre (filtrados por docente si aplica)
-                var cursosQuery = _db.CursoCuatrimestre
-                    .Where(cc => cc.CuatrimestreId == cuatrimestre.CuatrimestreId && cc.Ind_Estado == "A");
+                await conn.OpenAsync();
 
-                if (docenteId.HasValue)
-                    cursosQuery = cursosQuery.Where(cc => cc.DocenteId == docenteId.Value);
+                string query = @"
+                    SELECT 
+                        c.CuatrimestreId,
+                        c.Nombre,
+                        c.Anio,
+                        c.Numero,
+                        c.Ind_Estado
+                    FROM Cuatrimestre c
+                    WHERE c.Ind_Estado = 'A'
+                    ORDER BY c.Anio DESC, c.Numero DESC";
 
-                var totalCursos = await cursosQuery.CountAsync();
-
-                // Estudiantes activos en esos cursos
-                var estudiantesQuery = _db.EstudianteCurso
-                    .Where(ec => ec.CursoCuatrimestre.CuatrimestreId == cuatrimestre.CuatrimestreId && ec.Ind_Estado == "A");
-
-                if (docenteId.HasValue)
-                    estudiantesQuery = estudiantesQuery.Where(ec => ec.CursoCuatrimestre.DocenteId == docenteId.Value);
-
-                var totalEstudiantes = await estudiantesQuery
-                    .Select(ec => ec.EstudianteId)
-                    .Distinct()
-                    .CountAsync();
-
-                resultado.Add(new CuatrimestreOpcionViewModel
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    CuatrimestreID = cuatrimestre.CuatrimestreId,
-                    Nombre = cuatrimestre.Nombre,
-                    Anio = cuatrimestre.Anio,
-                    Numero = cuatrimestre.Numero,
-                    Ind_Estado = cuatrimestre.Ind_Estado,
-                    TotalCursos = totalCursos,
-                    TotalEstudiantes = totalEstudiantes
-                });
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var cuatrimestre = new CuatrimestreOpcionViewModel
+                            {
+                                CuatrimestreID = reader.GetInt32(0),
+                                Nombre = reader.GetString(1),
+                                Anio = reader.GetInt32(2),
+                                Numero = reader.GetInt32(3),
+                                Ind_Estado = reader.GetString(4)
+                            };
+                            resultado.Add(cuatrimestre);
+                        }
+                    }
+                }
+
+                // Obtener totales de cursos y estudiantes para cada cuatrimestre
+                foreach (var cuatrimestre in resultado)
+                {
+                    // Total de cursos
+                    string queryCursos = @"
+                        SELECT COUNT(*)
+                        FROM CursoCuatrimestre cc
+                        WHERE cc.CuatrimestreId = @CuatrimestreId 
+                        AND cc.Ind_Estado = 'A'";
+
+                    if (docenteId.HasValue)
+                        queryCursos += " AND cc.DocenteId = @DocenteId";
+
+                    using (SqlCommand cmd = new SqlCommand(queryCursos, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CuatrimestreId", cuatrimestre.CuatrimestreID);
+                        if (docenteId.HasValue)
+                            cmd.Parameters.AddWithValue("@DocenteId", docenteId.Value);
+
+                        cuatrimestre.TotalCursos = (int)await cmd.ExecuteScalarAsync();
+                    }
+
+                    // Total de estudiantes
+                    string queryEstudiantes = @"
+                        SELECT COUNT(DISTINCT ec.EstudianteId)
+                        FROM EstudianteCurso ec
+                        INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
+                        WHERE cc.CuatrimestreId = @CuatrimestreId 
+                        AND ec.Ind_Estado = 'A'";
+
+                    if (docenteId.HasValue)
+                        queryEstudiantes += " AND cc.DocenteId = @DocenteId";
+
+                    using (SqlCommand cmd = new SqlCommand(queryEstudiantes, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CuatrimestreId", cuatrimestre.CuatrimestreID);
+                        if (docenteId.HasValue)
+                            cmd.Parameters.AddWithValue("@DocenteId", docenteId.Value);
+
+                        cuatrimestre.TotalEstudiantes = (int)await cmd.ExecuteScalarAsync();
+                    }
+                }
             }
 
             return resultado;
@@ -76,55 +116,108 @@ namespace SistemaAcademico.Repository
         // OBTENER CURSOS POR CUATRIMESTRE
         // =============================================
         public async Task<List<CursoOpcionViewModel>> ObtenerCursosPorCuatrimestreAsync(int cuatrimestreId, int? docenteId = null)
-        { 
-            var query = _db.Curso.Where(c => c.Ind_Estado == "A" &&
-                                             c.CursoCuatrimestre.Any(cc => cc.CuatrimestreId == cuatrimestreId && 
-                                                                           cc.Ind_Estado == "A")
-                                        );
-
-            //Si se envía un docente, filtrar por él
-            if (docenteId.HasValue)
-            {
-                query = query.Where(c =>
-                    c.CursoCuatrimestre.Any(cc =>
-                        cc.CuatrimestreId == cuatrimestreId &&
-                        cc.Ind_Estado == "A" &&
-                        cc.DocenteId == docenteId.Value));
-            }
-            var cursos = await query
-                .OrderBy(c => c.Codigo)
-                .ToListAsync();
-
+        {
             var resultado = new List<CursoOpcionViewModel>();
 
-            foreach (var curso in cursos)
+            using (SqlConnection conn = new SqlConnection(_connectionString))
             {
-                var cursoCuatrimestre = await _db.CursoCuatrimestre
-                                                .FirstOrDefaultAsync(cc =>
-                                                    cc.CursoId == curso.CursoId &&
-                                                    cc.CuatrimestreId == cuatrimestreId &&
-                                                    cc.Ind_Estado == "A" &&
-                                                    (!docenteId.HasValue || cc.DocenteId == docenteId.Value));
+                await conn.OpenAsync();
 
-                if (cursoCuatrimestre == null)
-                    continue;
-                var totalEstudiantes = await _db.EstudianteCurso
-                    .Where(ec => ec.CursoCuatrimestreId == cursoCuatrimestre.CursoCuatrimestreId && ec.Ind_Estado == "A")
-                    .CountAsync();
+                string query = @"
+                    SELECT DISTINCT
+                        c.CursoId,
+                        c.Codigo,
+                        c.Nom_Curso,
+                        c.Num_Creditos
+                    FROM Curso c
+                    INNER JOIN CursoCuatrimestre cc ON c.CursoId = cc.CursoId
+                    WHERE c.Ind_Estado = 'A'
+                    AND cc.CuatrimestreId = @CuatrimestreId
+                    AND cc.Ind_Estado = 'A'";
 
-                var totalEvaluaciones = await _db.Evaluacion
-                    .Where(e => e.EstudianteCurso.CursoCuatrimestreId == cursoCuatrimestre.CursoCuatrimestreId)
-                    .CountAsync();
+                if (docenteId.HasValue)
+                    query += " AND cc.DocenteId = @DocenteId";
 
-                resultado.Add(new CursoOpcionViewModel
+                query += " ORDER BY c.Codigo";
+
+                using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
-                    CursoID = curso.CursoId,
-                    Codigo = curso.Codigo,
-                    Nombre = curso.Nom_Curso,
-                    Creditos = curso.Num_Creditos,
-                    TotalEstudiantes = totalEstudiantes,
-                    TotalEvaluaciones = totalEvaluaciones
-                });
+                    cmd.Parameters.AddWithValue("@CuatrimestreId", cuatrimestreId);
+                    if (docenteId.HasValue)
+                        cmd.Parameters.AddWithValue("@DocenteId", docenteId.Value);
+
+                    using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            var curso = new CursoOpcionViewModel
+                            {
+                                CursoID = reader.GetInt32(0),
+                                Codigo = reader.GetString(1),
+                                Nombre = reader.GetString(2),
+                                Creditos = reader.GetInt32(3)
+                            };
+                            resultado.Add(curso);
+                        }
+                    }
+                }
+
+                // Obtener estadísticas para cada curso
+                foreach (var curso in resultado)
+                {
+                    // Obtener CursoCuatrimestreId
+                    string queryCursoCuatrimestre = @"
+                        SELECT TOP 1 CursoCuatrimestreId
+                        FROM CursoCuatrimestre
+                        WHERE CursoId = @CursoId
+                        AND CuatrimestreId = @CuatrimestreId
+                        AND Ind_Estado = 'A'";
+
+                    if (docenteId.HasValue)
+                        queryCursoCuatrimestre += " AND DocenteId = @DocenteId";
+
+                    int cursoCuatrimestreId = 0;
+                    using (SqlCommand cmd = new SqlCommand(queryCursoCuatrimestre, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CursoId", curso.CursoID);
+                        cmd.Parameters.AddWithValue("@CuatrimestreId", cuatrimestreId);
+                        if (docenteId.HasValue)
+                            cmd.Parameters.AddWithValue("@DocenteId", docenteId.Value);
+
+                        var result = await cmd.ExecuteScalarAsync();
+                        if (result != null)
+                            cursoCuatrimestreId = Convert.ToInt32(result);
+                    }
+
+                    if (cursoCuatrimestreId == 0)
+                        continue;
+
+                    // Total estudiantes
+                    string queryEstudiantes = @"
+                        SELECT COUNT(*)
+                        FROM EstudianteCurso
+                        WHERE CursoCuatrimestreId = @CursoCuatrimestreId
+                        AND Ind_Estado = 'A'";
+
+                    using (SqlCommand cmd = new SqlCommand(queryEstudiantes, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CursoCuatrimestreId", cursoCuatrimestreId);
+                        curso.TotalEstudiantes = (int)await cmd.ExecuteScalarAsync();
+                    }
+
+                    // Total evaluaciones
+                    string queryEvaluaciones = @"
+                        SELECT COUNT(*)
+                        FROM Evaluacion e
+                        INNER JOIN EstudianteCurso ec ON e.EstudianteCursoId = ec.EstudianteCursoId
+                        WHERE ec.CursoCuatrimestreId = @CursoCuatrimestreId";
+
+                    using (SqlCommand cmd = new SqlCommand(queryEvaluaciones, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CursoCuatrimestreId", cursoCuatrimestreId);
+                        curso.TotalEvaluaciones = (int)await cmd.ExecuteScalarAsync();
+                    }
+                }
             }
 
             return resultado;
@@ -138,64 +231,192 @@ namespace SistemaAcademico.Repository
             var estadisticas = new EstadisticasViewModel
             {
                 CuatrimestreID = cuatrimestreId,
-                CursoID        = cursoId,
-                Generales      = new EstadisticasGeneralesViewModel(),
-                Graficos       = new EstadisticasGraficosViewModel(),
-                Estudiantes    = new List<EstudianteEstadisticaViewModel>()
+                CursoID = cursoId,
+                Generales = new EstadisticasGeneralesViewModel(),
+                Graficos = new EstadisticasGraficosViewModel(),
+                Estudiantes = new List<EstudianteEstadisticaViewModel>()
             };
 
-            // Obtener nombres
+            using (SqlConnection conn = new SqlConnection(_connectionString))
+            {
+                await conn.OpenAsync();
+
+                // Obtener nombres
+                if (cuatrimestreId.HasValue)
+                {
+                    string query = "SELECT Nombre FROM Cuatrimestre WHERE CuatrimestreId = @Id";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", cuatrimestreId.Value);
+                        var result = await cmd.ExecuteScalarAsync();
+                        estadisticas.NombreCuatrimestre = result?.ToString();
+                    }
+                }
+
+                if (cursoId.HasValue)
+                {
+                    string query = "SELECT Nom_Curso, Codigo FROM Curso WHERE CursoId = @Id";
+                    using (SqlCommand cmd = new SqlCommand(query, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", cursoId.Value);
+                        using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                        {
+                            if (await reader.ReadAsync())
+                            {
+                                estadisticas.NombreCurso = reader.GetString(0);
+                                estadisticas.CodigoCurso = reader.GetString(1);
+                            }
+                        }
+                    }
+                }
+
+                // Obtener estadísticas generales
+                await ObtenerEstadisticasGeneralesAsync(conn, estadisticas, cuatrimestreId, cursoId, docenteId);
+
+                // Obtener evaluaciones
+                var evaluaciones = await ObtenerEvaluacionesAsync(conn, cuatrimestreId, cursoId, docenteId);
+
+                // Calcular estadísticas de evaluaciones
+                CalcularEstadisticasEvaluaciones(estadisticas, evaluaciones);
+
+                // Preparar datos para gráficos
+                PrepararDatosGraficos(estadisticas, evaluaciones);
+
+                // Lista de estudiantes
+                estadisticas.Estudiantes = await ObtenerListaEstudiantesAsync(conn, cuatrimestreId, cursoId, docenteId);
+            }
+
+            return estadisticas;
+        }
+
+        // =============================================
+        // OBTENER ESTADÍSTICAS GENERALES
+        // =============================================
+        private async Task ObtenerEstadisticasGeneralesAsync(
+            SqlConnection conn,
+            EstadisticasViewModel estadisticas,
+            int? cuatrimestreId,
+            int? cursoId,
+            int? docenteId)
+        {
+            string query = @"
+                SELECT 
+                    COUNT(*) as TotalMatriculados,
+                    COUNT(DISTINCT ec.EstudianteId) as TotalEstudiantes
+                FROM EstudianteCurso ec
+                INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
+                WHERE ec.Ind_Estado = 'A'";
+
+            var parameters = new List<SqlParameter>();
+
             if (cuatrimestreId.HasValue)
             {
-                var cuatrimestre = await _db.Cuatrimestre.FindAsync(cuatrimestreId.Value);
-                estadisticas.NombreCuatrimestre = cuatrimestre?.Nombre;
+                query += " AND cc.CuatrimestreId = @CuatrimestreId";
+                parameters.Add(new SqlParameter("@CuatrimestreId", cuatrimestreId.Value));
             }
 
             if (cursoId.HasValue)
             {
-                var curso = await _db.Curso.FindAsync(cursoId.Value);
-                estadisticas.NombreCurso = curso?.Nom_Curso;
-                estadisticas.CodigoCurso = curso?.Codigo;
+                query += " AND cc.CursoId = @CursoId";
+                parameters.Add(new SqlParameter("@CursoId", cursoId.Value));
             }
-
-            // Query base
-            var query = _db.EstudianteCurso
-                .Include(ec => ec.Estudiante)
-                .Include(ec => ec.CursoCuatrimestre.Curso)
-                .Include(ec => ec.CursoCuatrimestre.Cuatrimestre)
-                .Where(ec => ec.Ind_Estado == "A");
-            // Aplicar filtros
-            if (cuatrimestreId.HasValue)
-                query = query.Where(ec => ec.CursoCuatrimestre.CuatrimestreId == cuatrimestreId.Value);
-
-            if (cursoId.HasValue)
-                query = query.Where(ec => ec.CursoCuatrimestre.CursoId == cursoId.Value);
 
             if (docenteId.HasValue)
-                query = query.Where(ec => ec.CursoCuatrimestre.DocenteId == docenteId.Value);
+            {
+                query += " AND cc.DocenteId = @DocenteId";
+                parameters.Add(new SqlParameter("@DocenteId", docenteId.Value));
+            }
 
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddRange(parameters.ToArray());
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    if (await reader.ReadAsync())
+                    {
+                        estadisticas.Generales.TotalMatriculados = reader.GetInt32(0);
+                        estadisticas.Generales.TotalEstudiantes = reader.GetInt32(1);
+                    }
+                }
+            }
+        }
 
-            var estudiantesCursos = await query.ToListAsync();
+        // =============================================
+        // OBTENER EVALUACIONES
+        // =============================================
+        private async Task<List<EvaluacionData>> ObtenerEvaluacionesAsync(
+            SqlConnection conn,
+            int? cuatrimestreId,
+            int? cursoId,
+            int? docenteId)
+        {
+            var evaluaciones = new List<EvaluacionData>();
 
-            // Calcular estadísticas generales
-            estadisticas.Generales.TotalMatriculados = estudiantesCursos.Count;
-            estadisticas.Generales.TotalEstudiantes = estudiantesCursos
-                .Select(ec => ec.EstudianteId)
-                .Distinct()
-                .Count();
+            string query = @"
+                SELECT 
+                    e.EvaluacionId,
+                    e.EstudianteCursoId,
+                    e.Nota,
+                    e.Estado,
+                    e.TipoParticipacion,
+                    e.Observaciones,
+                    e.Fec_Evaluacion
+                FROM Evaluacion e
+                INNER JOIN EstudianteCurso ec ON e.EstudianteCursoId = ec.EstudianteCursoId
+                INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
+                WHERE ec.Ind_Estado = 'A'";
 
-            // Obtener evaluaciones
-            var evaluacionesQuery = _db.Evaluacion
-                .Where(e => _db.EstudianteCurso
-                    .Where(ec => ec.Ind_Estado == "A"
-                        && (!cuatrimestreId.HasValue || ec.CursoCuatrimestre.CuatrimestreId == cuatrimestreId.Value)
-                        && (!cursoId.HasValue || ec.CursoCuatrimestre.CursoId == cursoId.Value)
-                        && (!docenteId.HasValue || ec.CursoCuatrimestre.DocenteId == docenteId.Value))
-                    .Select(ec => ec.EstudianteCursoId)
-                    .Contains(e.EstudianteCursoId));
+            var parameters = new List<SqlParameter>();
 
-            var evaluaciones = await evaluacionesQuery.ToListAsync();
+            if (cuatrimestreId.HasValue)
+            {
+                query += " AND cc.CuatrimestreId = @CuatrimestreId";
+                parameters.Add(new SqlParameter("@CuatrimestreId", cuatrimestreId.Value));
+            }
 
+            if (cursoId.HasValue)
+            {
+                query += " AND cc.CursoId = @CursoId";
+                parameters.Add(new SqlParameter("@CursoId", cursoId.Value));
+            }
+
+            if (docenteId.HasValue)
+            {
+                query += " AND cc.DocenteId = @DocenteId";
+                parameters.Add(new SqlParameter("@DocenteId", docenteId.Value));
+            }
+
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddRange(parameters.ToArray());
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        evaluaciones.Add(new EvaluacionData
+                        {
+                            EvaluacionId = reader.GetInt32(0),
+                            EstudianteCursoId = reader.GetInt32(1),
+                            Nota = reader.GetDecimal(2),
+                            Estado = reader.GetString(3),
+                            TipoParticipacion = reader.GetString(4),
+                            Observaciones = reader.IsDBNull(5) ? null : reader.GetString(5),
+                            Fec_Evaluacion = reader.GetDateTime(6)
+                        });
+                    }
+                }
+            }
+
+            return evaluaciones;
+        }
+
+        // =============================================
+        // CALCULAR ESTADÍSTICAS DE EVALUACIONES
+        // =============================================
+        private void CalcularEstadisticasEvaluaciones(
+            EstadisticasViewModel estadisticas,
+            List<EvaluacionData> evaluaciones)
+        {
             estadisticas.Generales.TotalEvaluaciones = evaluaciones.Count;
 
             // Porcentaje de participación
@@ -244,20 +465,12 @@ namespace SistemaAcademico.Repository
             estadisticas.Generales.ParticipacionRegular = evaluaciones.Count(e => e.TipoParticipacion == "Regular");
             estadisticas.Generales.ParticipacionBaja = evaluaciones.Count(e => e.TipoParticipacion == "Baja");
             estadisticas.Generales.ParticipacionNinguna = evaluaciones.Count(e => e.TipoParticipacion == "Ninguna");
-
-            // Preparar datos para gráficos
-            PrepararDatosGraficos(estadisticas, evaluaciones);
-
-            // Lista de estudiantes
-            estadisticas.Estudiantes = await ObtenerListaEstudiantesAsync(estudiantesCursos, evaluaciones);
-
-            return estadisticas;
         }
 
         // =============================================
         // PREPARAR DATOS PARA GRÁFICOS
         // =============================================
-        private void PrepararDatosGraficos(EstadisticasViewModel estadisticas, List<Evaluacion> evaluaciones)
+        private void PrepararDatosGraficos(EstadisticasViewModel estadisticas, List<EvaluacionData> evaluaciones)
         {
             // Gráfico de estados
             estadisticas.Graficos.EstadosLabels = new List<string> { "Aprobados", "Reprobados", "En Proceso" };
@@ -306,31 +519,82 @@ namespace SistemaAcademico.Repository
         // OBTENER LISTA DE ESTUDIANTES
         // =============================================
         private async Task<List<EstudianteEstadisticaViewModel>> ObtenerListaEstudiantesAsync(
-            List<EstudianteCurso> estudiantesCursos, List<Evaluacion> evaluaciones)
+            SqlConnection conn,
+            int? cuatrimestreId,
+            int? cursoId,
+            int? docenteId)
         {
             var resultado = new List<EstudianteEstadisticaViewModel>();
 
-            foreach (var ec in estudiantesCursos)
-            {
-                var evaluacion = evaluaciones.FirstOrDefault(e => e.EstudianteCursoId == ec.EstudianteCursoId);
+            string query = @"
+                SELECT 
+                    e.EstudianteId,
+                    e.Identificacion,
+                    e.Nombre,
+                    e.Apellidos,
+                    e.Email,
+                    c.Nom_Curso,
+                    ec.EstudianteCursoId,
+                    ev.Nota,
+                    ev.Estado,
+                    ev.TipoParticipacion,
+                    ev.Observaciones,
+                    ev.Fec_Evaluacion
+                FROM EstudianteCurso ec
+                INNER JOIN Estudiante e ON ec.EstudianteId = e.EstudianteId
+                INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
+                INNER JOIN Curso c ON cc.CursoId = c.CursoId
+                LEFT JOIN Evaluacion ev ON ec.EstudianteCursoId = ev.EstudianteCursoId
+                WHERE ec.Ind_Estado = 'A'";
 
-                resultado.Add(new EstudianteEstadisticaViewModel
-                {
-                    EstudianteID = ec.Estudiante.EstudianteId,
-                    Identificacion = ec.Estudiante.Identificacion,
-                    NombreCompleto = $"{ec.Estudiante.Nombre} {ec.Estudiante.Apellidos}",
-                    Email = ec.Estudiante.Email,
-                    TieneEvaluacion = evaluacion != null,
-                    NombreCurso = ec.CursoCuatrimestre.Curso.Nom_Curso,
-                    Nota = evaluacion?.Nota,
-                    Estado = evaluacion?.Estado,
-                    TipoParticipacion = evaluacion?.TipoParticipacion,
-                    Observaciones = evaluacion?.Observaciones,
-                    FechaEvaluacion = evaluacion?.Fec_Evaluacion
-                });
+            var parameters = new List<SqlParameter>();
+
+            if (cuatrimestreId.HasValue)
+            {
+                query += " AND cc.CuatrimestreId = @CuatrimestreId";
+                parameters.Add(new SqlParameter("@CuatrimestreId", cuatrimestreId.Value));
             }
 
-            return resultado.OrderBy(e => e.NombreCompleto).ToList();
+            if (cursoId.HasValue)
+            {
+                query += " AND cc.CursoId = @CursoId";
+                parameters.Add(new SqlParameter("@CursoId", cursoId.Value));
+            }
+
+            if (docenteId.HasValue)
+            {
+                query += " AND cc.DocenteId = @DocenteId";
+                parameters.Add(new SqlParameter("@DocenteId", docenteId.Value));
+            }
+
+            query += " ORDER BY e.Nombre, e.Apellidos";
+
+            using (SqlCommand cmd = new SqlCommand(query, conn))
+            {
+                cmd.Parameters.AddRange(parameters.ToArray());
+                using (SqlDataReader reader = await cmd.ExecuteReaderAsync())
+                {
+                    while (await reader.ReadAsync())
+                    {
+                        resultado.Add(new EstudianteEstadisticaViewModel
+                        {
+                            EstudianteID = reader.GetInt32(0),
+                            Identificacion = reader.GetString(1),
+                            NombreCompleto = $"{reader.GetString(2)} {reader.GetString(3)}",
+                            Email = reader.GetString(4),
+                            NombreCurso = reader.GetString(5),
+                            TieneEvaluacion = !reader.IsDBNull(7),
+                            Nota = reader.IsDBNull(7) ? (decimal?)null : reader.GetDecimal(7),
+                            Estado = reader.IsDBNull(8) ? null : reader.GetString(8),
+                            TipoParticipacion = reader.IsDBNull(9) ? null : reader.GetString(9),
+                            Observaciones = reader.IsDBNull(10) ? null : reader.GetString(10),
+                            FechaEvaluacion = reader.IsDBNull(11) ? (DateTime?)null : reader.GetDateTime(11)
+                        });
+                    }
+                }
+            }
+
+            return resultado;
         }
 
         // =============================================
@@ -346,7 +610,7 @@ namespace SistemaAcademico.Repository
 
             foreach (var curso in cursos)
             {
-                var stats = await ObtenerEstadisticasAsync(cuatrimestreId, curso.CursoID,docenteId);
+                var stats = await ObtenerEstadisticasAsync(cuatrimestreId, curso.CursoID, docenteId);
 
                 comparativa.Cursos.Add(new CursoComparativoViewModel
                 {
@@ -361,6 +625,20 @@ namespace SistemaAcademico.Repository
             }
 
             return comparativa;
+        }
+
+        // =============================================
+        // CLASE AUXILIAR PARA DATOS DE EVALUACIÓN
+        // =============================================
+        private class EvaluacionData
+        {
+            public int EvaluacionId { get; set; }
+            public int EstudianteCursoId { get; set; }
+            public decimal Nota { get; set; }
+            public string Estado { get; set; }
+            public string TipoParticipacion { get; set; }
+            public string Observaciones { get; set; }
+            public DateTime Fec_Evaluacion { get; set; }
         }
     }
 }

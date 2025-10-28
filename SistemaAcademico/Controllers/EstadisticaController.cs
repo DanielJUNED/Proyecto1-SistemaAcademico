@@ -22,7 +22,7 @@ namespace SistemaAcademico.Controllers
         public EstadisticaController()
         {
             _db = new ApplicationDbContext();
-            _dbEstadistica = new EstadisticaDB(_db);
+            _dbEstadistica = new EstadisticaDB();
         }
 
         // =============================================

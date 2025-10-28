@@ -190,7 +190,7 @@
     <Compile Include="Models\ViewModels\EstudianteViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repository\EstadisticaDB.cs" />
-    <Compile Include="Repository\EstudianteRepo.cs" />
+    <Compile Include="Repository\EstudianteDB.cs" />
     <Compile Include="Repository\EvaluacionDB.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
@@ -251,11 +251,6 @@
     <Content Include="Views\Home\About.cshtml" />
     <Content Include="Views\Home\Contact.cshtml" />
     <Content Include="Views\Home\Index.cshtml" />
-    <Content Include="Views\Estudiante\Create.cshtml" />
-    <Content Include="Views\Estudiante\Delete.cshtml" />
-    <Content Include="Views\Estudiante\Details.cshtml" />
-    <Content Include="Views\Estudiante\Edit.cshtml" />
-    <Content Include="Views\Estudiante\Index.cshtml" />
     <Content Include="Views\Estudiante\Registrar.cshtml" />
     <Content Include="Views\Shared\Lockout.cshtml" />
     <Content Include="Views\Shared\_LoginPartial.cshtml" />

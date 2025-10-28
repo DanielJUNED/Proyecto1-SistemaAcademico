@@ -19,131 +19,23 @@ namespace SistemaAcademico.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        private EstudianteRepo _dbEstudiante;
+        private EstudianteDB _dbEstudiante;
 
         // <summary>
         /// Obtiene  configuracion del repositorio actual
         /// </summary> 
-        private EstudianteRepo EstudianteRepo
+        private EstudianteDB EstudianteRepo
         {
             get
             {
                 if (_dbEstudiante == null)
                 {
-                    _dbEstudiante = new EstudianteRepo(db); 
+                    _dbEstudiante = new EstudianteDB(); 
                 }
 
                 return _dbEstudiante;
             }
-        }
-        // GET: Estudiante
-        public async Task<ActionResult> Index()
-        {
-            var estudiante = db.Estudiante.Include(e => e.Distrito);
-            return View(await estudiante.ToListAsync());
-        }
-
-        // GET: Estudiante/Details/5
-        public async Task<ActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Estudiante estudiante = await db.Estudiante.FindAsync(id);
-            if (estudiante == null)
-            {
-                return HttpNotFound();
-            }
-            return View(estudiante);
-        }
-
-        // GET: Estudiante/Create
-        public ActionResult Create()
-        {
-            ViewBag.DistritoId = new SelectList(db.Distrito, "DistritoId", "Nom_Distrito");
-            return View();
-        }
-
-        // POST: Estudiante/Create
-        // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que quiere enlazarse. Para obtener 
-        // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Create(Estudiante estudiante)
-        {
-
-            estudiante.Ind_Estado = "A";
-            estudiante.Fec_Registro = DateTime.Now;
-            if (ModelState.IsValid)
-            {
-                db.Estudiante.Add(estudiante);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-
-            ViewBag.DistritoId = new SelectList(db.Distrito, "DistritoId", "Nom_Distrito", estudiante.DistritoId);
-            return View(estudiante);
-        }
-
-        // GET: Estudiante/Edit/5
-        public async Task<ActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Estudiante estudiante = await db.Estudiante.FindAsync(id);
-            if (estudiante == null)
-            {
-                return HttpNotFound();
-            }
-            ViewBag.DistritoId = new SelectList(db.Distrito, "DistritoId", "Nom_Distrito", estudiante.DistritoId);
-            return View(estudiante);
-        }
-
-        // POST: Estudiante/Edit/5
-        // Para protegerse de ataques de publicación excesiva, habilite las propiedades específicas a las que quiere enlazarse. Para obtener 
-        // más detalles, vea https://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Edit([Bind(Include = "EstudianteId,Identificacion,Nombre,Apellidos,Fec_Nacimiento,Email,DistritoId,Ind_Estado,Fec_Registro")] Estudiante estudiante)
-        {
-            if (ModelState.IsValid)
-            {
-                db.Entry(estudiante).State = EntityState.Modified;
-                await db.SaveChangesAsync();
-                return RedirectToAction("Index");
-            }
-            ViewBag.DistritoId = new SelectList(db.Distrito, "DistritoId", "Nom_Distrito", estudiante.DistritoId);
-            return View(estudiante);
-        }
-
-        // GET: Estudiante/Delete/5
-        public async Task<ActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-            Estudiante estudiante = await db.Estudiante.FindAsync(id);
-            if (estudiante == null)
-            {
-                return HttpNotFound();
-            }
-            return View(estudiante);
-        }
-
-        // POST: Estudiante/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<ActionResult> DeleteConfirmed(int id)
-        {
-            Estudiante estudiante = await db.Estudiante.FindAsync(id);
-            db.Estudiante.Remove(estudiante);
-            await db.SaveChangesAsync();
-            return RedirectToAction("Index");
-        }
+        } 
 
         protected override void Dispose(bool disposing)
         {
