@@ -5,9 +5,7 @@ using SistemaAcademico.App_Start;
 using SistemaAcademico.Models;
 using SistemaAcademico.Models.ViewModels;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
@@ -62,7 +60,7 @@ namespace SistemaAcademico.Controllers
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
-         
+
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
@@ -97,7 +95,7 @@ namespace SistemaAcademico.Controllers
                         Message = "Credenciales inválidas. Verifique su correo electrónico y contraseña."
                     });
                 }
-                 
+
 
                 // Verificar si está bloqueado
                 if (await UserManager.IsLockedOutAsync(user.Id))
@@ -118,7 +116,7 @@ namespace SistemaAcademico.Controllers
                     model.UserName,
                     model.Password,
                     model.RememberMe,
-                    shouldLockout: true );
+                    shouldLockout: true);
 
                 switch (result)
                 {
@@ -214,7 +212,7 @@ namespace SistemaAcademico.Controllers
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email};
+                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
                 var result = await UserManager.CreateAsync(user, model.Password);
                 if (result.Succeeded)
                 {

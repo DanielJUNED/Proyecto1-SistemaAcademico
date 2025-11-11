@@ -1,5 +1,4 @@
-﻿using SistemaAcademico.Models;
-using SistemaAcademico.Models.ViewModels;
+﻿using SistemaAcademico.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Configuration;

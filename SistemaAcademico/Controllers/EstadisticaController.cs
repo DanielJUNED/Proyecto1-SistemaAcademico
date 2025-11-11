@@ -1,14 +1,11 @@
 ﻿using Microsoft.AspNet.Identity;
-using SistemaAcademico.Data;
 using SistemaAcademico.Models;
 using SistemaAcademico.Models.ViewModels;
 using SistemaAcademico.Repository;
 using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace SistemaAcademico.Controllers
@@ -37,7 +34,7 @@ namespace SistemaAcademico.Controllers
             {
                 docenteId = null;
             }
-            if (roles.Contains("Administrador")|| roles.Contains("Docente"))
+            if (roles.Contains("Administrador") || roles.Contains("Docente"))
             {
                 // lógica para Docente
                 listCuatri = await _dbEstadistica.ObtenerCuatrimestresAsync(docenteId);
@@ -93,7 +90,7 @@ namespace SistemaAcademico.Controllers
                 {
                     // lógica para Docente o admin(docente is null)
                     listCurso = await _dbEstadistica.ObtenerCursosPorCuatrimestreAsync(cuatrimestreId, docenteId);
-                }  
+                }
 
                 return Json(new
                 {
@@ -119,7 +116,7 @@ namespace SistemaAcademico.Controllers
         public async Task<JsonResult> ObtenerEstadisticas(int? cuatrimestreId, int? cursoId)
         {
             try
-            { 
+            {
                 if (!cuatrimestreId.HasValue)
                 {
                     return Json(new
@@ -138,7 +135,7 @@ namespace SistemaAcademico.Controllers
                 {
                     // lógica para Docente o admin(docente is null)
                     estadisticas = await _dbEstadistica.ObtenerEstadisticasAsync(cuatrimestreId, cursoId, docenteId);
-                } 
+                }
                 return Json(new
                 {
                     success = true,
@@ -173,8 +170,8 @@ namespace SistemaAcademico.Controllers
                 if (roles.Contains("Administrador") || roles.Contains("Docente"))
                 {
                     // lógica para Docente o admin(docente is null)
-                    comparativa = await _dbEstadistica.ObtenerComparativaCursosAsync(cuatrimestreId, docenteId); 
-                } 
+                    comparativa = await _dbEstadistica.ObtenerComparativaCursosAsync(cuatrimestreId, docenteId);
+                }
                 return Json(new
                 {
                     success = true,
@@ -208,7 +205,7 @@ namespace SistemaAcademico.Controllers
             var userId = User.Identity.GetUserId();
 
             // Obtener roles
-            var roleIds =  _db.Users
+            var roleIds = _db.Users
                 .Where(u => u.Id == userId)
                 .SelectMany(u => u.Roles.Select(r => r.RoleId))
                 .ToList();

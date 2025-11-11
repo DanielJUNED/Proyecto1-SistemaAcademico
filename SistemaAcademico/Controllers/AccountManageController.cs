@@ -4,12 +4,9 @@ using Microsoft.Owin.Security;
 using SistemaAcademico.App_Start;
 using SistemaAcademico.Models;
 using SistemaAcademico.Models.ViewModels;
-using SistemaAcademico.Repository;
 using System;
-using System.Collections.Generic;
 using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
 using System.Linq;
-using System.Net;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
@@ -21,7 +18,7 @@ namespace SistemaAcademico.Controllers
     {
         private ApplicationSignInManager _signInManager;
         private ApplicationUserManager _userManager;
-        private ApplicationDbContext _db ;
+        private ApplicationDbContext _db;
 
         public AccountManageController()
         {
@@ -70,7 +67,7 @@ namespace SistemaAcademico.Controllers
             {
                 _db = value;
             }
-           
+
         }
         // GET: /Manage/Index
         public async Task<ActionResult> Index(ManageMessageId? message)
@@ -109,9 +106,9 @@ namespace SistemaAcademico.Controllers
                 model.FechaCreacion = DateTime.Now;
             }
 
-            model.Email = user.Email;  
+            model.Email = user.Email;
             model.UltimaConexion = DateTime.Now;
-            model.Rol = roleNames.FirstOrDefault(); 
+            model.Rol = roleNames.FirstOrDefault();
             return View(model);
 
         }
@@ -152,7 +149,7 @@ namespace SistemaAcademico.Controllers
                 }
                 var docente = AppDbContext.Docente
                     .AsNoTracking()
-                                    .FirstOrDefault(d => d.UserId == userId); 
+                                    .FirstOrDefault(d => d.UserId == userId);
                 docente.Nombre = model.Nombre.Trim();
                 docente.Apellidos = model.Apellidos.Trim();
                 AppDbContext.Entry(docente).State = System.Data.Entity.EntityState.Modified;
@@ -164,7 +161,8 @@ namespace SistemaAcademico.Controllers
                         success = false,
                         message = "Error al actualizar el perfil del docente"
                     });
-                }else
+                }
+                else
                 {
                     return Json(new
                     {

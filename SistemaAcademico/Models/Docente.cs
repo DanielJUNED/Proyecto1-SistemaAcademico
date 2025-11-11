@@ -4,7 +4,6 @@ namespace SistemaAcademico.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
 
     [Table("Docente")]
     public partial class Docente
@@ -37,7 +36,7 @@ namespace SistemaAcademico.Models
         public DateTime Fec_Registro { get; set; }
 
         public virtual ICollection<Evaluacion> Evaluacion { get; set; }
-         
+
         public string UserId { get; set; }
         [ForeignKey("UserId")]
         public virtual ApplicationUser Usuario { get; set; }

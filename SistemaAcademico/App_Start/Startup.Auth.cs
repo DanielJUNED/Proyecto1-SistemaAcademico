@@ -1,11 +1,11 @@
-﻿using System;
-using Microsoft.AspNet.Identity;
+﻿using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.Owin;
 using Microsoft.Owin;
-using Microsoft.Owin.Security.Cookies; 
+using Microsoft.Owin.Security.Cookies;
 using Owin;
-using SistemaAcademico.Models;
 using SistemaAcademico.App_Start;
+using SistemaAcademico.Models;
+using System;
 
 namespace SistemaAcademico
 {
@@ -37,7 +37,7 @@ namespace SistemaAcademico
                         validateInterval: TimeSpan.FromMinutes(30),
                         regenerateIdentity: (manager, user) => user.GenerateUserIdentityAsync(manager))
                 }
-            });   
+            });
 
         }
     }

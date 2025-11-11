@@ -1,0 +1,11 @@
+{
+  "version": 2,
+  "dgSpecHash": "1wEHbuA9ywk=",
+  "success": true,
+  "projectFilePath": "C:\\Users\\dguti\\source\\Uned\\03101-Programacion_avanzada_en_web\\Proyecto#1-SistemaAcademico\\SistemaAcademico\\SistemaAcademico.API\\SistemaAcademico.API.csproj",
+  "expectedPackageFiles": [
+    "C:\\Users\\dguti\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.8\\microsoft.aspnetcore.openapi.9.0.8.nupkg.sha512",
+    "C:\\Users\\dguti\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"
+  ],
+  "logs": []
+}

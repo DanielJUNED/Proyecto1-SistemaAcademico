@@ -1,15 +1,9 @@
-﻿using Microsoft.AspNet.Identity;
-using SistemaAcademico.Models;
+﻿using SistemaAcademico.Models;
 using SistemaAcademico.Models.ViewModels;
 using SistemaAcademico.Repository;
 using System;
-using System.Collections.Generic;
 using System.Data;
-using System.Data.Entity;
 using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
 
 namespace SistemaAcademico.Controllers
@@ -30,12 +24,12 @@ namespace SistemaAcademico.Controllers
             {
                 if (_dbEstudiante == null)
                 {
-                    _dbEstudiante = new EstudianteDB(); 
+                    _dbEstudiante = new EstudianteDB();
                 }
 
                 return _dbEstudiante;
             }
-        } 
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -61,7 +55,7 @@ namespace SistemaAcademico.Controllers
         // POST: Estudiantes/Registrar
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public  ActionResult Registrar(EstudianteViewModel modelo)
+        public ActionResult Registrar(EstudianteViewModel modelo)
         {
             try
             {
@@ -129,7 +123,7 @@ namespace SistemaAcademico.Controllers
             {
                 return Json(new { existe = false });
             }
-            var repo = EstudianteRepo; 
+            var repo = EstudianteRepo;
             var existe = repo.ExisteIdentificacion(identificacion);
             return Json(new { existe }, JsonRequestBehavior.AllowGet);
         }

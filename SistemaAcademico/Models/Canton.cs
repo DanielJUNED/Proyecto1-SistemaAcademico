@@ -4,7 +4,6 @@ namespace SistemaAcademico.Models
     using System.Collections.Generic;
     using System.ComponentModel.DataAnnotations;
     using System.ComponentModel.DataAnnotations.Schema;
-    using System.Data.Entity.Spatial;
 
     [Table("Canton")]
     public partial class Canton

@@ -5,12 +5,9 @@ using Microsoft.Owin;
 using Microsoft.Owin.Security;
 using SistemaAcademico.Models;
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using System.Web;
 
 namespace SistemaAcademico.App_Start
 {
@@ -64,8 +61,8 @@ namespace SistemaAcademico.App_Start
                 Subject = "Código de seguridad",
                 BodyFormat = "Su código de seguridad es {0}"
             });
-           //manager.EmailService = new EmailService();
-           //manager.SmsService = new SmsService();
+            //manager.EmailService = new EmailService();
+            //manager.SmsService = new SmsService();
             var dataProtectionProvider = options.DataProtectionProvider;
             if (dataProtectionProvider != null)
             {
@@ -84,7 +81,7 @@ namespace SistemaAcademico.App_Start
         {
         }
 
-       public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
+        public override Task<ClaimsIdentity> CreateUserIdentityAsync(ApplicationUser user)
         {
             return user.GenerateUserIdentityAsync((ApplicationUserManager)UserManager);
         }

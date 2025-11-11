@@ -1,11 +1,8 @@
-﻿using SistemaAcademico.Models;
-using SistemaAcademico.Models.ViewModels;
+﻿using SistemaAcademico.Models.ViewModels;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
-using System.Data;
 using System.Data.SqlClient;
-using System.Linq;
 using System.Threading.Tasks;
 
 namespace SistemaAcademico.Data

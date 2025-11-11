@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.36414.22 d17.14
+VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaAcademico", "SistemaAcademico.csproj", "{E22B6D28-AA5B-427D-ABCF-F3810A9CE0A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaAcademico.Data", "SistemaAcademico.Data\SistemaAcademico.Data.csproj", "{AB401A91-3BF4-0179-8F8E-A89DFACD1B63}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaAcademico.API", "SistemaAcademico.API\SistemaAcademico.API.csproj", "{9647D012-AF05-E0D8-41A7-91CE191C16EB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -12,9 +16,16 @@ Global
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{E22B6D28-AA5B-427D-ABCF-F3810A9CE0A6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E22B6D28-AA5B-427D-ABCF-F3810A9CE0A6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E22B6D28-AA5B-427D-ABCF-F3810A9CE0A6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E22B6D28-AA5B-427D-ABCF-F3810A9CE0A6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AB401A91-3BF4-0179-8F8E-A89DFACD1B63}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AB401A91-3BF4-0179-8F8E-A89DFACD1B63}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AB401A91-3BF4-0179-8F8E-A89DFACD1B63}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AB401A91-3BF4-0179-8F8E-A89DFACD1B63}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9647D012-AF05-E0D8-41A7-91CE191C16EB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9647D012-AF05-E0D8-41A7-91CE191C16EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9647D012-AF05-E0D8-41A7-91CE191C16EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9647D012-AF05-E0D8-41A7-91CE191C16EB}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

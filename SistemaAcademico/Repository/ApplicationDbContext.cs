@@ -1,12 +1,8 @@
 ﻿using Microsoft.AspNet.Identity.EntityFramework;
-using System;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Data.Entity;
-using System.Linq;
-using System.Reflection;
 
 namespace SistemaAcademico.Models
-{ 
+{
     public partial class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext()
@@ -74,7 +70,7 @@ namespace SistemaAcademico.Models
                 .WithMany()
                 .HasForeignKey(d => d.UserId)
                 .WillCascadeOnDelete(false);
-           
+
             modelBuilder.Entity<Estudiante>()
                 .HasMany(e => e.EstudianteCurso)
                 .WithRequired(e => e.Estudiante)
@@ -98,7 +94,7 @@ namespace SistemaAcademico.Models
             modelBuilder.Entity<ApplicationUser>().ToTable("Usuarios");
             // Renombrar tablas de Identity (opcional) 
             modelBuilder.Entity<IdentityRole>().ToTable("Roles");
-            modelBuilder.Entity<IdentityUserRole>().ToTable("UsuarioRoles"); 
+            modelBuilder.Entity<IdentityUserRole>().ToTable("UsuarioRoles");
             modelBuilder.Entity<IdentityUserClaim>().ToTable("UsuarioClaims");
             modelBuilder.Entity<IdentityUserLogin>().ToTable("UsuarioLogins");
             //modelBuilder.Entity<IdentityRoleClaim<string>>().ToTable("RoleClaims");

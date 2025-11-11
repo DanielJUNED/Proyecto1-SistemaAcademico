@@ -1,0 +1,23 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "SistemaAcademico.Data/1.0.0": {
+        "runtime": {
+          "SistemaAcademico.Data.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "SistemaAcademico.Data/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
