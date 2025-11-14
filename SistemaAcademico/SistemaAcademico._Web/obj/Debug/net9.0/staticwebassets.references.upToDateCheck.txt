@@ -13,3 +13,5 @@ C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-Sistema
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\obj\Debug\net9.0\staticwebassets.build.json
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\obj\Debug\net9.0\staticwebassets.build.json
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\obj\Debug\net9.0\staticwebassets.build.json
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\obj\Debug\net9.0\staticwebassets.build.json
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\obj\Debug\net9.0\staticwebassets.build.json

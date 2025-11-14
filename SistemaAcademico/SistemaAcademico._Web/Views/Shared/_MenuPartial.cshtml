@@ -21,6 +21,7 @@ inject SignInManager<ApplicationUser> SignInManager-->
     {
         if (rolPrincipal == "Administrador" || rolPrincipal == "Docente")
         {-->
+            <li><a class="nav-link" asp-controller="Curso" asp-action="Index">Cursos</a></li>
             <li><a class="nav-link" asp-controller="Estadistica" asp-action="Index">Estadísticas</a></li>
             <li><a class="nav-link" asp-controller="Estudiante" asp-action="Registrar">Matrícula</a></li>
             <li><a class="nav-link" asp-controller="Evaluacion" asp-action="Index">Evaluación</a></li>

@@ -222,9 +222,9 @@ namespace SistemaAcademico._Web.Controllers
             {
                 var viewModel = new AsignarDocenteViewModel
                 {
-                    //Cursos = await ObtenerCursosParaSelect(),
-                    //Cuatrimestres = await ObtenerCuatrimestresParaSelect(),
-                    //Docentes = await ObtenerDocentesParaSelect()
+                    Cursos = new List<CursoSelectViewModel>(),//await ObtenerCursosParaSelect(),
+                    Cuatrimestres = new List<CuatrimestreSelectViewModel>(),//await ObtenerCuatrimestresParaSelect(),
+                    Docentes = new List<DocenteSelectViewModel>() //await ObtenerDocentesParaSelect()
                 };
 
                 return View(viewModel);
