@@ -1,0 +1,299 @@
+﻿@model SistemaAcademico._Web.Models.ViewModels.EstudianteViewModel
+@{
+    ViewData["Title"] = "Registrar Estudiante";
+}
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+    .field-validation {
+        display: block;
+        font-size: 0.875rem;
+        margin-top: 0.25rem;
+    }
+
+    .curso-checkbox {
+        padding: 10px;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        transition: all 0.3s;
+    }
+
+        .curso-checkbox:hover {
+            background-color: #f8f9fa;
+            border-color: #007bff;
+        }
+
+        .curso-checkbox input[type="checkbox"]:checked + label {
+            color: #007bff;
+            font-weight: bold;
+        }
+
+    .spinner-border-sm {
+        width: 1rem;
+        height: 1rem;
+        border-width: 0.2em;
+    }
+</style>
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-user-plus"></i> Registro de Nuevo Estudiante
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!-- Alertas -->
+                    <div id="alertContainer"></div>
+
+                    <!-- Formulario -->
+                    <form id="formRegistroEstudiante">
+                        @Html.AntiForgeryToken()
+
+                        <!-- Sección: Datos Personales -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-user"></i> Datos Personales</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Identificación -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="Identificacion" class="font-weight-bold">
+                                                Identificación <span class="text-danger">*</span>
+                                            </label>
+                                            <input asp-for="Identificacion"
+                                                   class="form-control"
+                                                   id="identificacion"
+                                                   placeholder="Ej: 118230456"
+                                                   maxlength="20" />
+                                            <small class="form-text text-muted">Solo números</small>
+                                            <span class="text-danger field-validation" data-valmsg-for="Identificacion"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Nombre -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="Nombre" class="font-weight-bold">
+                                                Nombre <span class="text-danger">*</span>
+                                            </label>
+                                            <input asp-for="Nombre"
+                                                   class="form-control"
+                                                   id="nombre"
+                                                   placeholder="Ej: María"
+                                                   maxlength="100" />
+                                            <span class="text-danger field-validation" data-valmsg-for="Nombre"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Apellidos -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="Apellidos" class="font-weight-bold">
+                                                Apellidos <span class="text-danger">*</span>
+                                            </label>
+                                            <input asp-for="Apellidos"
+                                                   class="form-control"
+                                                   id="apellidos"
+                                                   placeholder="Ej: González López"
+                                                   maxlength="100" />
+                                            <span class="text-danger field-validation" data-valmsg-for="Apellidos"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <!-- Fecha de Nacimiento -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="FechaNacimiento" class="font-weight-bold">
+                                                Fecha de Nacimiento <span class="text-danger">*</span>
+                                            </label>
+                                            <input asp-for="FechaNacimiento"
+                                                   type="date"
+                                                   class="form-control"
+                                                   id="fechaNacimiento" />
+                                            <span class="text-danger field-validation" data-valmsg-for="FechaNacimiento"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Email -->
+                                    <div class="col-md-8">
+                                        <div class="form-group">
+                                            <label asp-for="Email" class="font-weight-bold">
+                                                Correo Electrónico <span class="text-danger">*</span>
+                                            </label> 
+                                            <input asp-for="Email"
+                                                    type="email"
+                                                    class="form-control"
+                                                    id="email"
+                                                    placeholder="estudiante@est.uned.ac.cr"
+                                                    maxlength="100" /> 
+                                            <span class="text-danger field-validation" data-valmsg-for="Email"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección: Ubicación Geográfica -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-map-marker-alt"></i> Ubicación de Residencia</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Provincia -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="ProvinciaID" class="font-weight-bold">
+                                                Provincia <span class="text-danger">*</span>
+                                            </label>
+                                            <select asp-for="ProvinciaID"
+                                                    class="form-control"
+                                                    id="provinciaId">
+                                                <option value="">-- Seleccione --</option>
+                                                @foreach (var provincia in ViewBag.Provincias)
+                                                {
+                                                    <option value="@provincia.ProvinciaId">@provincia.Nom_Provincia</option>
+                                                }
+                                            </select>
+                                            <span class="text-danger field-validation" data-valmsg-for="ProvinciaID"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Cantón -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="CantonID" class="font-weight-bold">
+                                                Cantón <span class="text-danger">*</span>
+                                            </label>
+                                            <select asp-for="CantonID"
+                                                    class="form-control"
+                                                    id="cantonId"
+                                                    disabled>
+                                                <option value="">-- Seleccione provincia primero --</option>
+                                            </select>
+                                            <span class="text-danger field-validation" data-valmsg-for="CantonID"></span>
+                                        </div>
+                                    </div>
+
+                                    <!-- Distrito -->
+                                    <div class="col-md-4">
+                                        <div class="form-group">
+                                            <label asp-for="DistritoID" class="font-weight-bold">
+                                                Distrito <span class="text-danger">*</span>
+                                            </label>
+                                            <select asp-for="DistritoID"
+                                                    class="form-control"
+                                                    id="distritoId"
+                                                    disabled>
+                                                <option value="">-- Seleccione cantón primero --</option>
+                                            </select>
+                                            <span class="text-danger field-validation" data-valmsg-for="DistritoID"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Sección: Información Académica -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-light">
+                                <h5 class="mb-0"><i class="fas fa-graduation-cap"></i> Información Académica</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <!-- Cuatrimestre -->
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label asp-for="CuatrimestreID" class="font-weight-bold">
+                                                Cuatrimestre <span class="text-danger">*</span>
+                                            </label>
+                                            <select asp-for="CuatrimestreID"
+                                                    class="form-control"
+                                                    id="cuatrimestreId">
+                                                <option value="">-- Seleccione --</option>
+                                                @foreach (var cuatrimestre in ViewBag.Cuatrimestres)
+                                                {
+                                                    <option value="@cuatrimestre.CuatrimestreId">@cuatrimestre.Nombre</option>
+                                                }
+                                            </select>
+                                            <span class="text-danger field-validation" data-valmsg-for="CuatrimestreID"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Cursos Disponibles -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="form-group">
+                                            <label class="font-weight-bold">
+                                                Cursos Matriculados <span class="text-danger">*</span>
+                                            </label>
+                                            <div id="cursosContainer" class="border rounded p-3 bg-light" style="min-height: 150px;">
+                                                <p class="text-muted text-center">
+                                                    <i class="fas fa-info-circle"></i>
+                                                    Seleccione un cuatrimestre para ver los cursos disponibles
+                                                </p>
+                                            </div>
+                                            <span class="text-danger field-validation" data-valmsg-for="CursosSeleccionados"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="row">
+                            <div class="col-md-12 text-right">
+                                <button type="button" class="btn btn-secondary" onclick="limpiarFormulario()">
+                                    <i class="fas fa-eraser"></i> Limpiar
+                                </button>
+                                <button type="submit" class="btn btn-primary" id="btnRegistrar">
+                                    <i class="fas fa-save"></i> Registrar Estudiante
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal de Confirmación -->
+<div class="modal fade" id="modalExito" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title">
+                    <i class="fas fa-check-circle"></i> Registro Exitoso
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p id="mensajeExito"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" onclick="limpiarFormulario()" data-dismiss="modal">
+                    Registrar Otro
+                </button>
+                <a href="@Url.Action("Index", "Home")" class="btn btn-secondary">
+                    Ir al Inicio
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/Content/_AppJs/estudiantes-registro.js"></script>
+}
+

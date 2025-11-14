@@ -1,0 +1,60 @@
+﻿@model SistemaAcademico._Web.Models.ViewModels.AsignarDocenteViewModel
+
+@{
+    ViewBag.Title = "Asignar Docente a Curso";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4><i class="fa fa-user-plus"></i> Asignar Docente a Curso</h4>
+                </div>
+                <div class="card-body">
+                    <form asp-action="AsignarDocente" method="post">
+                        @Html.AntiForgeryToken()
+
+                        <div class="form-group mb-3">
+                            <label asp-for="CursoId" class="form-label"></label>
+                            <select asp-for="CursoId" class="form-select" asp-items="@(new SelectList(Model.Cursos, "CursoId", "DisplayText"))">
+                                <option value="">-- Seleccione un curso --</option>
+                            </select>
+                            <span asp-validation-for="CursoId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="CuatrimestreId" class="form-label"></label>
+                            <select asp-for="CuatrimestreId" class="form-select" asp-items="@(new SelectList(Model.Cuatrimestres, "CuatrimestreId", "DisplayText"))">
+                                <option value="">-- Seleccione un cuatrimestre --</option>
+                            </select>
+                            <span asp-validation-for="CuatrimestreId" class="text-danger"></span>
+                        </div>
+
+                        <div class="form-group mb-3">
+                            <label asp-for="DocenteId" class="form-label"></label>
+                            <select asp-for="DocenteId" class="form-select" asp-items="@(new SelectList(Model.Docentes, "DocenteId", "DisplayText"))">
+                                <option value="">-- Seleccione un docente --</option>
+                            </select>
+                            <span asp-validation-for="DocenteId" class="text-danger"></span>
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fa fa-info-circle"></i>
+                            <strong>Nota:</strong> Esta acción asignará el docente seleccionado al curso y cuatrimestre indicados.
+                        </div>
+
+                        <div class="form-group mt-4">
+                            <button type="submit" class="btn btn-success">
+                                <i class="fa fa-save"></i> Asignar Docente
+                            </button>
+                            <a asp-action="Index" class="btn btn-secondary">
+                                <i class="fa fa-arrow-left"></i> Volver
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

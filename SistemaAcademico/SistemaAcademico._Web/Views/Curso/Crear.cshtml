@@ -1,0 +1,40 @@
+﻿@{
+    ViewBag.Title = "Crear Curso";
+}
+
+<div class="container mt-4">
+    <h2>Crear Nuevo Curso</h2>
+
+    <div class="card">
+        <div class="card-body">
+            <form id="formCurso">
+                @Html.AntiForgeryToken() 
+                <div class="form-group">
+                    <label>Código</label>
+                    <input type="text" class="form-control" id="codigo" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Nombre del Curso</label>
+                    <input type="text" class="form-control" id="nombre" required>
+                </div>
+
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea class="form-control" id="descripcion" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Créditos</label>
+                    <input type="number" class="form-control" id="creditos" value="3" min="1" max="5" required>
+                </div>
+
+                <button type="submit" class="btn btn-primary">Guardar</button>
+                <a href="@Url.Action("Index", "Curso")" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+</div>
+@section Scripts { 
+    <script src="~/js/cursos/crear.js"></script>
+}

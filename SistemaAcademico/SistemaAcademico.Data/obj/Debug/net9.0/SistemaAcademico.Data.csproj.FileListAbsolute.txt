@@ -1,6 +1,8 @@
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\bin\Debug\net9.0\SistemaAcademico.Data.deps.json
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\bin\Debug\net9.0\SistemaAcademico.Data.runtimeconfig.json
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\bin\Debug\net9.0\SistemaAcademico.Data.dll
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\bin\Debug\net9.0\SistemaAcademico.Data.pdb
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\obj\Debug\net9.0\SistemaAcademico.Data.csproj.AssemblyReference.cache
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\obj\Debug\net9.0\SistemaAcademico.Data.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\obj\Debug\net9.0\SistemaAcademico.Data.AssemblyInfoInputs.cache
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\obj\Debug\net9.0\SistemaAcademico.Data.AssemblyInfo.cs
@@ -8,4 +10,5 @@ C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-Sistema
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\obj\Debug\net9.0\SistemaAcademico.Data.dll
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\obj\Debug\net9.0\refint\SistemaAcademico.Data.dll
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\obj\Debug\net9.0\SistemaAcademico.Data.pdb
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\obj\Debug\net9.0\SistemaAcademico.Data.genruntimeconfig.cache
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.Data\obj\Debug\net9.0\ref\SistemaAcademico.Data.dll

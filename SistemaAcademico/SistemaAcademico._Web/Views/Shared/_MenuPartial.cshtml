@@ -1,0 +1,29 @@
+﻿<!--using Microsoft.AspNetCore.Identity
+using SistemaAcademico._Web.Models
+inject UserManager<ApplicationUser> UserManager
+inject SignInManager<ApplicationUser> SignInManager-->
+
+@{
+    string rolPrincipal = "Sin rol";
+
+  <!--  if (SignInManager.IsSignedIn(User))
+    {
+        var user = await UserManager.GetUserAsync(User);
+        var roles = await UserManager.GetRolesAsync(user);
+        rolPrincipal = roles.FirstOrDefault() ?? "Sin rol";
+      }-->
+}
+
+<ul class="navbar-nav flex-grow-1">
+    <li><a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a></li>
+
+    <!--if (SignInManager.IsSignedIn(User))
+    {
+        if (rolPrincipal == "Administrador" || rolPrincipal == "Docente")
+        {-->
+            <li><a class="nav-link" asp-controller="Estadistica" asp-action="Index">Estadísticas</a></li>
+            <li><a class="nav-link" asp-controller="Estudiante" asp-action="Registrar">Matrícula</a></li>
+            <li><a class="nav-link" asp-controller="Evaluacion" asp-action="Index">Evaluación</a></li>
+       <!-- }
+    }-->
+</ul>

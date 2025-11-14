@@ -1,0 +1,90 @@
+﻿@{
+    ViewBag.Title = "Gestión de Cursos";
+}
+
+<div class="container mt-4">
+    <h2>Gestión de Cursos</h2>
+
+    <div class="mb-3">
+        <a href="@Url.Action("Crear", "Curso")" class="btn btn-primary">
+            <i class="fa fa-plus"></i> Crear Nuevo Curso
+        </a>
+        <a href="@Url.Action("AsignarDocente", "Curso")" class="btn btn-success">
+            <i class="fa fa-user"></i> Asignar Docente
+        </a>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <table id="tablaCursos" class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Código</th>
+                        <th>Nombre</th>
+                        <th>Créditos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    cargarCursos();
+
+    function cargarCursos() {
+        $.ajax({
+            url: '/api/cursos',
+            type: 'GET',
+            success: function(data) {
+                let tbody = '';
+                data.forEach(curso => {
+                    tbody += `
+                        <tr>
+                            <td>${curso.Codigo}</td>
+                            <td>${curso.Nom_Curso}</td>
+                            <td>${curso.Num_Creditos}</td>
+                            <td>
+                                <a href="/CursosAdmin/Editar/${curso.CursoId}"
+                                   class="btn btn-sm btn-warning">
+                                    <i class="fa fa-edit"></i> Editar
+                                </a>
+                                <button class="btn btn-sm btn-danger btn-eliminar"
+                                        data-id="${curso.CursoId}">
+                                    <i class="fa fa-trash"></i> Eliminar
+                                </button>
+                            </td>
+                        </tr>
+                    `;
+                });
+                $('#tablaCursos tbody').html(tbody);
+            }
+        });
+    }
+
+    $(document).on('click', '.btn-eliminar', function() {
+        const cursoId = $(this).data('id');
+
+        if (confirm('¿Está seguro de eliminar este curso?')) {
+            $.ajax({
+                url: '/api/cursos/' + cursoId,
+                type: 'DELETE',
+                success: function(response) {
+                    if (response.success) {
+                        alert('Curso eliminado correctamente');
+                        cargarCursos();
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function() {
+                    alert('Error al eliminar el curso');
+                }
+            });
+        }
+    });
+});
+</script>

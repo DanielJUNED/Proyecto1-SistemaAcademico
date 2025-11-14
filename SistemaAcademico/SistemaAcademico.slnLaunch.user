@@ -3,11 +3,11 @@
     "Name": "Nuevo perfil",
     "Projects": [
       {
-        "Path": "SistemaAcademico.csproj",
+        "Path": "SistemaAcademico.API\\SistemaAcademico.API.csproj",
         "Action": "Start"
       },
       {
-        "Path": "SistemaAcademico.API\\SistemaAcademico.API.csproj",
+        "Path": "SistemaAcademico._Web\\SistemaAcademico._Web.csproj",
         "Action": "Start"
       }
     ]

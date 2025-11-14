@@ -8,6 +8,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaAcademico.Data", "SistemaAcademico.Data\SistemaAcademico.Data.csproj", "{AB401A91-3BF4-0179-8F8E-A89DFACD1B63}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaAcademico.API", "SistemaAcademico.API\SistemaAcademico.API.csproj", "{9647D012-AF05-E0D8-41A7-91CE191C16EB}"
+	ProjectSection(ProjectDependencies) = postProject
+		{AB401A91-3BF4-0179-8F8E-A89DFACD1B63} = {AB401A91-3BF4-0179-8F8E-A89DFACD1B63}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaAcademico._Web", "SistemaAcademico._Web\SistemaAcademico._Web.csproj", "{F756F27B-9B0E-4366-BC93-E76C9673B8A2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -26,6 +31,10 @@ Global
 		{9647D012-AF05-E0D8-41A7-91CE191C16EB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9647D012-AF05-E0D8-41A7-91CE191C16EB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9647D012-AF05-E0D8-41A7-91CE191C16EB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F756F27B-9B0E-4366-BC93-E76C9673B8A2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F756F27B-9B0E-4366-BC93-E76C9673B8A2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F756F27B-9B0E-4366-BC93-E76C9673B8A2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F756F27B-9B0E-4366-BC93-E76C9673B8A2}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
