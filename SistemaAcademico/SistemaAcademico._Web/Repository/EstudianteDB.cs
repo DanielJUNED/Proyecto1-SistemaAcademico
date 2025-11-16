@@ -441,7 +441,7 @@ namespace SistemaAcademico._Web.Repository
         // =============================================
         public Estudiante ObtenerEstudianteCompleto(int estudianteId)
         {
-            Estudiante estudiante = null;
+            Estudiante estudiante = new Estudiante();
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -589,7 +589,7 @@ namespace SistemaAcademico._Web.Repository
             if (string.IsNullOrWhiteSpace(criterio))
                 return new Estudiante();
 
-            Estudiante estudiante = null;
+            Estudiante estudiante = new Estudiante();
             var criterioBusqueda = criterio.Trim().ToLower();
 
             using (SqlConnection conn = new SqlConnection(_connectionString))

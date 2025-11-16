@@ -1,70 +1,47 @@
-﻿/*using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using SistemaAcademico.App_Start;
-using SistemaAcademico._Web.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using SistemaAcademico.Data.Entities;
 using SistemaAcademico._Web.Models.ViewModels;
-using System;
-using System.Configuration;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 
-namespace SistemaAcademico._Web.Controllers
+namespace SistemaAcademico.Controllers
 {
     [Authorize]
     public class AccountController : Controller
     {
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-        public AccountController()
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly IConfiguration _configuration;
+
+        public AccountController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            IConfiguration configuration)
         {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _configuration = configuration;
         }
 
-        public AccountController(ApplicationUserManager userManager, ApplicationSignInManager signInManager)
-        {
-            UserManager = userManager;
-            SignInManager = signInManager;
-        }
-
-        public ApplicationSignInManager SignInManager
-        {
-            get
-            {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set
-            {
-                _signInManager = value;
-            }
-        }
-
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
-        }
-
-        //
         // GET: /Account/Login
+        [HttpGet]
         [AllowAnonymous]
-        public ActionResult Login(string returnUrl)
+        public IActionResult Login(string? returnUrl = null)
         {
+            if (User.Identity?.IsAuthenticated == true)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
+        // POST: /Account/Login
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<JsonResult> Login(LoginViewModel model, string returnUrl)
+        public async Task<JsonResult> Login(LoginViewModel model, string? returnUrl = null)
         {
             try
             {
@@ -85,7 +62,7 @@ namespace SistemaAcademico._Web.Controllers
                 }
 
                 // Buscar usuario por email
-                var user = await UserManager.FindByNameAsync(model.UserName);
+                var user = await _userManager.FindByNameAsync(model.UserName);
 
                 if (user == null)
                 {
@@ -96,12 +73,11 @@ namespace SistemaAcademico._Web.Controllers
                     });
                 }
 
-
                 // Verificar si está bloqueado
-                if (await UserManager.IsLockedOutAsync(user.Id))
+                if (await _userManager.IsLockedOutAsync(user))
                 {
                     var lockoutMinutes = int.Parse(
-                        ConfigurationManager.AppSettings["Authentication:LockoutMinutes"] ?? "15");
+                        _configuration["Authentication:LockoutMinutes"] ?? "15");
 
                     return Json(new LoginResultViewModel
                     {
@@ -112,80 +88,84 @@ namespace SistemaAcademico._Web.Controllers
                 }
 
                 // Intentar autenticación
-                var result = await SignInManager.PasswordSignInAsync(
+                var result = await _signInManager.PasswordSignInAsync(
                     model.UserName,
                     model.Password,
                     model.RememberMe,
-                    shouldLockout: true);
+                    lockoutOnFailure: true);
 
-                switch (result)
+                if (result.Succeeded)
                 {
-                    case SignInStatus.Success:
-                        // Verificar que tenga el rol de Docente
-                        if (!await UserManager.IsInRoleAsync(user.Id, "Docente") && !await UserManager.IsInRoleAsync(user.Id, "Administrador"))
-                        {
-                            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
-
-                            return Json(new LoginResultViewModel
-                            {
-                                Success = false,
-                                Message = "No tiene permisos para acceder al sistema."
-                            });
-                        }
-
-                        // Login exitoso
-                        var redirectUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
-                            ? returnUrl
-                            : Url.Action("Index", "Home");
-
-                        return Json(new LoginResultViewModel
-                        {
-                            Success = true,
-                            Message = "Autenticación exitosa. Redirigiendo...",
-                            RedirectUrl = redirectUrl
-                        });
-
-                    case SignInStatus.LockedOut:
-                        var lockoutTime = int.Parse(
-                            ConfigurationManager.AppSettings["Authentication:LockoutMinutes"] ?? "15");
+                    // Verificar que tenga el rol de Docente o Administrador
+                    if (!await _userManager.IsInRoleAsync(user, "Docente") &&
+                        !await _userManager.IsInRoleAsync(user, "Administrador"))
+                    {
+                        await _signInManager.SignOutAsync();
 
                         return Json(new LoginResultViewModel
                         {
                             Success = false,
-                            Message = $"Cuenta bloqueada por {lockoutTime} minutos debido a múltiples intentos fallidos.",
-                            IsLockedOut = true
+                            Message = "No tiene permisos para acceder al sistema."
                         });
+                    }
 
-                    case SignInStatus.Failure:
-                    default:
-                        // Obtener intentos restantes
-                        var maxAttempts = int.Parse(
-                            ConfigurationManager.AppSettings["Authentication:MaxLoginAttempts"] ?? "5");
-                        var failedAttempts = await UserManager.GetAccessFailedCountAsync(user.Id);
-                        var remainingAttempts = maxAttempts - failedAttempts;
+                    // Actualizar última conexión
+                    //user.UltimaConexion = DateTime.Now;
+                    await _userManager.UpdateAsync(user);
 
-                        string message;
-                        if (remainingAttempts > 0)
-                        {
-                            message = $"Credenciales inválidas. Intentos restantes: {remainingAttempts}";
-                        }
-                        else
-                        {
-                            message = "Credenciales inválidas.";
-                        }
+                    // Login exitoso
+                    var redirectUrl = !string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)
+                        ? returnUrl
+                        : Url.Action("Index", "Home");
 
-                        return Json(new LoginResultViewModel
-                        {
-                            Success = false,
-                            Message = message,
-                            RemainingAttempts = remainingAttempts > 0 ? remainingAttempts : (int?)null
-                        });
+                    return Json(new LoginResultViewModel
+                    {
+                        Success = true,
+                        Message = "Autenticación exitosa. Redirigiendo...",
+                        RedirectUrl = redirectUrl
+                    });
                 }
+
+                if (result.IsLockedOut)
+                {
+                    var lockoutTime = int.Parse(
+                        _configuration["Authentication:LockoutMinutes"] ?? "15");
+
+                    return Json(new LoginResultViewModel
+                    {
+                        Success = false,
+                        Message = $"Cuenta bloqueada por {lockoutTime} minutos debido a múltiples intentos fallidos.",
+                        IsLockedOut = true
+                    });
+                }
+
+                // Obtener intentos restantes
+                var maxAttempts = int.Parse(
+                    _configuration["Authentication:MaxLoginAttempts"] ?? "5");
+                var failedAttempts = await _userManager.GetAccessFailedCountAsync(user);
+                var remainingAttempts = maxAttempts - failedAttempts;
+
+                string message;
+                if (remainingAttempts > 0)
+                {
+                    message = $"Credenciales inválidas. Intentos restantes: {remainingAttempts}";
+                }
+                else
+                {
+                    message = "Credenciales inválidas.";
+                }
+
+                return Json(new LoginResultViewModel
+                {
+                    Success = false,
+                    Message = message,
+                    RemainingAttempts = remainingAttempts > 0 ? remainingAttempts : null
+                });
             }
             catch (Exception ex)
             {
-                // Log del error (implementar logging según necesidades)
-                System.Diagnostics.Debug.WriteLine($"Error en Login: {ex.Message}");
+                // Log del error
+                Console.WriteLine($"Error en Login: {ex.Message}");
 
                 return Json(new LoginResultViewModel
                 {
@@ -195,109 +175,52 @@ namespace SistemaAcademico._Web.Controllers
             }
         }
 
-        //
         // GET: /Account/Register
+        [HttpGet]
         [AllowAnonymous]
-        public ActionResult Register()
+        public IActionResult Register()
         {
             return View();
         }
 
-        //
         // POST: /Account/Register
         [HttpPost]
         [AllowAnonymous]
         [ValidateAntiForgeryToken]
-        public async Task<ActionResult> Register(RegisterViewModel model)
+        public async Task<IActionResult> Register(RegisterViewModel model)
         {
             if (ModelState.IsValid)
             {
-                var user = new ApplicationUser { UserName = model.UserName, Email = model.Email };
-                var result = await UserManager.CreateAsync(user, model.Password);
+                var user = new ApplicationUser
+                {
+                    UserName = model.UserName,
+                    Email = model.Email
+                };
+
+                var result = await _userManager.CreateAsync(user, model.Password);
+
                 if (result.Succeeded)
                 {
-                    await SignInManager.SignInAsync(user, isPersistent: false, rememberBrowser: false);
-
-                    // Para obtener más información sobre cómo habilitar la confirmación de cuentas y el restablecimiento de contraseña, visite https://go.microsoft.com/fwlink/?LinkID=320771
-                    // Enviar un correo electrónico con este vínculo
-                    // string code = await UserManager.GenerateEmailConfirmationTokenAsync(user.Id);
-                    // var callbackUrl = Url.Action("ConfirmEmail", "Account", new { userId = user.Id, code = code }, protocol: Request.Url.Scheme);
-                    // await UserManager.SendEmailAsync(user.Id, "Confirmar la cuenta", "Para confirmar su cuenta, haga clic <a href=\"" + callbackUrl + "\">aquí</a>");
-
+                    await _signInManager.SignInAsync(user, isPersistent: false);
                     return RedirectToAction("Index", "Home");
                 }
-                AddErrors(result);
+
+                foreach (var error in result.Errors)
+                {
+                    ModelState.AddModelError(string.Empty, error.Description);
+                }
             }
 
-            // Si llegamos a este punto, es que se ha producido un error y volvemos a mostrar el formulario
             return View(model);
         }
-        //
+
         // POST: /Account/LogOff
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult LogOff()
+        public async Task<IActionResult> LogOff()
         {
-            AuthenticationManager.SignOut(DefaultAuthenticationTypes.ApplicationCookie);
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Index", "Home");
         }
-        #region Aplicaciones auxiliares
-        // Se usa para la protección XSRF al agregar inicios de sesión externos
-        private const string XsrfKey = "XsrfId";
-
-        private IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.GetOwinContext().Authentication;
-            }
-        }
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error);
-            }
-        }
-
-        private ActionResult RedirectToLocal(string returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            return RedirectToAction("Index", "Home");
-        }
-
-        internal class ChallengeResult : HttpUnauthorizedResult
-        {
-            public ChallengeResult(string provider, string redirectUri)
-                : this(provider, redirectUri, null)
-            {
-            }
-
-            public ChallengeResult(string provider, string redirectUri, string userId)
-            {
-                LoginProvider = provider;
-                RedirectUri = redirectUri;
-                UserId = userId;
-            }
-
-            public string LoginProvider { get; set; }
-            public string RedirectUri { get; set; }
-            public string UserId { get; set; }
-
-            public override void ExecuteResult(ControllerContext context)
-            {
-                var properties = new AuthenticationProperties { RedirectUri = RedirectUri };
-                if (UserId != null)
-                {
-                    properties.Dictionary[XsrfKey] = UserId;
-                }
-                context.HttpContext.GetOwinContext().Authentication.Challenge(properties, LoginProvider);
-            }
-        }
-        #endregion
     }
 }
-*/

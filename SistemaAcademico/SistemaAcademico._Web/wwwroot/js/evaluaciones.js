@@ -110,7 +110,7 @@ function buscarEstudiantes(criterio) {
 }
 
 function mostrarResultadosBusqueda(estudiantes) {
-    const $lista = $('#listaEstudiantes');
+  const $lista = $('#listaEstudiantes');
     $lista.empty();
 
     if (estudiantes.length === 0) {
@@ -125,24 +125,24 @@ function mostrarResultadosBusqueda(estudiantes) {
 
     estudiantes.forEach(function (estudiante) {
         const html = `
-            <div class="estudiante-item" data-estudiante-id="${estudiante.EstudianteID}">
+            <div class="estudiante-item" data-estudiante-id="${estudiante.estudianteID}">
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h6 class="mb-1">
                             <i class="fas fa-user text-primary"></i>
-                            <strong>${estudiante.NombreCompleto}</strong>
+                            <strong>${estudiante.nombreCompleto}</strong>
                         </h6>
                         <p class="mb-0 text-muted small">
-                            <i class="fas fa-id-card"></i> ${estudiante.Identificacion} | 
-                            <i class="fas fa-envelope"></i> ${estudiante.Email}
+                            <i class="fas fa-id-card"></i> ${estudiante.identificacion} | 
+                            <i class="fas fa-envelope"></i> ${estudiante.email}
                         </p>
                     </div>
                     <div class="col-md-4 text-right">
                         <span class="badge badge-info">
-                            ${estudiante.CursosMatriculados ? estudiante.CursosMatriculados.length : 0} cursos
+                            ${estudiante.cursosMatriculados ? estudiante.cursosMatriculados.length : 0} cursos
                         </span>
                         <span class="badge badge-secondary">
-                            ${estudiante.Edad} años
+                            ${estudiante.edad} años
                         </span>
                     </div>
                 </div>
@@ -177,7 +177,7 @@ function seleccionarEstudiante(estudianteId) {
             if (response.success) {
                 estudianteSeleccionado = response.data;
                 mostrarInformacionEstudiante(response.data);
-                mostrarCursosMatriculados(response.data.CursosMatriculados, response.permiteEvaluar);
+                mostrarCursosMatriculados(response.data.cursosMatriculados, response.permiteEvaluar);
 
                 // Scroll a la información del estudiante
                 $('html, body').animate({
@@ -194,11 +194,11 @@ function seleccionarEstudiante(estudianteId) {
 }
 
 function mostrarInformacionEstudiante(estudiante) {
-    $('#infoIdentificacion').text(estudiante.Identificacion);
-    $('#infoNombre').text(estudiante.NombreCompleto);
-    $('#infoEmail').text(estudiante.Email);
-    $('#infoEdad').text(`${estudiante.Edad} años`);
-    $('#infoDireccion').text(estudiante.DireccionCompleta);
+    $('#infoIdentificacion').text(estudiante.identificacion);
+    $('#infoNombre').text(estudiante.nombreCompleto);
+    $('#infoEmail').text(estudiante.email);
+    $('#infoEdad').text(`${estudiante.edad} años`);
+    $('#infoDireccion').text(estudiante.direccionCompleta);
 
     $('#cardEstudiante').fadeIn();
 }
@@ -219,10 +219,10 @@ function mostrarCursosMatriculados(cursos,permiteEvaluar) {
     }
 
     cursos.forEach(function (curso) {
-        const tieneEvaluacion = curso.TieneEvaluacion;
+        const tieneEvaluacion = curso.tieneEvaluacion;
         const cardClass = tieneEvaluacion ? 'curso-card evaluado' : 'curso-card';
         const badge = tieneEvaluacion
-            ? `<span class="badge badge-success">✓ Evaluado: ${curso.NotaActual}</span>`
+            ? `<span class="badge badge-success">✓ Evaluado: ${curso.notaActual}</span>`
             : `<span class="badge badge-warning">Pendiente</span>`;
         const botonTexto = tieneEvaluacion ? 'Editar Evaluación' : 'Evaluar';
         const botonClass = tieneEvaluacion ? 'btn-warning' : 'btn-primary';
@@ -232,27 +232,27 @@ function mostrarCursosMatriculados(cursos,permiteEvaluar) {
                 <div class="row align-items-center">
                     <div class="col-md-8">
                         <h6 class="mb-1">
-                            <strong>${curso.CodigoCurso}</strong> - ${curso.NombreCurso}
+                            <strong>${curso.codigoCurso}</strong> - ${curso.nombreCurso}
                         </h6>
                         <p class="mb-0 text-muted small">
-                            <i class="fas fa-calendar"></i> ${curso.NombreCuatrimestre} | 
-                            <i class="fas fa-award"></i> ${curso.Creditos} créditos | 
-                            <i class="fas fa-user"></i> ${curso.NombreDocente} Profesor
+                            <i class="fas fa-calendar"></i> ${curso.nombreCuatrimestre} | 
+                            <i class="fas fa-award"></i> ${curso.creditos} créditos | 
+                            <i class="fas fa-user"></i> ${curso.nombreDocente} Profesor
                         </p>
                         ${tieneEvaluacion ? `
                             <p class="mb-0 mt-1 small">
                                 <strong>Estado:</strong> 
-                                <span class="badge badge-${obtenerColorEstado(curso.EstadoActual)}">
-                                    ${curso.EstadoActual}
+                                <span class="badge badge-${obtenerColorEstado(curso.estadoActual)}">
+                                    ${curso.estadoActual}
                                 </span>
                             </p>
                         ` : ''}
                     </div>
                     <div class="col-md-4 text-right">
                         ${badge}
-                        ${permiteEvaluar || curso.PermisoEvaluar ? `
+                        ${permiteEvaluar || curso.permisoEvaluar ? `
                              <button class="btn ${botonClass} btn-sm d-block w-100 mt-2" 
-                                onclick="abrirFormularioEvaluacion(${curso.EstudianteCursoID}, ${tieneEvaluacion},${curso.EvaluacionId})">
+                                onclick="abrirFormularioEvaluacion(${curso.estudianteCursoID}, ${tieneEvaluacion},${curso.evaluacionId})">
                                 <i class="fas fa-${tieneEvaluacion ? 'edit' : 'plus'}"></i> ${botonTexto}
                             </button>
                         ` : ''}
@@ -272,8 +272,8 @@ function mostrarCursosMatriculados(cursos,permiteEvaluar) {
 // =============================================
 function abrirFormularioEvaluacion(estudianteCursoId, esEdicion,evaluacionId) {
     // Buscar el curso seleccionado
-    cursoSeleccionado = estudianteSeleccionado.CursosMatriculados.find(
-        c => c.EstudianteCursoID === estudianteCursoId
+    cursoSeleccionado = estudianteSeleccionado.cursosMatriculados.find(
+        c => c.estudianteCursoID === estudianteCursoId
     );
 
     if (!cursoSeleccionado) {
@@ -286,9 +286,9 @@ function abrirFormularioEvaluacion(estudianteCursoId, esEdicion,evaluacionId) {
     $('#modoEdicion').val(esEdicion ? 'editar' : 'crear');
 
     // Mostrar información
-    $('#evalEstudiante').text(estudianteSeleccionado.NombreCompleto);
-    $('#evalCurso').text(`${cursoSeleccionado.CodigoCurso} - ${cursoSeleccionado.NombreCurso}`);
-    $('#evalCuatrimestre').text(cursoSeleccionado.NombreCuatrimestre);
+    $('#evalEstudiante').text(estudianteSeleccionado.nombreCompleto);
+    $('#evalCurso').text(`${cursoSeleccionado.codigoCurso} - ${cursoSeleccionado.nombreCurso}`);
+    $('#evalCuatrimestre').text(cursoSeleccionado.nombreCuatrimestre);
 
     if (esEdicion) {
         // Cargar datos existentes
@@ -313,12 +313,12 @@ function cargarEvaluacionExistente(estudianteCursoId) {
     // Obtener la evaluación actual del array
     const curso = cursoSeleccionado;
 
-    $('#nota').val(curso.NotaActual);
+    $('#nota').val(curso.notaActual);
 
-    $('#evaluacionId').val(curso.EvaluacionId);
-    $('#observaciones').val(curso.Observacion);
-    $('#tipoParticipacion').val(curso.TipoParticipacion); // Se cargará con AJAX completo
-    $('#estado').val(curso.EstadoActual);
+    $('#evaluacionId').val(curso.evaluacionId);
+    $('#observaciones').val(curso.observacion);
+    $('#tipoParticipacion').val(curso.tipoParticipacion); // Se cargará con AJAX completo
+    $('#estado').val(curso.estadoActual);
 
     // Aquí podrías hacer una llamada AJAX para obtener todos los detalles
     // Por ahora usamos los datos básicos que ya tenemos
@@ -367,7 +367,7 @@ function guardarEvaluacion() {
     };
 
     if (modoEdicion) {
-        datos.EvaluacionID = $('#evaluacionId').val();
+        datos.evaluacionID = $('#evaluacionId').val();
     }
 
     // Deshabilitar botón
@@ -378,22 +378,22 @@ function guardarEvaluacion() {
         type: 'POST',
         data: datos,
         success: function (response) {
-            if (response.Success) {
+            if (response.success) {
                 // Mostrar modal de confirmación
-                mostrarModalConfirmacion(response.Evaluacion);
+                mostrarModalConfirmacion(response.evaluacion);
 
                 // Ocultar formulario
                 $('#cardEvaluacion').fadeOut();
 
                 // Actualizar lista de cursos
                 if (estudianteSeleccionado) {
-                    seleccionarEstudiante(estudianteSeleccionado.EstudianteID);
+                    seleccionarEstudiante(estudianteSeleccionado.estudianteID);
                 }
             } else {
-                var mensajeError = response.Message;
-                if (response.Errors && response.Errors.length > 0) {
+                var mensajeError = response.message;
+                if (response.Errors && response.errors.length > 0) {
                     mensajeError += '<ul class="mb-0 mt-2">';
-                    response.Errors.forEach(function (error) {
+                    response.errors.forEach(function (error) {
                         mensajeError += '<li>' + error + '</li>';
                     });
                     mensajeError += '</ul>';

@@ -38,8 +38,7 @@ namespace SistemaAcademico.Data.Entities
         public virtual ICollection<Evaluacion> Evaluacion { get; set; }
 
         public string UserId { get; set; }
-        [ForeignKey("UserId")]
-        public virtual ApplicationUser Usuario { get; set; }
+        public ApplicationUser User { get; set; }
         public virtual ICollection<CursoCuatrimestre> CursoCuatrimestre { get; set; }
     }
 }

@@ -1,15 +1,12 @@
 {
   "version": 2,
-  "dgSpecHash": "9yjvXAFj9v0=",
+  "dgSpecHash": "jbFm4/JkL8k=",
   "success": true,
   "projectFilePath": "C:\\Users\\dguti\\source\\Uned\\03101-Programacion_avanzada_en_web\\Proyecto#1-SistemaAcademico\\SistemaAcademico\\SistemaAcademico.Data\\SistemaAcademico.Data.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dguti\\.nuget\\packages\\azure.core\\1.38.0\\azure.core.1.38.0.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\azure.identity\\1.11.4\\azure.identity.1.11.4.nupkg.sha512",
-    "C:\\Users\\dguti\\.nuget\\packages\\entityframework\\6.1.0\\entityframework.6.1.0.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
-    "C:\\Users\\dguti\\.nuget\\packages\\microsoft.aspnet.identity.core\\2.2.4\\microsoft.aspnet.identity.core.2.2.4.nupkg.sha512",
-    "C:\\Users\\dguti\\.nuget\\packages\\microsoft.aspnet.identity.entityframework\\2.2.4\\microsoft.aspnet.identity.entityframework.2.2.4.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\microsoft.aspnetcore.cryptography.internal\\9.0.10\\microsoft.aspnetcore.cryptography.internal.9.0.10.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\microsoft.aspnetcore.cryptography.keyderivation\\9.0.10\\microsoft.aspnetcore.cryptography.keyderivation.9.0.10.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\microsoft.aspnetcore.identity.entityframeworkcore\\9.0.10\\microsoft.aspnetcore.identity.entityframeworkcore.9.0.10.nupkg.sha512",
@@ -31,7 +28,7 @@
     "C:\\Users\\dguti\\.nuget\\packages\\microsoft.entityframeworkcore.design\\9.0.10\\microsoft.entityframeworkcore.design.9.0.10.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\microsoft.entityframeworkcore.relational\\9.0.10\\microsoft.entityframeworkcore.relational.9.0.10.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\microsoft.entityframeworkcore.sqlserver\\9.0.10\\microsoft.entityframeworkcore.sqlserver.9.0.10.nupkg.sha512",
-    "C:\\Users\\dguti\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\9.0.10\\microsoft.entityframeworkcore.tools.9.0.10.nupkg.sha512",
+    "C:\\Users\\dguti\\.nuget\\packages\\microsoft.entityframeworkcore.tools\\10.0.0\\microsoft.entityframeworkcore.tools.10.0.0.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\microsoft.extensions.caching.abstractions\\9.0.10\\microsoft.extensions.caching.abstractions.9.0.10.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\microsoft.extensions.caching.memory\\9.0.10\\microsoft.extensions.caching.memory.9.0.10.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\microsoft.extensions.configuration\\9.0.10\\microsoft.extensions.configuration.9.0.10.nupkg.sha512",
@@ -98,42 +95,5 @@
     "C:\\Users\\dguti\\.nuget\\packages\\system.threading.tasks.extensions\\4.5.4\\system.threading.tasks.extensions.4.5.4.nupkg.sha512",
     "C:\\Users\\dguti\\.nuget\\packages\\system.windows.extensions\\6.0.0\\system.windows.extensions.6.0.0.nupkg.sha512"
   ],
-  "logs": [
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "message": "El paquete \"EntityFramework 6.1.0\" se restauró con \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\" en lugar de la plataforma de destino del proyecto \"net9.0\". Puede que el paquete no sea totalmente compatible con el proyecto.",
-      "projectPath": "C:\\Users\\dguti\\source\\Uned\\03101-Programacion_avanzada_en_web\\Proyecto#1-SistemaAcademico\\SistemaAcademico\\SistemaAcademico.Data\\SistemaAcademico.Data.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\dguti\\source\\Uned\\03101-Programacion_avanzada_en_web\\Proyecto#1-SistemaAcademico\\SistemaAcademico\\SistemaAcademico.Data\\SistemaAcademico.Data.csproj",
-      "libraryId": "EntityFramework",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "message": "El paquete \"Microsoft.AspNet.Identity.Core 2.2.4\" se restauró con \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\" en lugar de la plataforma de destino del proyecto \"net9.0\". Puede que el paquete no sea totalmente compatible con el proyecto.",
-      "projectPath": "C:\\Users\\dguti\\source\\Uned\\03101-Programacion_avanzada_en_web\\Proyecto#1-SistemaAcademico\\SistemaAcademico\\SistemaAcademico.Data\\SistemaAcademico.Data.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\dguti\\source\\Uned\\03101-Programacion_avanzada_en_web\\Proyecto#1-SistemaAcademico\\SistemaAcademico\\SistemaAcademico.Data\\SistemaAcademico.Data.csproj",
-      "libraryId": "Microsoft.AspNet.Identity.Core",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    },
-    {
-      "code": "NU1701",
-      "level": "Warning",
-      "message": "El paquete \"Microsoft.AspNet.Identity.EntityFramework 2.2.4\" se restauró con \".NETFramework,Version=v4.6.1, .NETFramework,Version=v4.6.2, .NETFramework,Version=v4.7, .NETFramework,Version=v4.7.1, .NETFramework,Version=v4.7.2, .NETFramework,Version=v4.8, .NETFramework,Version=v4.8.1\" en lugar de la plataforma de destino del proyecto \"net9.0\". Puede que el paquete no sea totalmente compatible con el proyecto.",
-      "projectPath": "C:\\Users\\dguti\\source\\Uned\\03101-Programacion_avanzada_en_web\\Proyecto#1-SistemaAcademico\\SistemaAcademico\\SistemaAcademico.Data\\SistemaAcademico.Data.csproj",
-      "warningLevel": 1,
-      "filePath": "C:\\Users\\dguti\\source\\Uned\\03101-Programacion_avanzada_en_web\\Proyecto#1-SistemaAcademico\\SistemaAcademico\\SistemaAcademico.Data\\SistemaAcademico.Data.csproj",
-      "libraryId": "Microsoft.AspNet.Identity.EntityFramework",
-      "targetGraphs": [
-        "net9.0"
-      ]
-    }
-  ]
+  "logs": []
 }

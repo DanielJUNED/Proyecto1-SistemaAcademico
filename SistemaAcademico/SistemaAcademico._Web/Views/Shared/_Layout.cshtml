@@ -9,7 +9,17 @@
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/SistemaAcademico._Web.styles.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.8/css/dataTables.bootstrap5.min.css" />
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="~/Content/images/favicon.png"> 
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/4.6.2/css/bootstrap.min.css" rel="stylesheet" /> 
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" rel="stylesheet" /> 
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"> 
+  
 
+    @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     <header>
@@ -21,7 +31,8 @@
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                     @await  Html.PartialAsync("_MenuPartial") 
+                     @await Html.PartialAsync("_MenuPartial")
+                     @await Html.PartialAsync("_LoginPartial")
                 </div>
             </div>
         </nav>
@@ -37,8 +48,9 @@
             &copy; 2025 - SistemaAcademico._Web - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
         </div>
     </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script> 
+    <script src="~/lib/bootstrap/dist/js/popper.min.js"></script> 
+    <script src="~/lib/jquery/dist/jquery.min.js"></script> 
+
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
     <!-- DataTables -->

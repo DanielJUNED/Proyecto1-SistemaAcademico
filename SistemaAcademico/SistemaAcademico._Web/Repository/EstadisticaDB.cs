@@ -74,15 +74,20 @@ namespace SistemaAcademico._Web.Repository
                 // Obtener totales de cursos y estudiantes para cada cuatrimestre
                 foreach (var cuatrimestre in resultado)
                 {
-                    // Total de cursos
+                    // Total de cursos 
+                    var docentejoin = "";
+                    var docenteParam = "";
                     string queryCursos = @"
                         SELECT COUNT(*)
-                        FROM CursoCuatrimestre cc
-                        WHERE cc.CuatrimestreId = @CuatrimestreId 
-                        AND cc.Ind_Estado = 'A'";
+                        FROM CursoCuatrimestre cc";
 
-                    if (docenteId.HasValue)
-                        queryCursos += " AND cc.DocenteId = @DocenteId";
+                    if (docenteId.HasValue) {
+                        docentejoin += @" INNER JOIN CursoCuatrimestreDocente ccd ON cc.CursoCuatrimestreId = ccd.CursoCuatrimestreId";
+                        docenteParam = @" AND ccd.DocenteId = @DocenteId";
+                    }
+                    queryCursos += docentejoin;
+                    queryCursos += @" WHERE cc.CuatrimestreId = @CuatrimestreId 
+                                      AND cc.Ind_Estado = 'A'" + docenteParam;
 
                     using (SqlCommand cmd = new SqlCommand(queryCursos, conn))
                     {
@@ -97,12 +102,12 @@ namespace SistemaAcademico._Web.Repository
                     string queryEstudiantes = @"
                         SELECT COUNT(DISTINCT ec.EstudianteId)
                         FROM EstudianteCurso ec
-                        INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
-                        WHERE cc.CuatrimestreId = @CuatrimestreId 
-                        AND ec.Ind_Estado = 'A'";
-
-                    if (docenteId.HasValue)
-                        queryEstudiantes += " AND cc.DocenteId = @DocenteId";
+                        INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId" +
+                        docentejoin +
+                        @" WHERE cc.CuatrimestreId = @CuatrimestreId 
+                        AND ec.Ind_Estado = 'A'"+
+                        docenteParam;
+                     
 
                     using (SqlCommand cmd = new SqlCommand(queryEstudiantes, conn))
                     {
@@ -129,6 +134,13 @@ namespace SistemaAcademico._Web.Repository
             {
                 await conn.OpenAsync();
 
+                var docentejoin = "";
+                var docenteParam = "";
+                if (docenteId.HasValue)
+                {
+                    docentejoin += @" INNER JOIN CursoCuatrimestreDocente ccd ON cc.CursoCuatrimestreId = ccd.CursoCuatrimestreId";
+                    docenteParam = @" AND ccd.DocenteId = @DocenteId";
+                }
                 string query = @"
                     SELECT DISTINCT
                         c.CursoId,
@@ -136,13 +148,12 @@ namespace SistemaAcademico._Web.Repository
                         c.Nom_Curso,
                         c.Num_Creditos
                     FROM Curso c
-                    INNER JOIN CursoCuatrimestre cc ON c.CursoId = cc.CursoId
+                    INNER JOIN CursoCuatrimestre cc ON c.CursoId = cc.CursoId"+
+                    docentejoin + @"
                     WHERE c.Ind_Estado = 'A'
                     AND cc.CuatrimestreId = @CuatrimestreId
-                    AND cc.Ind_Estado = 'A'";
-
-                if (docenteId.HasValue)
-                    query += " AND cc.DocenteId = @DocenteId";
+                    AND cc.Ind_Estado = 'A'"+
+                    docenteParam;
 
                 query += " ORDER BY c.Codigo";
 
@@ -173,14 +184,12 @@ namespace SistemaAcademico._Web.Repository
                 {
                     // Obtener CursoCuatrimestreId
                     string queryCursoCuatrimestre = @"
-                        SELECT TOP 1 CursoCuatrimestreId
-                        FROM CursoCuatrimestre
-                        WHERE CursoId = @CursoId
-                        AND CuatrimestreId = @CuatrimestreId
-                        AND Ind_Estado = 'A'";
-
-                    if (docenteId.HasValue)
-                        queryCursoCuatrimestre += " AND DocenteId = @DocenteId";
+                        SELECT TOP 1 cc.CursoCuatrimestreId
+                        FROM CursoCuatrimestre cc" +
+                        docentejoin + @"
+                        WHERE cc.CursoId = @CursoId
+                        AND cc.CuatrimestreId = @CuatrimestreId
+                        AND cc.Ind_Estado = 'A'"+ docenteParam;
 
                     int cursoCuatrimestreId = 0;
                     using (SqlCommand cmd = new SqlCommand(queryCursoCuatrimestre, conn))
@@ -222,6 +231,18 @@ namespace SistemaAcademico._Web.Repository
                     {
                         cmd.Parameters.AddWithValue("@CursoCuatrimestreId", cursoCuatrimestreId);
                         curso.TotalEvaluaciones = (int)await cmd.ExecuteScalarAsync();
+                    }
+                    // Total estudiantes
+                    string queryDocente = @"
+                        SELECT COUNT(*)
+                        FROM CursoCuatrimestreDocente
+                        WHERE CursoCuatrimestreId = @CursoCuatrimestreId
+                        AND Ind_Estado = 'A'";
+
+                    using (SqlCommand cmd = new SqlCommand(queryEstudiantes, conn))
+                    {
+                        cmd.Parameters.AddWithValue("@CursoCuatrimestreId", cursoCuatrimestreId);
+                        curso.TotalDocentes = (int)await cmd.ExecuteScalarAsync();
                     }
                 }
             }
@@ -305,13 +326,21 @@ namespace SistemaAcademico._Web.Repository
             int? cursoId,
             int? docenteId)
         {
+            var docentejoin = "";
+            var docenteParam = "";
+            if (docenteId.HasValue)
+            {
+                docentejoin += @" INNER JOIN CursoCuatrimestreDocente ccd ON cc.CursoCuatrimestreId = ccd.CursoCuatrimestreId";
+                docenteParam = @" AND ccd.DocenteId = @DocenteId";
+            }
             string query = @"
                 SELECT 
                     COUNT(*) as TotalMatriculados,
                     COUNT(DISTINCT ec.EstudianteId) as TotalEstudiantes
                 FROM EstudianteCurso ec
-                INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
-                WHERE ec.Ind_Estado = 'A'";
+                INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId"+
+                docentejoin + @"
+                WHERE ec.Ind_Estado = 'A'"+ docenteParam;
 
             var parameters = new List<SqlParameter>();
 
@@ -329,7 +358,6 @@ namespace SistemaAcademico._Web.Repository
 
             if (docenteId.HasValue)
             {
-                query += " AND cc.DocenteId = @DocenteId";
                 parameters.Add(new SqlParameter("@DocenteId", docenteId.Value));
             }
 
@@ -357,7 +385,13 @@ namespace SistemaAcademico._Web.Repository
             int? docenteId)
         {
             var evaluaciones = new List<EvaluacionData>();
-
+            var docentejoin = "";
+            var docenteParam = "";
+            if (docenteId.HasValue)
+            {
+                docentejoin += @" INNER JOIN CursoCuatrimestreDocente ccd ON cc.CursoCuatrimestreId = ccd.CursoCuatrimestreId";
+                docenteParam = @" AND ccd.DocenteId = @DocenteId";
+            }
             string query = @"
                 SELECT 
                     e.EvaluacionId,
@@ -370,7 +404,10 @@ namespace SistemaAcademico._Web.Repository
                 FROM Evaluacion e
                 INNER JOIN EstudianteCurso ec ON e.EstudianteCursoId = ec.EstudianteCursoId
                 INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
-                WHERE ec.Ind_Estado = 'A'";
+                "+docentejoin+ @"
+                WHERE ec.Ind_Estado = 'A'"
+                + docenteParam;
+
 
             var parameters = new List<SqlParameter>();
 
@@ -388,7 +425,6 @@ namespace SistemaAcademico._Web.Repository
 
             if (docenteId.HasValue)
             {
-                query += " AND cc.DocenteId = @DocenteId";
                 parameters.Add(new SqlParameter("@DocenteId", docenteId.Value));
             }
 
@@ -531,6 +567,13 @@ namespace SistemaAcademico._Web.Repository
             int? docenteId)
         {
             var resultado = new List<EstudianteEstadisticaViewModel>();
+            var docentejoin = "";
+            var docenteParam = "";
+            if (docenteId.HasValue)
+            {
+                docentejoin += @" INNER JOIN CursoCuatrimestreDocente ccd ON cc.CursoCuatrimestreId = ccd.CursoCuatrimestreId";
+                docenteParam = @" AND ccd.DocenteId = @DocenteId";
+            }
 
             string query = @"
                 SELECT 
@@ -549,9 +592,11 @@ namespace SistemaAcademico._Web.Repository
                 FROM EstudianteCurso ec
                 INNER JOIN Estudiante e ON ec.EstudianteId = e.EstudianteId
                 INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
+                "+docentejoin+ @"
                 INNER JOIN Curso c ON cc.CursoId = c.CursoId
                 LEFT JOIN Evaluacion ev ON ec.EstudianteCursoId = ev.EstudianteCursoId
-                WHERE ec.Ind_Estado = 'A'";
+                WHERE ec.Ind_Estado = 'A'"+
+                docenteParam;
 
             var parameters = new List<SqlParameter>();
 
@@ -568,8 +613,7 @@ namespace SistemaAcademico._Web.Repository
             }
 
             if (docenteId.HasValue)
-            {
-                query += " AND cc.DocenteId = @DocenteId";
+            { 
                 parameters.Add(new SqlParameter("@DocenteId", docenteId.Value));
             }
 

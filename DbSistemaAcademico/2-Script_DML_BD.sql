@@ -1,3 +1,7 @@
+USE DBSistemaAcademico;
+GO
+
+
 -- ------------------------------
 -- Provincias
 -- ------------------------------
@@ -257,36 +261,98 @@ INSERT INTO Distrito (Nom_Distrito, CantonId) VALUES
 ('Carrandí', 35);
 
 
-INSERT INTO Usuarios (Id, Email, EmailConfirmed, 
-                      PasswordHash, SecurityStamp, PhoneNumber,
-                      PhoneNumberConfirmed, TwoFactorEnabled, LockoutEndDateUtc, 
-                      LockoutEnabled, AccessFailedCount, UserName
-                    )
-VALUES 
+INSERT INTO Usuarios (
+    Id,
+    UserName,
+    NormalizedUserName,
+    Email,
+    NormalizedEmail,
+    EmailConfirmed,
+    PasswordHash,
+    SecurityStamp,
+    ConcurrencyStamp,
+    PhoneNumber,
+    PhoneNumberConfirmed,
+    TwoFactorEnabled,
+    LockoutEnd,
+    LockoutEnabled,
+    AccessFailedCount
+)
+VALUES
 (
-    '7e9f33d5-ed39-4c60-ac9a-0157f85fe7de', 'danielg@prueba.com', 0,
-    'AHKTqzhTjb/RltZhp8vCVrDn6eL8wRMkk1LdUH/keQvbRwlwXqVEbwRcJa38g+1egA==', 'ea83ceb0-17fb-45c5-92a2-15896c5f6012', NULL,
-    0, 0, '2025-10-22 05:38:43.017',
-    1,0,'DanielG'
+    '7e9f33d5-ed39-4c60-ac9a-0157f85fe7de',      -- Id
+    'DanielG',                                   -- UserName
+    'DANIELG',                                   -- NormalizedUserName
+    'danielg@prueba.com',                        -- Email
+    'DANIELG@PRUEBA.COM',                        -- NormalizedEmail
+    0,                                           -- EmailConfirmed
+    'AHKTqzhTjb/RltZhp8vCVrDn6eL8wRMkk1LdUH/keQvbRwlwXqVEbwRcJa38g+1egA==',  -- PasswordHash
+    'ea83ceb0-17fb-45c5-92a2-15896c5f6012',      -- SecurityStamp
+    NEWID(),                                     -- ConcurrencyStamp
+    NULL,                                        -- PhoneNumber
+    0,                                           -- PhoneNumberConfirmed
+    0,                                           -- TwoFactorEnabled
+    '2025-10-22 05:38:43.017 +00:00',            -- LockoutEnd
+    1,                                           -- LockoutEnabled
+    0                                            -- AccessFailedCount
 ),
 (
-    'd0efef33-6ea7-4380-9a47-2916c411c655', 'nbrunner@uned.ac.cr', 0,
-    'AJ3HyifRP0KjhaCrfOKAu33o42CGBAERFav7CfmDHEeAlslys83a+/1fuI5eO8p59w==', 'cb73e2e4-6870-404b-b194-521eb96f5e20',     NULL,
-    0, 0, NULL,
-    1,0,'NorberthB'
+    'd0efef33-6ea7-4380-9a47-2916c411c655',
+    'NorberthB',
+    'NORBERTHB',
+    'nbrunner@uned.ac.cr',
+    'NBRUNNER@UNED.AC.CR',
+    0,
+    'AJ3HyifRP0KjhaCrfOKAu33o42CGBAERFav7CfmDHEeAlslys83a+/1fuI5eO8p59w==',
+    'cb73e2e4-6870-404b-b194-521eb96f5e20',
+    NEWID(),
+    NULL,
+    0,
+    0,
+    NULL,
+    1,
+    0
 ),
 (
-    'e64be105-16a8-4830-b6c7-0a71df6f0ef7','admin@prueba.com', 0,
-    'ABaVTAJGpid2heCZdgQoZFxp7VqKWMpFHnQlYCZjzLPHA1l0ja/OwRaTU3RSB1VaDw==', '6a00e6e6-c50d-4f06-8104-cf7ea74201a9', NULL,
-    0, 0, NULL,
-    1, 0, 'Admin'
+    'e64be105-16a8-4830-b6c7-0a71df6f0ef7',
+    'Admin',
+    'ADMIN',
+    'admin@prueba.com',
+    'ADMIN@PRUEBA.COM',
+    0,
+    'ABaVTAJGpid2heCZdgQoZFxp7VqKWMpFHnQlYCZjzLPHA1l0ja/OwRaTU3RSB1VaDw==',
+    '6a00e6e6-c50d-4f06-8104-cf7ea74201a9',
+    NEWID(),
+    NULL,
+    0,
+    0,
+    NULL,
+    1,
+    0
 );
 
 
 
-INSERT INTO Roles(Id,Name) 
-values('DOCEN','Docente'),
-      ('ADMIN','Administrador');
+INSERT INTO Roles (
+    Id,
+    Name,
+    NormalizedName,
+    ConcurrencyStamp
+)
+VALUES
+(
+    'DOCEN',            -- Id
+    'Docente',          -- Name
+    'DOCENTE',          -- NormalizedName
+    NEWID()             -- ConcurrencyStamp
+),
+(
+    'ADMIN',
+    'Administrador',
+    'ADMINISTRADOR',
+    NEWID()
+);
+
 
 
 
@@ -349,28 +415,46 @@ VALUES
 -- =============================================
 
 -- I Cuatrimestre 2025
-INSERT INTO CursoCuatrimestre (CursoId, CuatrimestreId, DocenteId, Ind_Estado, Fec_Registro)
+INSERT INTO CursoCuatrimestre (CursoId, CuatrimestreId, Ind_Estado, Fec_Registro)
 VALUES
-(1, 1, 1, 'A', '2024-12-15 10:00:00'), -- Prog. Avanzada Web - Daniel
-(2, 1, 2, 'A', '2024-12-15 10:15:00'), -- BD II - Norberth
-(3, 1, 1, 'A', '2024-12-15 10:30:00'), -- Ing. Software II - Daniel
-(4, 1, 2, 'A', '2024-12-15 10:45:00'); -- Desarrollo Móvil - Norberth
+(1, 1, 'A', '2024-12-15 10:00:00'), -- Prog. Avanzada Web - Daniel
+(2, 1, 'A', '2024-12-15 10:15:00'), -- BD II - Norberth
+(3, 1, 'A', '2024-12-15 10:30:00'), -- Ing. Software II - Daniel
+(4, 1, 'A', '2024-12-15 10:45:00'); -- Desarrollo Móvil - Norberth
 
 -- II Cuatrimestre 2025
-INSERT INTO CursoCuatrimestre (CursoId, CuatrimestreId, DocenteId, Ind_Estado, Fec_Registro)
+INSERT INTO CursoCuatrimestre (CursoId, CuatrimestreId, Ind_Estado, Fec_Registro)
 VALUES
-(1, 2, 1, 'A', '2025-04-20 09:00:00'), -- Prog. Avanzada Web - Daniel
-(2, 2, 2, 'A', '2025-04-20 09:15:00'), -- BD II - Norberth
-(3, 2, 1, 'A', '2025-04-20 09:30:00'), -- Ing. Software II - Daniel
-(4, 2, 2, 'A', '2025-04-20 09:45:00'); -- Desarrollo Móvil - Norberth
+(1, 2, 'A', '2025-04-20 09:00:00'), -- Prog. Avanzada Web - Daniel
+(2, 2, 'A', '2025-04-20 09:15:00'), -- BD II - Norberth
+(3, 2, 'A', '2025-04-20 09:30:00'), -- Ing. Software II - Daniel
+(4, 2, 'A', '2025-04-20 09:45:00'); -- Desarrollo Móvil - Norberth
 
 -- III Cuatrimestre 2025
-INSERT INTO CursoCuatrimestre (CursoId, CuatrimestreId, DocenteId, Ind_Estado, Fec_Registro)
+INSERT INTO CursoCuatrimestre (CursoId, CuatrimestreId, Ind_Estado, Fec_Registro)
 VALUES
-(1, 3, 1, 'A', '2025-08-25 08:00:00'), -- Prog. Avanzada Web - Daniel
-(2, 3, 2, 'A', '2025-08-25 08:15:00'), -- BD II - Norberth
-(3, 3, 1, 'A', '2025-08-25 08:30:00'), -- Ing. Software II - Daniel
-(4, 3, 2, 'A', '2025-08-25 08:45:00'); -- Desarrollo Móvil - Norberth
+(1, 3, 'A', '2025-08-25 08:00:00'), -- Prog. Avanzada Web - Daniel
+(2, 3, 'A', '2025-08-25 08:15:00'), -- BD II - Norberth
+(3, 3, 'A', '2025-08-25 08:30:00'), -- Ing. Software II - Daniel
+(4, 3, 'A', '2025-08-25 08:45:00'); -- Desarrollo Móvil - Norberth
+
+
+INSERT INTO CursoCuatrimestreDocente (CursoCuatrimestreId, DocenteId, Ind_Estado, Fec_Registro)
+     VALUES
+           (1,1,'A','2024-12-15 10:00:00.000'),
+           (2,2,'A','2024-12-15 10:00:00.000'),
+           (3,1,'A','2024-12-15 10:00:00.000'),
+           (4,2,'A','2024-12-15 10:00:00.000'),
+           (5,1,'A','2025-04-20 09:00:00.000'),
+           (6,2,'A','2025-04-20 09:15:00.000'),
+           (7,1,'A','2025-04-20 09:30:00.000'),
+           (8,2,'A','2025-04-20 09:45:00.000'),
+           (9,1,'A','2025-08-25 08:00:00.000'),
+           (10,2,'A','2025-08-25 08:15:00.000'),
+           (11,1,'A','2025-08-25 08:30:00.000'),
+           (12,2,'A','2025-08-25 08:45:00.000');
+GO
+
 
 -- =============================================
 -- MATRÍCULA DE ESTUDIANTES - I CUATRIMESTRE 2025

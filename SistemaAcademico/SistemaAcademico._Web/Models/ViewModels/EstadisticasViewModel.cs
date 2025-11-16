@@ -129,6 +129,7 @@ namespace SistemaAcademico._Web.Models.ViewModels
         public int Creditos { get; set; }
         public int TotalEstudiantes { get; set; }
         public int TotalEvaluaciones { get; set; }
+        public int TotalDocentes { get; set; }
     }
 
     // Comparativa entre cursos

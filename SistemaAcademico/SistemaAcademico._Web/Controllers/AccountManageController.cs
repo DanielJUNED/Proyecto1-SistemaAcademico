@@ -1,97 +1,57 @@
-﻿/*using Microsoft.AspNet.Identity;
-using Microsoft.AspNet.Identity.Owin;
-using Microsoft.Owin.Security;
-using SistemaAcademico.App_Start;
-using SistemaAcademico._Web.Models;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using SistemaAcademico.Data.Entities;
+using SistemaAcademico.Data.Context;
 using SistemaAcademico._Web.Models.ViewModels;
-using System;
-using System.Data.Entity.Core.Common.CommandTrees.ExpressionBuilder;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Mvc;
 
 namespace SistemaAcademico._Web.Controllers
 {
     [Authorize]
     public class AccountManageController : Controller
     {
-        private ApplicationSignInManager _signInManager;
-        private ApplicationUserManager _userManager;
-        private ApplicationDbContext _db;
+        private readonly UserManager<ApplicationUser> _userManager;
+        private readonly SignInManager<ApplicationUser> _signInManager;
+        private readonly ApplicationDbContext _db;
 
-        public AccountManageController()
+        public AccountManageController(
+            UserManager<ApplicationUser> userManager,
+            SignInManager<ApplicationUser> signInManager,
+            ApplicationDbContext db)
         {
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _db = db;
         }
 
-        public AccountManageController(ApplicationUserManager userManager, ApplicationSignInManager signInManager, ApplicationDbContext db)
-        {
-            UserManager = userManager;
-            SignInManager = signInManager;
-            AppDbContext = db;
-        }
-
-        public ApplicationSignInManager SignInManager
-        {
-            get
-            {
-                return _signInManager ?? HttpContext.GetOwinContext().Get<ApplicationSignInManager>();
-            }
-            private set
-            {
-                _signInManager = value;
-            }
-        }
-
-        public ApplicationUserManager UserManager
-        {
-            get
-            {
-                return _userManager ?? HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
-            }
-            private set
-            {
-                _userManager = value;
-            }
-        }
-        // <summary>
-        /// Obtiene  configuracion del repositorio actual
-        /// </summary> 
-        public ApplicationDbContext AppDbContext
-        {
-            get
-            {
-                return _db ?? HttpContext.GetOwinContext().Get<ApplicationDbContext>();
-            }
-            private set
-            {
-                _db = value;
-            }
-
-        }
-        // GET: /Manage/Index
-        public async Task<ActionResult> Index(ManageMessageId? message)
+        // GET: /AccountManage/Index
+        public async Task<IActionResult> Index(ManageMessageId? message)
         {
             ViewBag.StatusMessage =
                 message == ManageMessageId.ChangePasswordSuccess ? "Su contraseña ha sido cambiada exitosamente."
                 : message == ManageMessageId.UpdateProfileSuccess ? "Su perfil ha sido actualizado exitosamente."
                 : message == ManageMessageId.Error ? "Ha ocurrido un error."
                 : "";
-            var userId = User.Identity.GetUserId();
-            var user = await UserManager.FindByIdAsync(userId);
 
+            var userId = _userManager.GetUserId(User);
+            if (userId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
             if (user == null)
             {
                 return RedirectToAction("Login", "Account");
             }
-            var roleNames = await UserManager.GetRolesAsync(userId);
 
-
+            var roleNames = await _userManager.GetRolesAsync(user);
 
             var model = new ManageProfileViewModel();
-            var docente = AppDbContext.Docente
-                                    .AsNoTracking()
-                                    .FirstOrDefault(d => d.UserId == userId);
+            var docente = await _db.Docente
+                .AsNoTracking()
+                .FirstOrDefaultAsync(d => d.UserId == userId);
 
             if (docente != null)
             {
@@ -106,15 +66,14 @@ namespace SistemaAcademico._Web.Controllers
                 model.FechaCreacion = DateTime.Now;
             }
 
-            model.Email = user.Email;
-            model.UltimaConexion = DateTime.Now;
+            model.Email = user.Email ?? string.Empty;
+            //model.UltimaConexion = user.UltimaConexion ?? DateTime.Now;
             model.Rol = roleNames.FirstOrDefault();
-            return View(model);
 
+            return View(model);
         }
-        // =============================================
-        // POST: /Manage/UpdateProfile (AJAX)
-        // =============================================
+
+        // POST: /AccountManage/UpdateProfile (AJAX)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> UpdateProfile(ManageProfileViewModel model)
@@ -132,13 +91,21 @@ namespace SistemaAcademico._Web.Controllers
                     {
                         success = false,
                         message = "Datos inválidos",
-                        errors = errors
+                        errors
                     });
                 }
 
-                var userId = User.Identity.GetUserId();
-                var user = await UserManager.FindByIdAsync(userId);
+                var userId = _userManager.GetUserId(User);
+                if (userId == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Usuario no encontrado"
+                    });
+                }
 
+                var user = await _userManager.FindByIdAsync(userId);
                 if (user == null)
                 {
                     return Json(new
@@ -147,13 +114,25 @@ namespace SistemaAcademico._Web.Controllers
                         message = "Usuario no encontrado"
                     });
                 }
-                var docente = AppDbContext.Docente
-                    .AsNoTracking()
-                                    .FirstOrDefault(d => d.UserId == userId);
+
+                var docente = await _db.Docente
+                    .FirstOrDefaultAsync(d => d.UserId == userId);
+
+                if (docente == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Docente no encontrado"
+                    });
+                }
+
                 docente.Nombre = model.Nombre.Trim();
                 docente.Apellidos = model.Apellidos.Trim();
-                AppDbContext.Entry(docente).State = System.Data.Entity.EntityState.Modified;
-                var resultUpdateDocente = AppDbContext.SaveChanges();
+
+                _db.Entry(docente).State = EntityState.Modified;
+                var resultUpdateDocente = await _db.SaveChangesAsync();
+
                 if (resultUpdateDocente <= 0)
                 {
                     return Json(new
@@ -162,15 +141,12 @@ namespace SistemaAcademico._Web.Controllers
                         message = "Error al actualizar el perfil del docente"
                     });
                 }
-                else
-                {
-                    return Json(new
-                    {
-                        success = true,
-                        message = "Perfil actualizado exitosamente"
-                    });
-                }
 
+                return Json(new
+                {
+                    success = true,
+                    message = "Perfil actualizado exitosamente"
+                });
             }
             catch (Exception ex)
             {
@@ -182,16 +158,13 @@ namespace SistemaAcademico._Web.Controllers
             }
         }
 
-        // =============================================
-        // GET: /Manage/ChangePassword
-        // =============================================
-        public ActionResult ChangePassword()
+        // GET: /AccountManage/ChangePassword
+        public IActionResult ChangePassword()
         {
             return View();
         }
-        // =============================================
-        // POST: /Manage/ChangePassword (AJAX)
-        // =============================================
+
+        // POST: /AccountManage/ChangePassword (AJAX)
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<JsonResult> ChangePassword(ChangePasswordViewModel model)
@@ -209,23 +182,35 @@ namespace SistemaAcademico._Web.Controllers
                     {
                         success = false,
                         message = "Datos inválidos",
-                        errors = errors
+                        errors
                     });
                 }
 
-                var userId = User.Identity.GetUserId();
-                var result = await UserManager.ChangePasswordAsync(
-                    userId,
+                var userId = _userManager.GetUserId(User);
+                if (userId == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Usuario no encontrado"
+                    });
+                }
+
+                var result = await _userManager.ChangePasswordAsync(
+                    await _userManager.FindByIdAsync(userId) ?? throw new InvalidOperationException(),
                     model.CurrentPassword,
                     model.NewPassword);
 
                 if (result.Succeeded)
                 {
-                    var user = await UserManager.FindByIdAsync(userId);
+                    var user = await _userManager.FindByIdAsync(userId);
                     if (user != null)
                     {
                         // Actualizar el security stamp para invalidar otros tokens
-                        await UserManager.UpdateSecurityStampAsync(userId);
+                        await _userManager.UpdateSecurityStampAsync(user);
+
+                        // Refrescar el sign-in
+                        await _signInManager.RefreshSignInAsync(user);
                     }
 
                     return Json(new
@@ -234,23 +219,21 @@ namespace SistemaAcademico._Web.Controllers
                         message = "Contraseña cambiada exitosamente"
                     });
                 }
-                else
+
+                // Interpretar errores comunes
+                var errorMessage = "Error al cambiar la contraseña";
+
+                if (result.Errors.Any(e => e.Code.Contains("PasswordMismatch")))
                 {
-                    // Interpretar errores comunes
-                    var errorMessage = "Error al cambiar la contraseña";
-
-                    if (result.Errors.Any(e => e.Contains("Incorrect password")))
-                    {
-                        errorMessage = "La contraseña actual es incorrecta";
-                    }
-
-                    return Json(new
-                    {
-                        success = false,
-                        message = errorMessage,
-                        errors = result.Errors.ToList()
-                    });
+                    errorMessage = "La contraseña actual es incorrecta";
                 }
+
+                return Json(new
+                {
+                    success = false,
+                    message = errorMessage,
+                    errors = result.Errors.Select(e => e.Description).ToList()
+                });
             }
             catch (Exception ex)
             {
@@ -262,54 +245,11 @@ namespace SistemaAcademico._Web.Controllers
             }
         }
 
-
-
-        #region Aplicaciones auxiliares
-        // Se usa para la protección XSRF al agregar inicios de sesión externos
-        private const string XsrfKey = "XsrfId";
-
-        private IAuthenticationManager AuthenticationManager
-        {
-            get
-            {
-                return HttpContext.GetOwinContext().Authentication;
-            }
-        }
-
-        private void AddErrors(IdentityResult result)
-        {
-            foreach (var error in result.Errors)
-            {
-                ModelState.AddModelError("", error);
-            }
-        }
-
-        private bool HasPassword()
-        {
-            var user = UserManager.FindById(User.Identity.GetUserId());
-            if (user != null)
-            {
-                return user.PasswordHash != null;
-            }
-            return false;
-        }
-
-        private bool HasPhoneNumber()
-        {
-            var user = UserManager.FindById(User.Identity.GetUserId());
-            if (user != null)
-            {
-                return user.PhoneNumber != null;
-            }
-            return false;
-        }
         public enum ManageMessageId
         {
             ChangePasswordSuccess,
             UpdateProfileSuccess,
             Error
         }
-
-        #endregion
     }
-}*/
+}

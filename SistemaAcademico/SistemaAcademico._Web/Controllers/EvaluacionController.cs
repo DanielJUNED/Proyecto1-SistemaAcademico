@@ -2,33 +2,30 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using SistemaAcademico._Web.Models;
 using SistemaAcademico._Web.Models.ViewModels;
 using SistemaAcademico._Web.Utils;
 using SistemaAcademico._Web.Repository;
-using System;
-using System.Collections.Generic;
-using System.Net.Http;
-using System.Threading.Tasks;
+using SistemaAcademico.Data.Entities;   // <-- IMPORTANTE para ApplicationUser
 
-namespace SistemaAcademico.Controllers
+namespace SistemaAcademico_Web.Controllers
 {
     [Authorize(Roles = "Docente,Administrador")]
     public class EvaluacionController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly SistemaAcademico.Data.Context.ApplicationDbContext _db;
         private readonly EvaluacionDB _dbEvaluacion;
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<ApplicationUser> _userManager;   // <-- CAMBIADO
 
         public EvaluacionController(
-            ApplicationDbContext db,
+            SistemaAcademico.Data.Context.ApplicationDbContext db,
             EvaluacionDB dbEvaluacion,
-            UserManager<IdentityUser> userManager)
+            UserManager<ApplicationUser> userManager)   // <-- CAMBIADO
         {
             _db = db;
             _dbEvaluacion = dbEvaluacion;
             _userManager = userManager;
         }
+
         // =============================================
         // GET: /Evaluacion/Index
         // =============================================
@@ -86,6 +83,7 @@ namespace SistemaAcademico.Controllers
             try
             {
                 bool permiteEvaluar = false;
+
                 var user = await _userManager.GetUserAsync(User);
                 var userId = user?.Id;
 
@@ -249,9 +247,6 @@ namespace SistemaAcademico.Controllers
             }
         }
 
-        // =============================================
-        // DISPOSE
-        // =============================================
         protected override void Dispose(bool disposing)
         {
             if (disposing)

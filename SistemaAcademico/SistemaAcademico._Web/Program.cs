@@ -1,16 +1,51 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
-using SistemaAcademico._Web.Repository;
-using SistemaAcademico._Web.Models;
+using SistemaAcademico.Data.Context;
+using SistemaAcademico.Data.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-/*var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));*/
-//builder.Services.AddDatabaseDeveloperPageExceptionFilter();
- 
+    options.UseSqlServer(connectionString));
+
+
+builder.Services.AddIdentity<ApplicationUser, IdentityRole>(options =>
+{
+    // Configuración de Password
+    options.Password.RequireDigit = true;
+    options.Password.RequireLowercase = true;
+    options.Password.RequireUppercase = true;
+    options.Password.RequireNonAlphanumeric = true;
+    options.Password.RequiredLength = 8;
+    options.Password.RequiredUniqueChars = 1;
+
+    // Configuración de Lockout
+    options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(15);
+    options.Lockout.MaxFailedAccessAttempts = 5;
+    options.Lockout.AllowedForNewUsers = true;
+
+    // Configuración de Usuario
+    options.User.RequireUniqueEmail = true;
+    options.SignIn.RequireConfirmedEmail = false;
+}).AddEntityFrameworkStores<ApplicationDbContext>()
+  .AddDefaultTokenProviders();
+
+// Configurar cookies de autenticación con mejoras de seguridad de .NET 9.0
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Login";
+    options.LogoutPath = "/Account/Logout";
+    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.ExpireTimeSpan = TimeSpan.FromHours(2);
+    options.SlidingExpiration = true;
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
+});
+
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient("API", client =>
 {
@@ -27,6 +62,10 @@ builder.Services.AddSession(options =>
     options.Cookie.HttpOnly = true;
     options.Cookie.IsEssential = true;
 });
+
+builder.Services.AddTransient<SistemaAcademico._Web.Repository.EstadisticaDB>();
+builder.Services.AddTransient<SistemaAcademico._Web.Repository.EstudianteDB>();
+builder.Services.AddTransient<SistemaAcademico._Web.Repository.EvaluacionDB>();
 /*builder.Services.AddControllersWithViews();
 builder.Services.AddTransient<EstadisticaDB>();
 builder.Services.AddTransient<EstudianteDB>();
@@ -48,8 +87,9 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapStaticAssets();

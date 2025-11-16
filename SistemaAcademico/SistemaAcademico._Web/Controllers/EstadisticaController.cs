@@ -2,9 +2,10 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore; 
-using SistemaAcademico._Web.Models;
+using SistemaAcademico.Data.Entities;
 using SistemaAcademico._Web.Models.ViewModels; 
-using SistemaAcademico._Web.Repository; 
+using SistemaAcademico.Data.Context;
+using SistemaAcademico._Web.Repository;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -15,12 +16,12 @@ namespace SistemaAcademico._Web.Controllers
     [Authorize(Roles = "Docente,Administrador")]
     public class EstadisticaController : Controller
     {
-        private readonly ApplicationDbContext _db;
+        private readonly SistemaAcademico.Data.Context.ApplicationDbContext _db;
         private readonly EstadisticaDB _dbEstadistica;
         private readonly UserManager<ApplicationUser> _userManager;
 
         public EstadisticaController(
-            ApplicationDbContext db,
+            SistemaAcademico.Data.Context.ApplicationDbContext db,
             EstadisticaDB dbEstadistica,
             UserManager<ApplicationUser> userManager)
         {

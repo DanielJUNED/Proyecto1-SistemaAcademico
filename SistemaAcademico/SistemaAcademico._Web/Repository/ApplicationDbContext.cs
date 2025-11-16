@@ -67,9 +67,10 @@ namespace SistemaAcademico._Web.Repository
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Docente>()
-                .HasOne(d => d.Usuario)
+                .HasOne(d => d.User)
                 .WithMany()
                 .HasForeignKey(d => d.UserId)
+                .HasPrincipalKey(u => u.Id)
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Estudiante>()

@@ -12,10 +12,6 @@ namespace SistemaAcademico.Data.Context
                 : base(options)
             {
             }
-        /*public static ApplicationDbContext Create()
-            {
-                return new ApplicationDbContext();
-            }*/
 
             public virtual DbSet<Canton> Canton { get; set; }
             public virtual DbSet<Cuatrimestre> Cuatrimestre { get; set; }
@@ -68,10 +64,12 @@ namespace SistemaAcademico.Data.Context
                 .OnDelete(DeleteBehavior.Restrict);
 
             modelBuilder.Entity<Docente>()
-                .HasOne(d => d.Usuario)
-                .WithMany()
+                .HasOne(d => d.User)
+                .WithMany(u => u.Docente)
                 .HasForeignKey(d => d.UserId)
+                .HasPrincipalKey(u => u.Id)
                 .OnDelete(DeleteBehavior.Restrict);
+
 
             modelBuilder.Entity<Estudiante>()
                 .HasMany(e => e.EstudianteCurso)

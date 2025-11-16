@@ -56,9 +56,9 @@ function cargarCursos(cuatrimestreId) {
             if (response.success) {
                 let options = '<option value="">-- Todos los cursos --</option>';
                 response.data.forEach(function (curso) {
-                    options += `<option value="${curso.CursoID}">
-                        ${curso.Codigo} - ${curso.Nombre} 
-                        (${curso.TotalEstudiantes} estudiantes, ${curso.TotalEvaluaciones} evaluaciones)
+                    options += `<option value="${curso.cursoID}">
+                        ${curso.codigo} - ${curso.nombre} 
+                        (${curso.totalEstudiantes} estudiantes, ${curso.totalEvaluaciones} evaluaciones)
                     </option>`;
                 });
                 $('#filtroCurso').html(options).prop('disabled', false);
@@ -120,22 +120,22 @@ function mostrarEstadisticas(data) {
     $('#seccionEstadisticas').fadeIn();
 
     // Actualizar títulos
-    let titulo = data.NombreCuatrimestre;
-    let subtitulo = data.NombreCurso
-        ? `${data.CodigoCurso} - ${data.NombreCurso}`
+    let titulo = data.nombreCuatrimestre;
+    let subtitulo = data.nombreCurso
+        ? `${data.codigoCurso} - ${data.nombreCurso}`
         : 'Todos los cursos';
 
     $('#tituloEstadisticas').text(titulo);
     $('#subtituloEstadisticas').text(subtitulo);
 
     // Actualizar indicadores
-    actualizarIndicadores(data.Generales);
+    actualizarIndicadores(data.generales);
 
     // Actualizar gráficos
-    actualizarGraficos(data.Graficos);
+    actualizarGraficos(data.graficos);
 
     // Actualizar tabla de estudiantes
-    actualizarTablaEstudiantes(data.Estudiantes);
+    actualizarTablaEstudiantes(data.estudiantes);
 
     // Scroll suave
     $('html, body').animate({
@@ -148,20 +148,20 @@ function mostrarEstadisticas(data) {
 // =============================================
 function actualizarIndicadores(generales) {
     // Total estudiantes
-    $('#statTotalEstudiantes').text(generales.TotalEstudiantes);
-    $('#statMatriculados').text(`${generales.TotalMatriculados} matrículas`);
+    $('#statTotalEstudiantes').text(generales.totalEstudiantes);
+    $('#statMatriculados').text(`${generales.totalMatriculados} matrículas`);
 
     // Aprobación
-    $('#statAprobacion').text(generales.PorcentajeAprobacion.toFixed(1) + '%');
-    $('#statAprobados').text(`${generales.EstudiantesAprobados} aprobados`);
+    $('#statAprobacion').text(generales.porcentajeAprobacion.toFixed(1) + '%');
+    $('#statAprobados').text(`${generales.estudiantesAprobados} aprobados`);
 
     // Reprobación
-    $('#statReprobacion').text(generales.PorcentajeReprobacion.toFixed(1) + '%');
-    $('#statReprobados').text(`${generales.EstudiantesReprobados} reprobados`);
+    $('#statReprobacion').text(generales.porcentajeReprobacion.toFixed(1) + '%');
+    $('#statReprobados').text(`${generales.estudiantesReprobados} reprobados`);
 
     // Promedio
-    $('#statPromedio').text(generales.PromedioGeneral.toFixed(1));
-    $('#statParticipacion').text(`${generales.PorcentajeParticipacion.toFixed(1)}% participación`);
+    $('#statPromedio').text(generales.promedioGeneral.toFixed(1));
+    $('#statParticipacion').text(`${generales.porcentajeParticipacion.toFixed(1)}% participación`);
 
     // Animación de números
     animarNumeros();
@@ -192,10 +192,10 @@ function actualizarGraficoEstados(graficos) {
     chartEstados = new Chart(ctx, {
         type: 'pie',
         data: {
-            labels: graficos.EstadosLabels,
+            labels: graficos.estadosLabels,
             datasets: [{
-                data: graficos.EstadosData,
-                backgroundColor: graficos.EstadosColors,
+                data: graficos.estadosData,
+                backgroundColor: graficos.estadosColors,
                 borderWidth: 2,
                 borderColor: '#fff'
             }]
@@ -239,10 +239,10 @@ function actualizarGraficoParticipacion(graficos) {
     chartParticipacion = new Chart(ctx, {
         type: 'doughnut',
         data: {
-            labels: graficos.ParticipacionLabels,
+            labels: graficos.participacionLabels,
             datasets: [{
-                data: graficos.ParticipacionData,
-                backgroundColor: graficos.ParticipacionColors,
+                data: graficos.participacionData,
+                backgroundColor: graficos.participacionColors,
                 borderWidth: 2,
                 borderColor: '#fff'
             }]
@@ -284,10 +284,10 @@ function actualizarGraficoNotas(graficos) {
     chartNotas = new Chart(ctx, {
         type: 'bar',
         data: {
-            labels: graficos.NotasRangos,
+            labels: graficos.notasRangos,
             datasets: [{
                 label: 'Cantidad de Estudiantes',
-                data: graficos.NotasDistribucion,
+                data: graficos.notasDistribucion,
                 backgroundColor: [
                     'rgba(220, 53, 69, 0.8)',   // 0-59 Rojo
                     'rgba(255, 193, 7, 0.8)',   // 60-69 Amarillo
@@ -352,23 +352,23 @@ function actualizarTablaEstudiantes(estudiantes) {
     }
 
     estudiantes.forEach(function (estudiante) {
-        const tieneEvaluacion = estudiante.TieneEvaluacion;
-        const nota = tieneEvaluacion ? estudiante.Nota.toFixed(2) : '-';
-        const estado = tieneEvaluacion ? estudiante.Estado : 'Sin evaluar';
-        const participacion = tieneEvaluacion ? estudiante.TipoParticipacion : '-';
-        const fecha = tieneEvaluacion && estudiante.FechaEvaluacion
-            ? formatearFecha(estudiante.FechaEvaluacion)
+        const tieneEvaluacion = estudiante.tieneEvaluacion;
+        const nota = tieneEvaluacion ? estudiante.nota.toFixed(2) : '-';
+        const estado = tieneEvaluacion ? estudiante.estado : 'Sin evaluar';
+        const participacion = tieneEvaluacion ? estudiante.tipoParticipacion : '-';
+        const fecha = tieneEvaluacion && estudiante.fechaEvaluacion
+            ? formatearFecha(estudiante.fechaEvaluacion)
             : '-';
 
         const colorEstado = obtenerColorEstado(estado);
-        const colorNota = obtenerColorNota(estudiante.Nota);
+        const colorNota = obtenerColorNota(estudiante.nota);
 
         const row = `
             <tr class="${!tieneEvaluacion ? 'table-warning' : ''}">
-                <td>${estudiante.Identificacion}</td>
-                <td>${estudiante.NombreCompleto}</td>
-                <!--<td><small>${estudiante.Email}</small></td>-->
-                <td><small>${estudiante.NombreCurso}</small></td>
+                <td>${estudiante.identificacion}</td>
+                <td>${estudiante.nombreCompleto}</td>
+                <!--<td><small>${estudiante.email}</small></td>-->
+                <td><small>${estudiante.nombreCurso}</small></td>
                 <td class="text-center">
                     <span class="badge badge-xl badge-${colorNota}">${nota}</span>
                 </td>
@@ -429,7 +429,7 @@ function mostrarComparativa() {
 }
 
 function renderizarComparativa(data) {
-    if (!data.Cursos || data.Cursos.length === 0) {
+    if (!data.cursos || data.cursos.length === 0) {
         $('#modalBodyComparativa').html(`
             <div class="alert alert-warning">
                 <i class="fas fa-info-circle"></i> No hay cursos para comparar
@@ -454,28 +454,28 @@ function renderizarComparativa(data) {
         <tbody>
     `;
 
-    data.Cursos.forEach(function (curso) {
-        const colorAprobacion = curso.PorcentajeAprobacion >= 70 ? 'success' :
-            curso.PorcentajeAprobacion >= 50 ? 'warning' : 'danger';
+    data.cursos.forEach(function (curso) {
+        const colorAprobacion = curso.porcentajeAprobacion >= 70 ? 'success' :
+            curso.porcentajeAprobacion >= 50 ? 'warning' : 'danger';
 
         html += `
             <tr>
-                <td><strong>${curso.CodigoCurso}</strong></td>
-                <td>${curso.NombreCurso}</td>
-                <td class="text-center">${curso.TotalEstudiantes}</td>
+                <td><strong>${curso.codigoCurso}</strong></td>
+                <td>${curso.nombreCurso}</td>
+                <td class="text-center">${curso.totalEstudiantes}</td>
                 <td class="text-center">
-                    <span class="badge badge-info">${curso.PromedioNota.toFixed(2)}</span>
+                    <span class="badge badge-info">${curso.promedioNota.toFixed(2)}</span>
                 </td>
                 <td class="text-center">
                     <span class="badge badge-${colorAprobacion}">
-                        ${curso.PorcentajeAprobacion.toFixed(1)}%
+                        ${curso.porcentajeAprobacion.toFixed(1)}%
                     </span>
                 </td>
                 <td class="text-center">
-                    <span class="badge badge-success">${curso.Aprobados}</span>
+                    <span class="badge badge-success">${curso.aprobados}</span>
                 </td>
                 <td class="text-center">
-                    <span class="badge badge-danger">${curso.Reprobados}</span>
+                    <span class="badge badge-danger">${curso.reprobados}</span>
                 </td>
             </tr>
         `;
@@ -538,11 +538,20 @@ function obtenerColorNota(nota) {
 }
 
 function formatearFecha(fecha) {
-    if (!fecha) return '-';
-    // Extraer el número entre paréntesis
-    const timestamp = parseInt(fecha.replace(/\/Date\((\d+)\)\//, '$1'));
+    if (!fecha) return '-'; 
+    let date; 
+    // Detectar formato /Date(1234567890)/
+    if (/\/Date\(\d+\)\//.test(fecha)) {
+        const timestamp = parseInt(fecha.replace(/\/Date\((\d+)\)\//, '$1'));
+        date = new Date(timestamp);
+    }
+    // Detectar ISO 2025-09-17T08:30:00
+    else {
+        date = new Date(fecha);
+    }
 
-    const date = new Date(timestamp);
+    if (isNaN(date.getTime())) return '-';
+
     return date.toLocaleDateString('es-ES', {
         year: 'numeric',
         month: '2-digit',

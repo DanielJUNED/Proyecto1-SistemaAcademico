@@ -379,7 +379,7 @@ function registrarEstudiante() {
         //},
         data: datos,//JSON.stringify(datos),
         success: function (response) {
-            if (response.Exitoso) {
+            if (response.exitoso) {
                 // Mostrar modal de éxito
                 $('#mensajeExito').html(`
                     <p><strong>¡Estudiante registrado exitosamente!</strong></p>
@@ -390,7 +390,7 @@ function registrarEstudiante() {
                 $('#modalExito').modal('show');
             } else {
                 // Mostrar errores
-                let mensajeError = response.Mensaje;
+                let mensajeError = response.mensaje;
                 if (response.errores && response.errores.length > 0) {
                     mensajeError += '<ul class="mt-2">';
                     response.Errores.forEach(function (error) {

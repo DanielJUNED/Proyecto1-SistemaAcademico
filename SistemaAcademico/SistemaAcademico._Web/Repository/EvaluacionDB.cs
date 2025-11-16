@@ -180,7 +180,7 @@ namespace SistemaAcademico._Web.Repository
         // =============================================
         public async Task<BusquedaEstudianteViewModel> ObtenerEstudianteDetalleAsync(int estudianteId, int docenteLogin)
         {
-            BusquedaEstudianteViewModel resultado = null;
+            BusquedaEstudianteViewModel resultado = new BusquedaEstudianteViewModel();
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
@@ -427,7 +427,7 @@ namespace SistemaAcademico._Web.Repository
         // =============================================
         public async Task<EvaluacionDetalleViewModel> ObtenerEvaluacionPorIdAsync(int evaluacionId)
         {
-            EvaluacionDetalleViewModel resultado = null;
+            EvaluacionDetalleViewModel resultado = new EvaluacionDetalleViewModel();
 
             using (SqlConnection conn = new SqlConnection(_connectionString))
             {
