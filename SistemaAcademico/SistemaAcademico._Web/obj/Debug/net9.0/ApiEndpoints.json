@@ -1,5 +1,288 @@
 [
   {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetAll",
+    "RelativePath": "api/CursoCuatrimestre",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cuatrimestreId",
+        "Type": "System.Nullable\u00601[[System.Int32, System.Private.CoreLib, Version=9.0.0.0, Culture=neutral, PublicKeyToken=7cec85d7bea7798e]]",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[SistemaAcademico.API.DTOs.CursoCuatrimestreDTO, SistemaAcademico.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "Create",
+    "RelativePath": "api/CursoCuatrimestre",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SistemaAcademico.API.DTOs.CreateCursoCuatrimestreDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Int32",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetById",
+    "RelativePath": "api/CursoCuatrimestre/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "SistemaAcademico.API.DTOs.CursoCuatrimestreDTO",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "Update",
+    "RelativePath": "api/CursoCuatrimestre/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "SistemaAcademico.API.DTOs.UpdateCursoCuatrimestreDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "Delete",
+    "RelativePath": "api/CursoCuatrimestre/{id}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "AsignarDocente",
+    "RelativePath": "api/CursoCuatrimestre/AsignarDocente",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SistemaAcademico.API.DTOs.AsignarDocenteGeneralDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetCuatrimestres",
+    "RelativePath": "api/CursoCuatrimestre/cuatrimestres",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetCuatrimestreById",
+    "RelativePath": "api/CursoCuatrimestre/cuatrimestres/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetCursosNoEnCuatrimestre",
+    "RelativePath": "api/CursoCuatrimestre/CursoNoEnCuatrimestre/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetCursos",
+    "RelativePath": "api/CursoCuatrimestre/cursos",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetCursoById",
+    "RelativePath": "api/CursoCuatrimestre/cursos/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetDocentes",
+    "RelativePath": "api/CursoCuatrimestre/docentes",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetDocentes",
+    "RelativePath": "api/CursoCuatrimestre/Docentes/{cursoCuatrimestreId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cursoCuatrimestreId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[SistemaAcademico.API.DTOs.DocenteAsignadoDTO, SistemaAcademico.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "GetDocenteById",
+    "RelativePath": "api/CursoCuatrimestre/docentes/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "RemoverDocente",
+    "RelativePath": "api/CursoCuatrimestre/RemoverDocente/{cursoCuatriDocenteId}",
+    "HttpMethod": "DELETE",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "cursoCuatriDocenteId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
+    "Method": "ValidarEdicion",
+    "RelativePath": "api/CursoCuatrimestre/ValidarEdicion/{id}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "SistemaAcademico.API.Controllers.CursosController",
     "Method": "GetTodos",
     "RelativePath": "api/Cursos",
@@ -27,27 +310,6 @@
   },
   {
     "ContainingType": "SistemaAcademico.API.Controllers.CursosController",
-    "Method": "Actualizar",
-    "RelativePath": "api/Cursos",
-    "HttpMethod": "PUT",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "id",
-        "Type": "System.Int32",
-        "IsRequired": false
-      },
-      {
-        "Name": "dto",
-        "Type": "SistemaAcademico.API.DTOs.CursoDTO",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SistemaAcademico.API.Controllers.CursosController",
     "Method": "GetCurso",
     "RelativePath": "api/Cursos/{id}",
     "HttpMethod": "GET",
@@ -64,6 +326,27 @@
   },
   {
     "ContainingType": "SistemaAcademico.API.Controllers.CursosController",
+    "Method": "Actualizar",
+    "RelativePath": "api/Cursos/{id}",
+    "HttpMethod": "PUT",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "id",
+        "Type": "System.Int32",
+        "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "SistemaAcademico.API.DTOs.CursoDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.CursosController",
     "Method": "Eliminar",
     "RelativePath": "api/Cursos/{id}",
     "HttpMethod": "DELETE",
@@ -73,22 +356,6 @@
       {
         "Name": "id",
         "Type": "System.Int32",
-        "IsRequired": true
-      }
-    ],
-    "ReturnTypes": []
-  },
-  {
-    "ContainingType": "SistemaAcademico.API.Controllers.CursosController",
-    "Method": "AsignarDocente",
-    "RelativePath": "api/Cursos/api/cursos/asignardocente",
-    "HttpMethod": "POST",
-    "IsController": true,
-    "Order": 0,
-    "Parameters": [
-      {
-        "Name": "datos",
-        "Type": "System.Object",
         "IsRequired": true
       }
     ],

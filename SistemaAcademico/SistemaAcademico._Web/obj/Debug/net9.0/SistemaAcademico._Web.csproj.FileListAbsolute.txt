@@ -96,10 +96,14 @@ C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-Sistema
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\scopedcss\projectbundle\SistemaAcademico._Web.bundle.scp.css
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\ha09iz1f6u-b9sayid5wm.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\nlmyfwsh0y-61n19gt1b8.gz
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\t7fhi63vv8-86zgk0is8y.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\6flsq1jziv-cfkirhyby3.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\jjttbh7fgq-671vfkwesy.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\bzu8zayhfg-stwh6fu1x2.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\wkq467s3ph-5637m8fwjn.gz
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\f75njs1ss7-x0klw4qhm0.gz
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\njtrfgup7j-55gfmj2z90.gz
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\4rfjolor6z-pry60cx6bq.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\6s1b63nrgy-xtxxf3hu2r.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\1637h7u8e7-bqjiyaj88i.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\euxa9manwu-c2jlpeoesf.gz
@@ -145,6 +149,7 @@ C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-Sistema
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\xaa64weua1-h1s4sie4z3.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\oi4lxmvgl9-63fj8s7r0e.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\r8m18sya7u-0j3bgjxly4.gz
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\b3wz1wb5zv-9bve8z9uq6.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\7lzxy70tuw-47otxtyo56.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\xc6658jade-4v8eqarkd7.gz
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\w1qufoycfs-356vix0kms.gz
@@ -173,8 +178,5 @@ C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-Sistema
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\SistemaAcademico._Web.pdb
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\SistemaAcademico._Web.genruntimeconfig.cache
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\ref\SistemaAcademico._Web.dll
-C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\t7fhi63vv8-86zgk0is8y.gz
-C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\f75njs1ss7-x0klw4qhm0.gz
-C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\b3wz1wb5zv-9bve8z9uq6.gz
-C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\njtrfgup7j-55gfmj2z90.gz
-C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\4rfjolor6z-pry60cx6bq.gz
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\morqkxr2ft-niugr08twj.gz
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\obj\Debug\net9.0\compressed\s8abu7xwb2-30g8u3g19h.gz

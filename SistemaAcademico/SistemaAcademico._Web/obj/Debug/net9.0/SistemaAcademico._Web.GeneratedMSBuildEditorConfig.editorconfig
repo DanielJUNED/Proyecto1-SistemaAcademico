@@ -36,8 +36,20 @@ build_metadata.AdditionalFiles.CssScope =
 build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQWNjb3VudFxSZWdpc3Rlci5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[C:/Users/dguti/source/Uned/03101-Programacion_avanzada_en_web/Proyecto\#1-SistemaAcademico/SistemaAcademico/SistemaAcademico._Web/Views/Curso/AsignarDocente.cshtml]
-build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3Vyc29cQXNpZ25hckRvY2VudGUuY3NodG1s
+[C:/Users/dguti/source/Uned/03101-Programacion_avanzada_en_web/Proyecto\#1-SistemaAcademico/SistemaAcademico/SistemaAcademico._Web/Views/CursoCuatrimestre/Crear.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3Vyc29DdWF0cmltZXN0cmVcQ3JlYXIuY3NodG1s
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/dguti/source/Uned/03101-Programacion_avanzada_en_web/Proyecto\#1-SistemaAcademico/SistemaAcademico/SistemaAcademico._Web/Views/CursoCuatrimestre/Detalle.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3Vyc29DdWF0cmltZXN0cmVcRGV0YWxsZS5jc2h0bWw=
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/dguti/source/Uned/03101-Programacion_avanzada_en_web/Proyecto\#1-SistemaAcademico/SistemaAcademico/SistemaAcademico._Web/Views/CursoCuatrimestre/Editar.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3Vyc29DdWF0cmltZXN0cmVcRWRpdGFyLmNzaHRtbA==
+build_metadata.AdditionalFiles.CssScope = 
+
+[C:/Users/dguti/source/Uned/03101-Programacion_avanzada_en_web/Proyecto\#1-SistemaAcademico/SistemaAcademico/SistemaAcademico._Web/Views/CursoCuatrimestre/Index.cshtml]
+build_metadata.AdditionalFiles.TargetPath = Vmlld3NcQ3Vyc29DdWF0cmltZXN0cmVcSW5kZXguY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
 [C:/Users/dguti/source/Uned/03101-Programacion_avanzada_en_web/Proyecto\#1-SistemaAcademico/SistemaAcademico/SistemaAcademico._Web/Views/Curso/Crear.cshtml]

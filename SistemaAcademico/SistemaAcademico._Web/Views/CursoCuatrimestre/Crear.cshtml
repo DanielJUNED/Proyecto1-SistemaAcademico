@@ -1,0 +1,166 @@
+﻿@model SistemaAcademico._Web.Models.ViewModels.CursoCuatrimestreCreateViewModel
+
+@{
+    ViewData["Title"] = "Crear Curso-Cuatrimestre";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-plus-circle"></i> Registrar Curso en Cuatrimestre
+                    </h4>
+                </div>
+                <div class="card-body">
+                    @Html.AntiForgeryToken()
+
+                    <!-- Información del Cuatrimestre -->
+                    <div class="card mb-4 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Información del Cuatrimestre</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>Nombre:</strong><br>
+                                    @Model.Cuatrimestre.Nombre
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Año:</strong><br>
+                                    @Model.Cuatrimestre.Anio
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Periodo:</strong><br>
+                                    @Model.Cuatrimestre.Numero° Cuatrimestre
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Fechas:</strong><br>
+                                    @Model.Cuatrimestre.Fec_Inicio.ToString("dd/MM/yyyy") -
+                                    @Model.Cuatrimestre.Fec_Fin.ToString("dd/MM/yyyy")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Formulario -->
+                    <form id="formCursoCuatrimestre">
+                        <input type="hidden" id="cuatrimestreId" value="@Model.CuatrimestreId" />
+
+                        <!-- Selección de Curso -->
+                        <div class="mb-3">
+                            <label for="cursoId" class="form-label">
+                                <strong>Seleccionar Curso:</strong> <span class="text-danger">*</span>
+                            </label>
+                            <select id="cursoId" class="form-select" required>
+                                <option value="">-- Seleccione un curso --</option>
+                                @foreach (var curso in Model.Cursos)
+                                {
+                                    <option value="@curso.CursoId"
+                                            data-codigo="@curso.Codigo"
+                                            data-nombre="@curso.Nom_Curso"
+                                            data-descripcion="@curso.Desc_Curso"
+                                            data-creditos="@curso.Num_Creditos">
+                                        @curso.Codigo - @curso.Nom_Curso
+                                    </option>
+                                }
+                            </select>
+                        </div>
+
+                        <!-- Información del Curso Seleccionado -->
+                        <div id="infoCurso" class="card mb-4 bg-light" style="display: none;">
+                            <div class="card-body">
+                                <h5 class="card-title">Información del Curso</h5>
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <strong>Código:</strong><br>
+                                        <span id="cursoCodigo"></span>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <strong>Nombre:</strong><br>
+                                        <span id="cursoNombre"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <strong>Créditos:</strong><br>
+                                        <span id="cursoCreditos"></span>
+                                    </div>
+                                </div>
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <strong>Descripción:</strong><br>
+                                        <span id="cursoDescripcion"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Asignación de Docentes -->
+                        <div class="card mb-3">
+                            <div class="card-header bg-secondary text-white">
+                                <h5 class="mb-0">Asignar Docentes</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="row mb-3">
+                                    <div class="col-md-10">
+                                        <select id="docenteSelector" class="form-select">
+                                            <option value="">-- Seleccione un docente para agregar --</option>
+                                            @foreach (var docente in Model.DocentesDisponibles)
+                                            {
+                                                <option value="@docente.DocenteId"
+                                                        data-nombre="@docente.NombreCompleto"
+                                                        data-email="@docente.Email">
+                                                    @docente.NombreCompleto - @docente.Email
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" id="btnAgregarDocente" class="btn btn-primary w-100">
+                                            <i class="fas fa-plus"></i> Agregar
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Tabla de Docentes Seleccionados -->
+                                <div class="table-responsive">
+                                    <table class="table table-bordered" id="tablaDocentes">
+                                        <thead class="table-secondary">
+                                            <tr>
+                                                <th style="width: 50%;">Nombre Completo</th>
+                                                <th style="width: 40%;">Email</th>
+                                                <th style="width: 10%;">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="docentesSeleccionados">
+                                            <tr id="noDocentesRow">
+                                                <td colspan="3" class="text-center">
+                                                    <em>No hay docentes asignados</em>
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Botones -->
+                        <div class="row">
+                            <div class="col-12">
+                                <button type="submit" class="btn btn-success">
+                                    <i class="fas fa-save"></i> Guardar
+                                </button>
+                                <a href="@Url.Action("Index", new { cuatrimestreId = Model.CuatrimestreId })"
+                                   class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Cancelar
+                                </a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/cursocuatrimestre/crear.js"></script> 
+}

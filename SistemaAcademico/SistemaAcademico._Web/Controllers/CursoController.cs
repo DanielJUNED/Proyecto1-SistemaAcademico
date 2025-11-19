@@ -172,6 +172,7 @@ namespace SistemaAcademico._Web.Controllers
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Editar(int id, CursoFormViewModel viewModel)
+
         {
             if (id != viewModel.CursoId)
                 return BadRequest();
@@ -183,7 +184,6 @@ namespace SistemaAcademico._Web.Controllers
             {
                 var client = _httpClientFactory.CreateClient("API");
 
-                // ViewModel → DTO
                 var dto = new CursoDTO
                 {
                     CursoId = viewModel.CursoId,
@@ -199,41 +199,13 @@ namespace SistemaAcademico._Web.Controllers
                 var response = await client.PutAsync($"cursos/{id}", content);
 
                 if (response.IsSuccessStatusCode)
-                {
-                    TempData["Success"] = "Curso actualizado exitosamente";
                     return RedirectToAction(nameof(Index));
-                }
-
-                var errorContent = await response.Content.ReadAsStringAsync();
-                ModelState.AddModelError("", $"Error al actualizar curso: {errorContent}");
-                return View(viewModel);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error: {ex.Message}");
-                ModelState.AddModelError("", "Error al actualizar curso");
-                return View(viewModel);
-            }
-        }
-        // GET: Curso/AsignarDocente 
-        public async Task<IActionResult> AsignarDocente()
-        {
-            try
-            {
-                var viewModel = new AsignarDocenteViewModel
-                {
-                    Cursos = new List<CursoSelectViewModel>(),//await ObtenerCursosParaSelect(),
-                    Cuatrimestres = new List<CuatrimestreSelectViewModel>(),//await ObtenerCuatrimestresParaSelect(),
-                    Docentes = new List<DocenteSelectViewModel>() //await ObtenerDocentesParaSelect()
-                };
 
                 return View(viewModel);
             }
-            catch (Exception ex)
+            catch
             {
-                _logger.LogError($"Error al cargar datos: {ex.Message}");
-                TempData["Error"] = "Error al cargar los datos necesarios";
-                return RedirectToAction(nameof(Index));
+                return View(viewModel);
             }
         }
     }

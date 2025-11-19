@@ -78,7 +78,7 @@ namespace SistemaAcademico.Data.Repositories
                 return await cmd.ExecuteNonQueryAsync() > 0;
             }
         }
-
+        /*
         public async Task<bool> AsignarDocente(int cursoId, int cuatrimestreId, int docenteId)
         {
             using (var conn = new SqlConnection(_connectionString))
@@ -100,7 +100,7 @@ namespace SistemaAcademico.Data.Repositories
                 conn.Open();
                 return await cmd.ExecuteNonQueryAsync() > 0;
             }
-        }
+        }*/
 
         public async Task<List<Curso>> ObtenerTodos()
         {

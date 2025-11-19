@@ -116,8 +116,9 @@ namespace SistemaAcademico.API.Controllers
         }
 
         // PUT: api/cursos/{id}
-        [HttpPut]
+        [HttpPut("{id}")]
         public async Task<IActionResult> Actualizar(int id, [FromBody] CursoDTO dto)
+
         {
             try
             {
@@ -191,7 +192,7 @@ namespace SistemaAcademico.API.Controllers
             }
         }
 
-        // POST: api/cursos/asignardocente
+        /*// POST: api/cursos/asignardocente
         [HttpPost]
         [Route("api/cursos/asignardocente")]
         public async Task<IActionResult> AsignarDocente([FromBody] dynamic datos)
@@ -216,7 +217,7 @@ namespace SistemaAcademico.API.Controllers
                     Modulo = "Cursos",
                     Descripcion = $"Docente {docenteId} asignado al curso {cursoId}",
                     DireccionIP = GetClientIP()
-                });*/
+                }); 
 
                 return Ok(new { success = true, message = "Docente asignado correctamente" });
 
@@ -225,7 +226,7 @@ namespace SistemaAcademico.API.Controllers
             {
                 return StatusCode(500, new { message = ex.Message });
             }
-        }
+        }*/
 
         private string GetClientIP()
         {

@@ -239,7 +239,7 @@ namespace SistemaAcademico._Web.Repository
                         WHERE CursoCuatrimestreId = @CursoCuatrimestreId
                         AND Ind_Estado = 'A'";
 
-                    using (SqlCommand cmd = new SqlCommand(queryEstudiantes, conn))
+                    using (SqlCommand cmd = new SqlCommand(queryDocente, conn))
                     {
                         cmd.Parameters.AddWithValue("@CursoCuatrimestreId", cursoCuatrimestreId);
                         curso.TotalDocentes = (int)await cmd.ExecuteScalarAsync();

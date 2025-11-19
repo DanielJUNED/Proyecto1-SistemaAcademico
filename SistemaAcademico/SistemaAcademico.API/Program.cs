@@ -29,6 +29,8 @@ builder.Services.AddEndpointsApiExplorer();
 // Registrar repositorios
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddScoped(sp => new CursoDB(connectionString));
+builder.Services.AddScoped(sp => new CursoCuatrimestreDB(connectionString));
+builder.Services.AddScoped(sp => new CursoCuatrimestreDocenteDB(connectionString));
 //builder.Services.AddScoped(sp => new CursoRepository(connectionString));
 
 

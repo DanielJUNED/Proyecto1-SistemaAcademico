@@ -12,7 +12,7 @@ namespace SistemaAcademico.Data.Entities
         public Docente()
         {
             Evaluacion = new HashSet<Evaluacion>();
-            CursoCuatrimestre = new HashSet<CursoCuatrimestre>();
+            CursoCuatrimestreDocente = new HashSet<CursoCuatrimestreDocente>();
         }
         [Key]
         public int DocenteId { get; set; }
@@ -39,6 +39,6 @@ namespace SistemaAcademico.Data.Entities
 
         public string UserId { get; set; }
         public ApplicationUser User { get; set; }
-        public virtual ICollection<CursoCuatrimestre> CursoCuatrimestre { get; set; }
+        public virtual ICollection<CursoCuatrimestreDocente> CursoCuatrimestreDocente { get; set;  }
     }
 }

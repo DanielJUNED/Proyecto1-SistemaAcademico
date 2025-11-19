@@ -1,0 +1,277 @@
+﻿@model SistemaAcademico._Web.Models.ViewModels.CursoCuatrimestreEditViewModel
+
+@{
+    ViewData["Title"] = "Editar Curso-Cuatrimestre";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-warning text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-edit"></i> Editar Curso en Cuatrimestre
+                    </h4>
+                </div>
+                <div class="card-body">
+                    <!--Html.AntiForgeryToken()-->
+
+                    @if (Model.TieneEstudiantes || Model.TieneEvaluaciones)
+                    {
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Advertencia:</strong> Este curso tiene
+                            @if (Model.TieneEstudiantes)
+                            {
+                                <span>estudiantes matriculados</span>
+                            }
+                            @if (Model.TieneEstudiantes && Model.TieneEvaluaciones)
+                            {
+                                <span> y </span>
+                            }
+                            @if (Model.TieneEvaluaciones)
+                            {
+                                <span>evaluaciones registradas</span>
+                            }
+                            . No se puede modificar el curso ni los docentes asignados.
+                        </div>
+                    }
+
+                    <!-- Información del Cuatrimestre -->
+                    <div class="card mb-4 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Información del Cuatrimestre</h5>
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <strong>Nombre:</strong><br>
+                                    @Model.Cuatrimestre.Nombre
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Año:</strong><br>
+                                    @Model.Cuatrimestre.Anio
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Periodo:</strong><br>
+                                    @Model.Cuatrimestre.Numero° Cuatrimestre
+                                </div>
+                                <div class="col-md-3">
+                                    <strong>Fechas:</strong><br>
+                                    @Model.Cuatrimestre.Fec_Inicio.ToString("dd/MM/yyyy") -
+                                    @Model.Cuatrimestre.Fec_Fin.ToString("dd/MM/yyyy")
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Información del Curso -->
+                    <div class="card mb-4 bg-light">
+                        <div class="card-body">
+                            <h5 class="card-title">Información del Curso</h5>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <strong>Código:</strong><br>
+                                    @Model.Curso.Codigo
+                                </div>
+                                <div class="col-md-6">
+                                    <strong>Nombre:</strong><br>
+                                    @Model.Curso.Nom_Curso
+                                </div>
+                                <div class="col-md-4">
+                                    <strong>Créditos:</strong><br>
+                                    @Model.Curso.Num_Creditos
+                                </div>
+                            </div>
+                            @if (!string.IsNullOrEmpty(Model.Curso.Desc_Curso))
+                            {
+                                <div class="row mt-2">
+                                    <div class="col-12">
+                                        <strong>Descripción:</strong><br>
+                                        @Model.Curso.Desc_Curso
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Gestión de Docentes -->
+                    <div class="card mb-3">
+                        <div class="card-header bg-secondary text-white">
+                            <h5 class="mb-0">Docentes Asignados</h5>
+                        </div>
+                        <div class="card-body">
+                            @if (Model.PuedeEditarDocentes)
+                            {
+                                <div class="row mb-3">
+                                    <div class="col-md-10">
+                                        <select id="docenteSelector" class="form-select">
+                                            <option value="">-- Seleccione un docente para agregar --</option>
+                                            @foreach (var docente in Model.DocentesDisponibles)
+                                            {
+                                                <option value="@docente.DocenteId"
+                                                        data-nombre="@docente.NombreCompleto"
+                                                        data-email="@docente.Email">
+                                                    @docente.NombreCompleto - @docente.Email
+                                                </option>
+                                            }
+                                        </select>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <button type="button" id="btnAgregarDocente" class="btn btn-primary w-100">
+                                            <i class="fas fa-plus"></i> Agregar
+                                        </button>
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Tabla de Docentes -->
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="tablaDocentes">
+                                    <thead class="table-secondary">
+                                        <tr>
+                                            <th style="width: 45%;">Nombre Completo</th>
+                                            <th style="width: 45%;">Email</th>
+                                            @if (Model.PuedeEditarDocentes)
+                                            {
+                                                <th style="width: 10%;">Acciones</th>
+                                            }
+                                        </tr>
+                                    </thead>
+                                    <tbody id="docentesAsignados">
+                                        @if (Model.DocentesAsignados.Any())
+                                        {
+                                            @foreach (var docente in Model.DocentesAsignados)
+                                            {
+                                                <tr data-docente-id="@docente.CursoCuatriDocenteId">
+                                                    <td>@docente.NombreCompleto</td>
+                                                    <td>@docente.Email</td>
+                                                    @if (Model.PuedeEditarDocentes)
+                                                    {
+                                                        <td class="text-center">
+                                                            <button type="button" class="btn btn-sm btn-danger"
+                                                                    onclick="removerDocente(@docente.CursoCuatriDocenteId)">
+                                                                <i class="fas fa-trash"></i>
+                                                            </button>
+                                                        </td>
+                                                    }
+                                                </tr>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <tr id="noDocentesRow">
+                                                <td colspan="@(Model.PuedeEditarDocentes ? "3" : "2")" class="text-center">
+                                                    <em>No hay docentes asignados</em>
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Botones -->
+                    <div class="row">
+                        <div class="col-12">
+                            <a href="@Url.Action("Index", new { cuatrimestreId = Model.CuatrimestreId })"
+                               class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Volver
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        const cursoCuatrimestreId = @Model.CursoCuatrimestreId;
+        const puedeEditarDocentes = @Model.PuedeEditarDocentes.ToString().ToLower(); 
+        $(document).ready(function() {
+            if (puedeEditarDocentes) {
+                // Agregar docente
+                $('#btnAgregarDocente').click(function() {
+                    const docenteId = $('#docenteSelector').val();
+                    if (!docenteId) {
+                        alert('Por favor, seleccione un docente');
+                        return;
+                    }
+
+                    // Verificar si ya está asignado
+                    const yaAsignado = $('#docentesAsignados tr').filter(function() {
+                        return $(this).find('td').first().text() ===
+                               $('#docenteSelector option:selected').data('nombre');
+                    }).length > 0;
+
+                    if (yaAsignado) {
+                        alert('Este docente ya está asignado');
+                        return;
+                    }
+
+                    const data = {
+                        cursoCuatrimestreId: cursoCuatrimestreId,
+                        docenteId: parseInt(docenteId)
+                    };
+
+                    $.ajax({
+                        url: '@Url.Action("RegistrarDocente", "CursoCuatrimestre")',
+                        type: 'POST',
+                        contentType: 'application/json',
+                        data: JSON.stringify(data),
+                        success: function(response) {
+                            if (response.success) {
+                                alert(response.message);
+                                location.reload();
+                            } else {
+                                alert(response.message);
+                            }
+                        },
+                        error: function(xhr) {
+                            const error = xhr.responseJSON?.message || 'Error al asignar docente';
+                            alert(error);
+                        }
+                    });
+                });
+            }
+        });
+
+        function removerDocente(cursoCuatriDocenteId) {
+            if (!confirm('¿Está seguro de remover este docente?')) {
+                return;
+            }
+
+            $.ajax({
+                url: '@Url.Action("RemoverDocente")/' + cursoCuatriDocenteId,
+                type: 'POST',
+                headers: {
+                    'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                },
+                success: function(response) {
+                    if (response.success) {
+                        alert(response.message);
+                        $(`tr[data-docente-id="${cursoCuatriDocenteId}"]`).remove();
+
+                        if ($('#docentesAsignados tr').length === 0) {
+                            const colspan = puedeEditarDocentes ? "3" : "2";
+                            $('#docentesAsignados').html(`
+                                <tr id="noDocentesRow">
+                                    <td colspan="${colspan}" class="text-center">
+                                        <em>No hay docentes asignados</em>
+                                    </td>
+                                </tr>
+                            `);
+                        }
+                    } else {
+                        alert(response.message);
+                    }
+                },
+                error: function(xhr) {
+                    const error = xhr.responseJSON?.message || 'Error al remover docente';
+                    alert(error);
+                }
+            });
+        }
+    </script>
+}
