@@ -389,6 +389,11 @@
         "Name": "id",
         "Type": "System.Int32",
         "IsRequired": true
+      },
+      {
+        "Name": "dto",
+        "Type": "SistemaAcademico.API.DTOs.BitacoraBaseDTO",
+        "IsRequired": true
       }
     ],
     "ReturnTypes": []

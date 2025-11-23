@@ -95,18 +95,16 @@ namespace SistemaAcademico.API.Controllers
                 bool resultado = await _cursodb.Crear(curso);
 
                 if (resultado)
-                {
-                    // OBTENER ID DEL USUARIO LOGUEADO
-                    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                { 
 
                     // Registrar en bitácora
                     await _bitacoradb.Registrar(new Bitacora
                     {
-                        UserId = userId,// "e64be105-16a8-4830-b6c7-0a71df6f0ef7", // Obtener del contexto
-                        Accion = "Crear Curso",
-                        Modulo = "Cursos",
-                        Descripcion = $"Curso creado: {curso.Codigo} - {curso.Nom_Curso}",
-                        DireccionIP = GetClientIP()
+                        UserId = dto.Bitacora.UserId,// "e64be105-16a8-4830-b6c7-0a71df6f0ef7", // Obtener del contexto
+                        Accion = dto.Bitacora.Accion,
+                        Modulo = dto.Bitacora.Modulo,
+                        Descripcion = dto.Bitacora.Descripcion,
+                        DireccionIP = dto.Bitacora.DireccionIP,
                     });
 
                     return Ok(new { success = true, message = "Curso creado correctamente" });
@@ -148,16 +146,18 @@ namespace SistemaAcademico.API.Controllers
                 if (!resultado)
                 {
                     return BadRequest("No se pudo actualizar el curso");
-                }
+                } 
                 // Registrar en bitácora
-                /*_bitacoradb.Registrar(new Bitacora
+                await _bitacoradb.Registrar(new Bitacora
                 {
-                    UserId = User.Identity.Name,
-                    Accion = "Actualizar Curso",
-                    Modulo = "Cursos",
-                    Descripcion = $"Curso actualizado: {curso.Codigo}",
-                    DireccionIP = GetClientIP()
-                });*/
+                    UserId = dto.Bitacora.UserId,// "e64be105-16a8-4830-b6c7-0a71df6f0ef7", // Obtener del contexto
+                    Accion = dto.Bitacora.Accion,
+                    Modulo = dto.Bitacora.Modulo,
+                    Descripcion = dto.Bitacora.Descripcion,
+                    DireccionIP = dto.Bitacora.DireccionIP,
+                });
+
+                
 
                 return Ok(new { success = true, message = "Curso actualizado correctamente" });
                  }
@@ -169,25 +169,28 @@ namespace SistemaAcademico.API.Controllers
 
         // DELETE: api/cursos/{id}
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Eliminar(int id)
+        public async Task<IActionResult> Eliminar(int id, [FromBody] BitacoraBaseDTO dto)
         {
             try
             {
+
+                var curso = await _cursodb.ObtenerPorId(id);
                 bool resultado = await _cursodb.Eliminar(id);
 
                 if (!resultado)
                 {
                     return BadRequest("No se pudo eliminar el curso. Puede tener estudiantes inscritos.");
                 }
+
                 // Registrar en bitácora
-                /*_bitacoradb.Registrar(new Bitacora
+                await _bitacoradb.Registrar(new Bitacora
                 {
-                    UserId = User.Identity.Name,
-                    Accion = "Eliminar Curso",
-                    Modulo = "Cursos",
-                    Descripcion = $"Curso eliminado: ID {id}",
-                    DireccionIP = GetClientIP()
-                });*/
+                    UserId = dto.UserId,// "e64be105-16a8-4830-b6c7-0a71df6f0ef7", // Obtener del contexto
+                    Accion = dto.Accion,
+                    Modulo = dto.Modulo,
+                    Descripcion = dto.Descripcion+", Codigo: "+ curso.Codigo+ "-"+curso.Nom_Curso,
+                    DireccionIP = dto.DireccionIP,
+                });
 
                 return Ok(new { success = true, message = "Curso eliminado correctamente" });
             }
@@ -197,55 +200,5 @@ namespace SistemaAcademico.API.Controllers
             }
         }
 
-        /*// POST: api/cursos/asignardocente
-        [HttpPost]
-        [Route("api/cursos/asignardocente")]
-        public async Task<IActionResult> AsignarDocente([FromBody] dynamic datos)
-        {
-            try
-            {
-                int cursoId = datos.cursoId;
-                int cuatrimestreId = datos.cuatrimestreId;
-                int docenteId = datos.docenteId;
-
-                bool resultado = await _cursodb.AsignarDocente(cursoId, cuatrimestreId, docenteId);
-
-                if (resultado)
-                {
-                    return BadRequest("No se pudo asignar el docente");
-                }
-
-               /* _bitacoradb.Registrar(new Bitacora
-                {
-                    UserId = User.Identity.Name,
-                    Accion = "Asignar Docente",
-                    Modulo = "Cursos",
-                    Descripcion = $"Docente {docenteId} asignado al curso {cursoId}",
-                    DireccionIP = GetClientIP()
-                }); 
-
-                return Ok(new { success = true, message = "Docente asignado correctamente" });
-
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, new { message = ex.Message });
-            }
-        }*/
-
-        private string GetClientIP()
-        {
-            var ip = HttpContext.Connection.RemoteIpAddress?.ToString();
-
-            // Si está detrás de un proxy o balanceador, podrías revisar el encabezado "X-Forwarded-For"
-            if (Request.Headers.ContainsKey("X-Forwarded-For"))
-            {
-                var forwardedIp = Request.Headers["X-Forwarded-For"].FirstOrDefault();
-                if (!string.IsNullOrEmpty(forwardedIp))
-                    ip = forwardedIp;
-            }
-
-            return ip ?? "IP desconocida";
-        }
     }
 }

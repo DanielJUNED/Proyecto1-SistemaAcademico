@@ -98,6 +98,17 @@ namespace SistemaAcademico._Web.Controllers
                     Num_Creditos = viewModel.Creditos
                 };
 
+                dto.Bitacora = new BitacoraBaseDTO
+                {
+                    UserId = userId,
+                    Accion = SistemaAcademico.Data.Constantes.AccionesBitacora.Crear,
+                    Modulo = SistemaAcademico.Data.Constantes.ModulosBitacora.Curso,
+                    Descripcion = "Curso nuevo creado. Codigo: " + dto.Codigo +" - "+dto.Nom_Curso,
+                    DireccionIP = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Desconocida",
+                    Fec_Registro = DateTime.UtcNow
+                };
+
+
                 var jsonContent = JsonSerializer.Serialize(dto);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
@@ -194,6 +205,16 @@ namespace SistemaAcademico._Web.Controllers
                     Num_Creditos = viewModel.Creditos
                 };
 
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                dto.Bitacora = new BitacoraBaseDTO
+                {
+                    UserId = userId,
+                    Accion = SistemaAcademico.Data.Constantes.AccionesBitacora.Editar,
+                    Modulo = SistemaAcademico.Data.Constantes.ModulosBitacora.Curso,
+                    Descripcion = "Se modificó curso. Codigo: " + dto.Codigo + " - " + dto.Nom_Curso,
+                    DireccionIP = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Desconocida",
+                    Fec_Registro = DateTime.UtcNow
+                };
                 var jsonContent = JsonSerializer.Serialize(dto);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
 
@@ -209,5 +230,62 @@ namespace SistemaAcademico._Web.Controllers
                 return View(viewModel);
             }
         }
+        [HttpDelete]
+        public async Task<IActionResult> Eliminar(int id)
+        {
+            try
+            {
+                var client = _httpClientFactory.CreateClient("API");
+
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
+                var bitacora = new BitacoraBaseDTO
+                {
+                    UserId = userId,
+                    Accion = SistemaAcademico.Data.Constantes.AccionesBitacora.Eliminar,
+                    Modulo = SistemaAcademico.Data.Constantes.ModulosBitacora.Curso,
+                    Descripcion = $"Se eliminó el curso con ID {id}",
+                    DireccionIP = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Desconocida",
+                    Fec_Registro = DateTime.UtcNow
+                };
+                var json = JsonSerializer.Serialize(bitacora);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+                // --------- REQUEST DELETE CON BODY ---------
+                var request = new HttpRequestMessage(HttpMethod.Delete, $"cursos/{id}")
+                {
+                    Content = content
+                };
+
+                var response = await client.SendAsync(request); 
+
+                if (response.IsSuccessStatusCode)
+                {
+                    return Ok(new
+                    {
+                        success = true,
+                        mensaje = "Curso eliminado correctamente"
+                    });
+                }
+
+                var error = await response.Content.ReadAsStringAsync();
+                return BadRequest(new
+                {
+                    success = false,
+                    mensaje = "No se pudo eliminar el curso",
+                    detalle = error
+                });
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(new
+                {
+                    success = false,
+                    mensaje = "Error inesperado",
+                    detalle = ex.Message
+                });
+            }
+        }
+
     }
 }

@@ -347,3 +347,31 @@ CREATE TABLE Evaluacion (
     CONSTRAINT FK_Evaluaciones_Docentes FOREIGN KEY (DocenteId) 
         REFERENCES Docente(DocenteId)
 ); 
+
+ 
+
+CREATE TABLE [dbo].[Bitacora](
+    [BitacoraId] [int] IDENTITY(1,1) NOT NULL,
+    [UserId] [nvarchar](450) NOT NULL,
+    [Accion] [nvarchar](50) NOT NULL,
+    [Modulo] [nvarchar](100) NOT NULL,
+    [Descripcion] [nvarchar](500) NOT NULL,
+    [DireccionIP] [nvarchar](50) NULL,
+    [Fec_Registro] [datetime] NOT NULL,
+PRIMARY KEY CLUSTERED 
+(
+    [BitacoraId] ASC
+)WITH (PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON, OPTIMIZE_FOR_SEQUENTIAL_KEY = OFF) ON [PRIMARY]
+) ON [PRIMARY]
+GO
+
+ALTER TABLE [dbo].[Bitacora] ADD  DEFAULT (getdate()) FOR [Fec_Registro]
+GO
+
+ALTER TABLE [dbo].[Bitacora]  WITH CHECK ADD  CONSTRAINT [FK_Bitacora_Usuario] FOREIGN KEY([UserId])
+REFERENCES [dbo].[Usuarios] ([Id])
+GO
+
+ALTER TABLE [dbo].[Bitacora] CHECK CONSTRAINT [FK_Bitacora_Usuario]
+GO
+

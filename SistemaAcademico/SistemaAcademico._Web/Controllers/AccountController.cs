@@ -270,8 +270,23 @@ namespace SistemaAcademico._Web.Controllers
                  else
                  {
                      message = "Credenciales inválidas.";
-                 } 
+                 }
+                var clientIntento = _httpClientFactory.CreateClient("API");
+                // ViewModel → DTO
+                var dtoIntento = new BitacoraBaseDTO
+                {
+                    UserId = user.Id,
+                    Accion = SistemaAcademico.Data.Constantes.AccionesBitacora.LoginFallido,
+                    Modulo = SistemaAcademico.Data.Constantes.ModulosBitacora.Autenticacion,
+                    Descripcion = "Intento fallidos para el usuario " + user.UserName ,
+                    DireccionIP = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Desconocida",
+                    Fec_Registro = DateTime.UtcNow
+                };
 
+                var jsonContentIntento = JsonSerializer.Serialize(dtoIntento);
+                var contentIntento = new StringContent(jsonContentIntento, Encoding.UTF8, "application/json");
+
+                var responseIntento = await clientIntento.PostAsync("bitacora", contentIntento);
                 return Json(new LoginResultViewModel
                  {
                      Success = false,

@@ -8,6 +8,7 @@ namespace SistemaAcademico.API.DTOs
         public string Nom_Curso { get; set; }
         public string Desc_Curso { get; set; }
         public int Num_Creditos { get; set; }
+        public BitacoraBaseDTO Bitacora { get; set; }
     }
 
     // DTO para crear (sin ID)
@@ -17,6 +18,7 @@ namespace SistemaAcademico.API.DTOs
         public string Nom_Curso { get; set; }
         public string Desc_Curso { get; set; }
         public int Num_Creditos { get; set; }
+        public BitacoraBaseDTO Bitacora { get; set; }
     }
     public class AsignarDocenteDTO
     {
