@@ -77,6 +77,7 @@ C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-Sistema
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\js\Account\login.js
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\js\Account\manage.js
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\js\Account\password.js
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\js\CursoCuatrimestre\Editar.js
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\js\Cursos\Crear.js
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\js\Cursos\Index.js
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\js\estadisticas.js
@@ -142,6 +143,5 @@ C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-Sistema
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\lib\jquery\dist\jquery.slim.js
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\lib\jquery\dist\jquery.slim.min.js
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\lib\jquery\dist\jquery.slim.min.map
-C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\lib\jquery\LICENSE.txt
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\js\CursoCuatrimestre\Crear.js
-C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\js\CursoCuatrimestre\Editar.js
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico._Web\wwwroot\lib\jquery\LICENSE.txt

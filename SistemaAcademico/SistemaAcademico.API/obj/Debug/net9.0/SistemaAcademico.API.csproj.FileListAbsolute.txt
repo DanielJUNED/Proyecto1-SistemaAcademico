@@ -9,6 +9,7 @@ C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-Sistema
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\bin\Debug\net9.0\Azure.Core.dll
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\bin\Debug\net9.0\Azure.Identity.dll
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\bin\Debug\net9.0\Humanizer.dll
+C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\bin\Debug\net9.0\Microsoft.AspNetCore.Authentication.JwtBearer.dll
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\bin\Debug\net9.0\Microsoft.AspNetCore.Cryptography.Internal.dll
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\bin\Debug\net9.0\Microsoft.AspNetCore.Cryptography.KeyDerivation.dll
 C:\Users\dguti\source\Uned\03101-Programacion_avanzada_en_web\Proyecto#1-SistemaAcademico\SistemaAcademico\SistemaAcademico.API\bin\Debug\net9.0\Microsoft.AspNetCore.Identity.EntityFrameworkCore.dll

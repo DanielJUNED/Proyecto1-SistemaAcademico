@@ -14,6 +14,9 @@ namespace SistemaAcademico.Data.Entities
         public string Modulo { get; set; }
         public string Descripcion { get; set; }
         public string DireccionIP { get; set; }
-        public DateTime Fec_Accion { get; set; }
+        public DateTime Fec_Registro { get; set; }
+        // Propiedades de navegación para consultas
+        public string NombreUsuario { get; set; }
+        public string EmailUsuario { get; set; }
     }
 }

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SistemaAcademico.API.DTOs;
 using SistemaAcademico.Data.Entities;   
 using SistemaAcademico.Data.Repositories;
@@ -8,16 +9,17 @@ namespace SistemaAcademico.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+
     public class CursosController : ControllerBase
     {
         private readonly CursoDB _cursodb;
         private readonly BitacoraDB _bitacoradb; 
 
-        public CursosController(CursoDB cursodb)
+        public CursosController(CursoDB cursodb,BitacoraDB bitacoradb)
         {
             _cursodb = cursodb;
              
-            /* _bitacoradb = new BitacoraDB(connString);*/
+            _bitacoradb = bitacoradb;
         }
 
         // GET: api/cursos
@@ -94,15 +96,18 @@ namespace SistemaAcademico.API.Controllers
 
                 if (resultado)
                 {
+                    // OBTENER ID DEL USUARIO LOGUEADO
+                    var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+
                     // Registrar en bitácora
-                    /*_bitacoradb.Registrar(new Bitacora
+                    await _bitacoradb.Registrar(new Bitacora
                     {
-                        UserId = User.Identity.Name, // Obtener del contexto
+                        UserId = userId,// "e64be105-16a8-4830-b6c7-0a71df6f0ef7", // Obtener del contexto
                         Accion = "Crear Curso",
                         Modulo = "Cursos",
                         Descripcion = $"Curso creado: {curso.Codigo} - {curso.Nom_Curso}",
                         DireccionIP = GetClientIP()
-                    });*/
+                    });
 
                     return Ok(new { success = true, message = "Curso creado correctamente" });
                 }

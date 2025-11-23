@@ -88,6 +88,7 @@ namespace SistemaAcademico._Web.Controllers
             {
                 var client = _httpClientFactory.CreateClient("API");
 
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
                 // ViewModel → DTO
                 var dto = new CrearCursoDTO
                 {

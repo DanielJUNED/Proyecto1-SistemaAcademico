@@ -1,5 +1,37 @@
 [
   {
+    "ContainingType": "SistemaAcademico.API.Controllers.AuthController",
+    "Method": "Login",
+    "RelativePath": "api/Auth/login",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "model",
+        "Type": "SistemaAcademico.API.Controllers.LoginDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
+    "ContainingType": "BitacoraController",
+    "Method": "Registrar",
+    "RelativePath": "api/Bitacora",
+    "HttpMethod": "POST",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "dto",
+        "Type": "SistemaAcademico.API.DTOs.BitacoraBaseDTO",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": []
+  },
+  {
     "ContainingType": "SistemaAcademico.API.Controllers.CursoCuatrimestreController",
     "Method": "GetAll",
     "RelativePath": "api/CursoCuatrimestre",
