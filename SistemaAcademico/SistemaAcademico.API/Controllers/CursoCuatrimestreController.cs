@@ -3,6 +3,7 @@ using SistemaAcademico.API.DTOs;
 using SistemaAcademico.Data.Entities;
 using SistemaAcademico.Data.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using SistemaAcademico.Data.Constantes;
 
 namespace SistemaAcademico.API.Controllers
 {
@@ -10,14 +11,17 @@ namespace SistemaAcademico.API.Controllers
     [ApiController]
     public class CursoCuatrimestreController : ControllerBase
     {
-        private readonly CursoCuatrimestreDB _cursodb;
+        private readonly CursoDB _cursodb;
+        private readonly CursoCuatrimestreDB _cursoCuatrimestredb;
         private readonly CursoCuatrimestreDocenteDB _cursoCuatrDocentedb;
         private readonly BitacoraDB _bitacoradb;
 
-        public CursoCuatrimestreController(CursoCuatrimestreDB cursodb, CursoCuatrimestreDocenteDB cursoCuatrDocentedb)
+        public CursoCuatrimestreController(CursoDB cursodb,CursoCuatrimestreDB cursoCuatrimestredb, CursoCuatrimestreDocenteDB cursoCuatrDocentedb, BitacoraDB bitacoradb)
         {
             _cursodb = cursodb;
+            _cursoCuatrimestredb = cursoCuatrimestredb;
             _cursoCuatrDocentedb = cursoCuatrDocentedb;
+            _bitacoradb = bitacoradb;
         } 
          
         // GET: api/CursoCuatrimestre
@@ -26,15 +30,15 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var entities = await _cursodb.ObtenerTodos(cuatrimestreId);
+                var entities = await _cursoCuatrimestredb.ObtenerTodos(cuatrimestreId);
                 var dtos = new List<CursoCuatrimestreDTO>();
 
                 foreach (var entity in entities)
                 {
-                    var tieneEstudiantes  = await _cursodb.TieneEstudiantes(entity.CursoCuatrimestreId);
-                    var tieneEvaluaciones = await _cursodb.TieneEvaluaciones(entity.CursoCuatrimestreId);
-                    var docentes          = await _cursodb.ObtenerDocentePorCurso(entity.CursoCuatrimestreId);
-                    var estudiante        = await _cursodb.ObtenerEstudientePorCurso(entity.CursoCuatrimestreId);
+                    var tieneEstudiantes  = await _cursoCuatrimestredb.TieneEstudiantes(entity.CursoCuatrimestreId);
+                    var tieneEvaluaciones = await _cursoCuatrimestredb.TieneEvaluaciones(entity.CursoCuatrimestreId);
+                    var docentes          = await _cursoCuatrimestredb.ObtenerDocentePorCurso(entity.CursoCuatrimestreId);
+                    var estudiante        = await _cursoCuatrimestredb.ObtenerEstudientePorCurso(entity.CursoCuatrimestreId);
 
                     dtos.Add(new CursoCuatrimestreDTO
                     {
@@ -65,13 +69,13 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var entity = await _cursodb.ObtenerPorId(id);
+                var entity = await _cursoCuatrimestredb.ObtenerPorId(id);
                 if (entity == null)
                     return NotFound(new { message = "Curso-Cuatrimestre no encontrado" });
 
-                var docentes = await _cursodb.ObtenerDocentePorCurso(id);
-                var tieneEstudiantes = await _cursodb.TieneEstudiantes(id);
-                var tieneEvaluaciones = await _cursodb.TieneEvaluaciones(id);
+                var docentes = await _cursoCuatrimestredb.ObtenerDocentePorCurso(id);
+                var tieneEstudiantes = await _cursoCuatrimestredb.TieneEstudiantes(id);
+                var tieneEvaluaciones = await _cursoCuatrimestredb.TieneEvaluaciones(id);
 
                 var dto = new CursoCuatrimestreDTO
                 {
@@ -108,7 +112,7 @@ namespace SistemaAcademico.API.Controllers
             try
             {
                 // Validar que no exista ya
-                if (await _cursodb.Existe(dto.CursoId, dto.CuatrimestreId))
+                if (await _cursoCuatrimestredb.Existe(dto.CursoId, dto.CuatrimestreId))
                 {
                     return BadRequest(new { message = "Este curso ya existe en el cuatrimestre seleccionado" });
                 }
@@ -120,14 +124,44 @@ namespace SistemaAcademico.API.Controllers
                     Ind_Estado = "A"
                 };
 
-                var id = await _cursodb.CreateAsync(entity);
+                var id = await _cursoCuatrimestredb.CreateAsync(entity);
+
+                 if (id != null)
+                { 
+                    var curso = await _cursodb.ObtenerPorId(dto.CursoId); 
+                    var cuatrimestre = await _cursoCuatrimestredb.ObtenerCuatrimestrePorId(dto.CuatrimestreId);
+                    // Registrar en bitácora
+                    await _bitacoradb.Registrar(new Bitacora
+                    {
+                        UserId = dto.Bitacora.UserId,// "e64be105-16a8-4830-b6c7-0a71df6f0ef7", // Obtener del contexto
+                        Accion = dto.Bitacora.Accion,
+                        Modulo = dto.Bitacora.Modulo,
+                        Descripcion = $"Se registro Curso {curso.Nom_Curso} en el cuatrimestre {cuatrimestre.Nombre}",
+                        DireccionIP = dto.Bitacora.DireccionIP,
+                    }); 
+                }
 
                 // Asignar docentes
                 if (dto.DocenteIds != null && dto.DocenteIds.Any())
                 {
+                    var listDocentes = "";
                     foreach (var docenteId in dto.DocenteIds)
                     {
-                        await _cursodb.AsignarDocente(id, docenteId);
+                        var seAsigno  = await _cursoCuatrimestredb.AsignarDocente(id, docenteId);
+                        var docente   = await _cursoCuatrimestredb.ObtenerDocentePorId(docenteId);
+                        listDocentes += listDocentes + ", Cod."+docenteId+" - " +docente.Nombre+" "+docente.Apellidos;
+                    }
+                    if (listDocentes != null)
+                    { 
+                        // Registrar en bitácora
+                        await _bitacoradb.Registrar(new Bitacora
+                        {
+                            UserId = dto.Bitacora.UserId, // Obtener del contexto
+                            Accion = AccionesBitacora.Crear,
+                            Modulo = ModulosBitacora.CursoCuatrimestreDocente,
+                            Descripcion = listDocentes,
+                            DireccionIP = dto.Bitacora.DireccionIP,
+                        });
                     }
                 }
 
@@ -148,13 +182,13 @@ namespace SistemaAcademico.API.Controllers
                 if (id != dto.CursoCuatrimestreId)
                     return BadRequest(new { message = "El ID no coincide" });
 
-                var exists = await _cursodb.ObtenerPorId(id);
+                var exists = await _cursoCuatrimestredb.ObtenerPorId(id);
                 if (exists == null)
                     return NotFound(new { message = "Curso-Cuatrimestre no encontrado" });
 
                 // Validar si tiene estudiantes o evaluaciones
-                var tieneEstudiantes = await _cursodb.TieneEstudiantes(id);
-                var tieneEvaluaciones = await _cursodb.TieneEvaluaciones(id);
+                var tieneEstudiantes = await _cursoCuatrimestredb.TieneEstudiantes(id);
+                var tieneEvaluaciones = await _cursoCuatrimestredb.TieneEvaluaciones(id);
 
                 if (tieneEstudiantes || tieneEvaluaciones)
                 {
@@ -168,7 +202,7 @@ namespace SistemaAcademico.API.Controllers
                     CuatrimestreId = dto.CuatrimestreId
                 };
 
-                var success = await _cursodb.Actualizar(entity);
+                var success = await _cursoCuatrimestredb.Actualizar(entity);
                 if (!success)
                     return StatusCode(500, new { message = "Error al actualizar" });
 
@@ -186,18 +220,18 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var exists = await _cursodb.ObtenerPorId(id);
+                var exists = await _cursoCuatrimestredb.ObtenerPorId(id);
                 if (exists == null)
                     return NotFound(new { message = "Curso-Cuatrimestre no encontrado" });
 
                 // Validar si puede eliminarse
-                var puedeEliminar = await _cursodb.PuedeEliminar(id);
+                var puedeEliminar = await _cursoCuatrimestredb.PuedeEliminar(id);
                 if (!puedeEliminar)
                 {
                     return BadRequest(new { message = "No se puede eliminar. El curso tiene docentes asignados, estudiantes matriculados o evaluaciones registradas." });
                 }
 
-                var success = await _cursodb.Eliminar(id);
+                var success = await _cursoCuatrimestredb.Eliminar(id);
                 if (!success)
                     return StatusCode(500, new { message = "Error al eliminar" });
 
@@ -216,13 +250,13 @@ namespace SistemaAcademico.API.Controllers
             try
             {
                 // Validar que el curso-cuatrimestre existe
-                var cursoCuatrimestre = await _cursodb.ObtenerPorId(dto.CursoCuatrimestreId);
+                var cursoCuatrimestre = await _cursoCuatrimestredb.ObtenerPorId(dto.CursoCuatrimestreId);
                 if (cursoCuatrimestre == null)
                     return NotFound(new { message = "Curso-Cuatrimestre no encontrado" });
 
                 // Validar si tiene estudiantes o evaluaciones
-                var tieneEstudiantes = await _cursodb.TieneEstudiantes(dto.CursoCuatrimestreId);
-                var tieneEvaluaciones = await _cursodb.TieneEvaluaciones(dto.CursoCuatrimestreId);
+                var tieneEstudiantes = await _cursoCuatrimestredb.TieneEstudiantes(dto.CursoCuatrimestreId);
+                var tieneEvaluaciones = await _cursoCuatrimestredb.TieneEvaluaciones(dto.CursoCuatrimestreId);
 
                 if (tieneEstudiantes || tieneEvaluaciones)
                 {
@@ -230,11 +264,11 @@ namespace SistemaAcademico.API.Controllers
                 }
 
                 // Validar que el docente no esté ya asignado
-                var yaAsignado = await _cursodb.DocenteYaAsignado(dto.CursoCuatrimestreId, dto.DocenteId);
+                var yaAsignado = await _cursoCuatrimestredb.DocenteYaAsignado(dto.CursoCuatrimestreId, dto.DocenteId);
                 if (yaAsignado)
                     return BadRequest(new { message = "El docente ya está asignado a este curso" });
 
-                var success = await _cursodb.AsignarDocente(dto.CursoCuatrimestreId, dto.DocenteId);
+                var success = await _cursoCuatrimestredb.AsignarDocente(dto.CursoCuatrimestreId, dto.DocenteId);
                 if (!success)
                     return StatusCode(500, new { message = "Error al asignar docente" });
 
@@ -254,22 +288,22 @@ namespace SistemaAcademico.API.Controllers
             {
                 // Obtener información del docente asignado para validaciones
                 var cursoCuatriDocente = await _cursoCuatrDocentedb.ObtenerPorId(cursoCuatriDocenteId);
-                var docentes = await _cursodb.ObtenerDocentePorCurso(cursoCuatriDocente.CursoCuatrimestreId); // Necesitarías ajustar esto
+                var docentes = await _cursoCuatrimestredb.ObtenerDocentePorCurso(cursoCuatriDocente.CursoCuatrimestreId); // Necesitarías ajustar esto
                 var docenteAsignado = docentes.FirstOrDefault(d => d.CursoCuatriDocenteId == cursoCuatriDocenteId);
 
                 if (docenteAsignado == null)
                     return NotFound(new { message = "Asignación no encontrada" });
 
                 // Validar si tiene estudiantes o evaluaciones
-                var tieneEstudiantes = await _cursodb.TieneEstudiantes(docenteAsignado.CursoCuatrimestreId);
-                var tieneEvaluaciones = await _cursodb.TieneEvaluaciones(docenteAsignado.CursoCuatrimestreId);
+                var tieneEstudiantes = await _cursoCuatrimestredb.TieneEstudiantes(docenteAsignado.CursoCuatrimestreId);
+                var tieneEvaluaciones = await _cursoCuatrimestredb.TieneEvaluaciones(docenteAsignado.CursoCuatrimestreId);
 
                 if (tieneEstudiantes || tieneEvaluaciones)
                 {
                     return BadRequest(new { message = "No se puede remover el docente. El curso tiene estudiantes matriculados o evaluaciones registradas." });
                 }
 
-                var success = await _cursodb.RemoverDocente(cursoCuatriDocenteId);
+                var success = await _cursoCuatrimestredb.RemoverDocente(cursoCuatriDocenteId);
                 if (!success)
                     return StatusCode(500, new { message = "Error al remover docente" });
 
@@ -287,7 +321,7 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var docentes = await _cursodb.ObtenerDocentePorCurso(cursoCuatrimestreId);
+                var docentes = await _cursoCuatrimestredb.ObtenerDocentePorCurso(cursoCuatrimestreId);
                 var dtos = docentes.Select(d => new DocenteAsignadoDTO
                 {
                     CursoCuatriDocenteId = d.CursoCuatriDocenteId,
@@ -310,8 +344,8 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var tieneEstudiantes = await _cursodb.TieneEstudiantes(id);
-                var tieneEvaluaciones = await _cursodb.TieneEvaluaciones(id);
+                var tieneEstudiantes = await _cursoCuatrimestredb.TieneEstudiantes(id);
+                var tieneEvaluaciones = await _cursoCuatrimestredb.TieneEvaluaciones(id);
 
                 return Ok(new
                 {
@@ -332,7 +366,7 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var cuatrimestres = await _cursodb.ObtenerCuatrimestresActivos();
+                var cuatrimestres = await _cursoCuatrimestredb.ObtenerCuatrimestresActivos();
                 return Ok(cuatrimestres);
             }
             catch (Exception ex)
@@ -347,7 +381,7 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var cuatrimestre = await _cursodb.ObtenerCuatrimestrePorId(id);
+                var cuatrimestre = await _cursoCuatrimestredb.ObtenerCuatrimestrePorId(id);
 
                 if (cuatrimestre == null)
                     return NotFound(new { message = "Cuatrimestre no encontrado" });
@@ -375,7 +409,7 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var cursos = await _cursodb.ObtenerCursosActivos();
+                var cursos = await _cursoCuatrimestredb.ObtenerCursosActivos();
                 return Ok(cursos);
             }
             catch (Exception ex)
@@ -390,7 +424,7 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var curso = await _cursodb.ObtenerCursoPorId(id);
+                var curso = await _cursoCuatrimestredb.ObtenerCursoPorId(id);
                 if (curso == null)
                     return NotFound(new { message = "Curso no encontrado" });
                 // MODEL → DTO
@@ -415,7 +449,7 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var cursos = await _cursodb.ObtenerCursoNoEnCuartrimestre(id);
+                var cursos = await _cursoCuatrimestredb.ObtenerCursoNoEnCuartrimestre(id);
                 return Ok(cursos);
             }
             catch (Exception ex)
@@ -429,7 +463,7 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var docentes = await _cursodb.ObtenerDocentesActivos();
+                var docentes = await _cursoCuatrimestredb.ObtenerDocentesActivos();
                 return Ok(docentes);
             }
             catch (Exception ex)
@@ -444,7 +478,7 @@ namespace SistemaAcademico.API.Controllers
         {
             try
             {
-                var docente = await _cursodb.ObtenerDocentePorId(id);
+                var docente = await _cursoCuatrimestredb.ObtenerDocentePorId(id);
                 if (docente == null)
                     return NotFound(new { message = "Docente no encontrado" });
                 // MODEL → DTO

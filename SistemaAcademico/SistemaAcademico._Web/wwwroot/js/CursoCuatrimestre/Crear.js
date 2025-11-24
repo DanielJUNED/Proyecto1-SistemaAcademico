@@ -59,7 +59,7 @@ $(document).ready(function () {
         };
 
         $.ajax({
-            url: '@Url.Action("Crear")',
+            url: urlCrearCursoCuatrimestre,
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(data),
@@ -69,7 +69,8 @@ $(document).ready(function () {
             success: function (response) {
                 if (response.success) {
                     alert(response.message);
-                    window.location.href = '@Url.Action("Index")?cuatrimestreId=' + cuatrimestreId;
+                    window.location.href = urlIndexConParametro + cuatrimestreId;
+
                 } else {
                     alert(response.message);
                 }

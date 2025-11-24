@@ -1,4 +1,7 @@
-﻿namespace SistemaAcademico.API.DTOs
+﻿using SistemaAcademico.Data.Repositories;
+using System.Text.Json.Serialization;
+
+namespace SistemaAcademico.API.DTOs
 {
     public class CursoCuatrimestreDTO
     {
@@ -19,6 +22,7 @@
         public int CursoId { get; set; }
         public int CuatrimestreId { get; set; }
         public List<int> DocenteIds { get; set; }
+        public BitacoraBaseDTO Bitacora { get; set; }
     }
 
     public class UpdateCursoCuatrimestreDTO

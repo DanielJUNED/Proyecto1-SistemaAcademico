@@ -78,29 +78,7 @@ namespace SistemaAcademico.Data.Repositories
                 return await cmd.ExecuteNonQueryAsync() > 0;
             }
         }
-        /*
-        public async Task<bool> AsignarDocente(int cursoId, int cuatrimestreId, int docenteId)
-        {
-            using (var conn = new SqlConnection(_connectionString))
-            {
-                var cmd = new SqlCommand(@"
-                IF NOT EXISTS (SELECT 1 FROM CursoCuatrimestre 
-                               WHERE CursoId = @CursoId 
-                               AND CuatrimestreId = @CuatrimestreId 
-                               AND DocenteId = @DocenteId)
-                BEGIN
-                    INSERT INTO CursoCuatrimestre (CursoId, CuatrimestreId, DocenteId)
-                    VALUES (@CursoId, @CuatrimestreId, @DocenteId)
-                END", conn);
-
-                cmd.Parameters.AddWithValue("@CursoId", cursoId);
-                cmd.Parameters.AddWithValue("@CuatrimestreId", cuatrimestreId);
-                cmd.Parameters.AddWithValue("@DocenteId", docenteId);
-
-                conn.Open();
-                return await cmd.ExecuteNonQueryAsync() > 0;
-            }
-        }*/
+      
 
         public async Task<List<Curso>> ObtenerTodos()
         {

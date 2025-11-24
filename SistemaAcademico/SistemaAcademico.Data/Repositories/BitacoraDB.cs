@@ -17,30 +17,6 @@ namespace SistemaAcademico.Data.Repositories
         {
             _connectionString = connectionString;
         }
-
-        public async Task RegistrarAsync(int usuarioId, string accion, string modulo, string descripcion, string direccionIP)
-        {
-            using (var conn = new SqlConnection(_connectionString))
-            {
-                var query = @"
-                    INSERT INTO Bitacora 
-                    (UserId, Accion, Modulo, Descripcion, DireccionIP, Fec_Registro)
-                    VALUES 
-                    (@UsuarioId, @Accion, @Modulo, @Descripcion, @DireccionIP, GETDATE())";
-
-                using (var cmd = new SqlCommand(query, conn))
-                {
-                    cmd.Parameters.AddWithValue("@UsuarioId", usuarioId);
-                    cmd.Parameters.AddWithValue("@Accion", accion);
-                    cmd.Parameters.AddWithValue("@Modulo", modulo);
-                    cmd.Parameters.AddWithValue("@Descripcion", descripcion);
-                    cmd.Parameters.AddWithValue("@DireccionIP", direccionIP ?? "Unknown");
-
-                    await conn.OpenAsync();
-                    await cmd.ExecuteNonQueryAsync();
-                }
-            }
-        }
         public async Task Registrar(Bitacora bitacora)
         {
             using (var conn = new SqlConnection(_connectionString))
@@ -65,12 +41,15 @@ namespace SistemaAcademico.Data.Repositories
             }
         }
         public async Task<IEnumerable<Bitacora>> GetAllAsync(
-            int? usuarioId = null,
-            string accion = null,
-            DateTime? fechaInicio = null,
-            DateTime? fechaFin = null,
-            int pagina = 1,
-            int registrosPorPagina = 50)
+           string nombreUsuario = null,
+           string accion = null,
+           string modulo = null,
+           DateTime? fechaInicio = null,
+           DateTime? fechaFin = null,
+           string ordenarPor = "Fec_Registro",
+           string direccion = "desc",
+           int pagina = 1,
+           int registrosPorPagina = 50)
         {
             var lista = new List<Bitacora>();
             using (var conn = new SqlConnection(_connectionString))
@@ -79,24 +58,37 @@ namespace SistemaAcademico.Data.Repositories
                     SELECT * FROM vw_BitacoraConsulta 
                     WHERE 1=1");
 
-                if (usuarioId.HasValue)
-                    query.Append(" AND UsuarioId = @UsuarioId");
+                if (!string.IsNullOrEmpty(nombreUsuario))
+                    query.Append(" AND (NombreUsuario LIKE '%@NombreUsuario%' OR EmailUsuario LIKE @EmailUsuario)");
                 if (!string.IsNullOrEmpty(accion))
                     query.Append(" AND Accion = @Accion");
+                if (!string.IsNullOrEmpty(modulo))
+                    query.Append(" AND Modulo = @Modulo");
                 if (fechaInicio.HasValue)
                     query.Append(" AND Fec_Registro >= @FechaInicio");
                 if (fechaFin.HasValue)
                     query.Append(" AND Fec_Registro <= @FechaFin");
 
-                query.Append(" ORDER BY Fec_Registro DESC");
+                // Validar columna de ordenamiento
+                var columnasValidas = new[] { "Fec_Registro", "NombreUsuario", "Accion", "Modulo" };
+                if (!columnasValidas.Contains(ordenarPor))
+                    ordenarPor = "Fec_Registro";
+
+                var dir = direccion?.ToLower() == "asc" ? "ASC" : "DESC";
+                query.Append($" ORDER BY {ordenarPor} {dir}");
                 query.Append(" OFFSET @Offset ROWS FETCH NEXT @PageSize ROWS ONLY");
 
                 using (var cmd = new SqlCommand(query.ToString(), conn))
                 {
-                    if (usuarioId.HasValue)
-                        cmd.Parameters.AddWithValue("@UsuarioId", usuarioId.Value);
+                    if (!string.IsNullOrEmpty(nombreUsuario))
+                    {
+                        cmd.Parameters.AddWithValue("@NombreUsuario", $"%{nombreUsuario}%");
+                        cmd.Parameters.AddWithValue("@EmailUsuario", $"%{nombreUsuario}%");
+                    }
                     if (!string.IsNullOrEmpty(accion))
                         cmd.Parameters.AddWithValue("@Accion", accion);
+                    if (!string.IsNullOrEmpty(modulo))
+                        cmd.Parameters.AddWithValue("@Modulo", modulo);
                     if (fechaInicio.HasValue)
                         cmd.Parameters.AddWithValue("@FechaInicio", fechaInicio.Value);
                     if (fechaFin.HasValue)
@@ -112,15 +104,15 @@ namespace SistemaAcademico.Data.Repositories
                         {
                             lista.Add(new Bitacora
                             {
-                                BitacoraId    = reader.GetInt32(0),
-                                UserId        = reader.GetString(1),
-                                NombreUsuario = reader.GetString(2),
-                                EmailUsuario  = reader.GetString(3),
-                                Accion        = reader.GetString(4),
-                                Modulo        = reader.GetString(5),
-                                Descripcion   = reader.GetString(6),
-                                DireccionIP   = reader.GetString(7),
-                                Fec_Registro  = reader.GetDateTime(8)
+                                BitacoraId = reader.GetInt32(0),
+                                UserId = reader.GetString(1),
+                                NombreUsuario = reader.GetString(3),
+                                EmailUsuario = reader.GetString(4),
+                                Accion = reader.GetString(5),
+                                Modulo = reader.GetString(6),
+                                Descripcion = reader.GetString(7),
+                                DireccionIP = reader.GetString(8),
+                                Fec_Registro = reader.GetDateTime(9)
                             });
                         }
                     }
@@ -130,19 +122,22 @@ namespace SistemaAcademico.Data.Repositories
         }
 
         public async Task<int> GetTotalRegistrosAsync(
-            int? usuarioId = null,
+            string nombreUsuario = null,
             string accion = null,
+            string modulo = null,
             DateTime? fechaInicio = null,
             DateTime? fechaFin = null)
         {
             using (var conn = new SqlConnection(_connectionString))
             {
-                var query = new StringBuilder("SELECT COUNT(*) FROM Bitacora WHERE 1=1");
+                var query = new StringBuilder("SELECT COUNT(*) FROM vw_BitacoraConsulta WHERE 1=1");
 
-                if (usuarioId.HasValue)
-                    query.Append(" AND UsuarioId = @UsuarioId");
+                if (!string.IsNullOrEmpty(nombreUsuario))
+                    query.Append(" AND (NombreUsuario LIKE @NombreUsuario OR EmailUsuario LIKE @EmailUsuario)");
                 if (!string.IsNullOrEmpty(accion))
                     query.Append(" AND Accion = @Accion");
+                if (!string.IsNullOrEmpty(modulo))
+                    query.Append(" AND Modulo = @Modulo");
                 if (fechaInicio.HasValue)
                     query.Append(" AND Fec_Registro >= @FechaInicio");
                 if (fechaFin.HasValue)
@@ -150,10 +145,15 @@ namespace SistemaAcademico.Data.Repositories
 
                 using (var cmd = new SqlCommand(query.ToString(), conn))
                 {
-                    if (usuarioId.HasValue)
-                        cmd.Parameters.AddWithValue("@UsuarioId", usuarioId.Value);
+                    if (!string.IsNullOrEmpty(nombreUsuario))
+                    {
+                        cmd.Parameters.AddWithValue("@NombreUsuario", $"%{nombreUsuario}%");
+                        cmd.Parameters.AddWithValue("@EmailUsuario", $"%{nombreUsuario}%");
+                    }
                     if (!string.IsNullOrEmpty(accion))
                         cmd.Parameters.AddWithValue("@Accion", accion);
+                    if (!string.IsNullOrEmpty(modulo))
+                        cmd.Parameters.AddWithValue("@Modulo", modulo);
                     if (fechaInicio.HasValue)
                         cmd.Parameters.AddWithValue("@FechaInicio", fechaInicio.Value);
                     if (fechaFin.HasValue)
@@ -163,6 +163,48 @@ namespace SistemaAcademico.Data.Repositories
                     return (int)await cmd.ExecuteScalarAsync();
                 }
             }
+        }
+
+        public async Task<IEnumerable<string>> GetAccionesAsync()
+        {
+            var lista = new List<string>();
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var query = "SELECT DISTINCT Accion FROM Bitacora ORDER BY Accion";
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    await conn.OpenAsync();
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            lista.Add(reader.GetString(0));
+                        }
+                    }
+                }
+            }
+            return lista;
+        }
+
+        public async Task<IEnumerable<string>> GetModulosAsync()
+        {
+            var lista = new List<string>();
+            using (var conn = new SqlConnection(_connectionString))
+            {
+                var query = "SELECT DISTINCT Modulo FROM Bitacora ORDER BY Modulo";
+                using (var cmd = new SqlCommand(query, conn))
+                {
+                    await conn.OpenAsync();
+                    using (var reader = await cmd.ExecuteReaderAsync())
+                    {
+                        while (await reader.ReadAsync())
+                        {
+                            lista.Add(reader.GetString(0));
+                        }
+                    }
+                }
+            }
+            return lista;
         }
     }
     /*public class BitacoraDB2

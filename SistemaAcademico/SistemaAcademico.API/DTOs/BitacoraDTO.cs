@@ -2,13 +2,13 @@
 {
     public class BitacoraBaseDTO
     {
-        public int BitacoraId { get; set; }
-        public string UserId { get; set; } 
-        public string Accion { get; set; } = string.Empty;
+        public int? BitacoraId { get; set; }
+        public string? UserId { get; set; } 
+        public string? Accion { get; set; } = string.Empty;
         public string? Modulo { get; set; }
         public string? Descripcion { get; set; }
         public string? DireccionIP { get; set; }
-        public DateTime Fec_Registro { get; set; }
+        public DateTime? Fec_Registro { get; set; }
     }
     public class BitacoraDto
     {

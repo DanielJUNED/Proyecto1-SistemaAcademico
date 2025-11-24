@@ -96,7 +96,6 @@ namespace SistemaAcademico.API.Controllers
 
                 if (resultado)
                 { 
-
                     // Registrar en bitácora
                     await _bitacoradb.Registrar(new Bitacora
                     {

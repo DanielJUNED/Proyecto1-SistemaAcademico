@@ -1,0 +1,433 @@
+﻿@model SistemaAcademico._Web.Models.ViewModels.BitacoraIndexViewModel
+
+@{
+    ViewData["Title"] = "Bitácora del Sistema";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-dark text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-clipboard-list"></i> Bitácora del Sistema
+                    </h4>
+                    <small>Registro de auditoría de acciones del sistema</small>
+                </div>
+                <div class="card-body">
+                    @if (ViewBag.Error != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            @ViewBag.Error
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <!-- Panel de Filtros -->
+                    <div class="card mb-4 border-primary">
+                        <div class="card-header bg-primary text-white">
+                            <h5 class="mb-0">
+                                <i class="fas fa-filter"></i> Filtros de Búsqueda
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <form method="get" id="formFiltros">
+                                <div class="row g-3">
+                                    <!-- Nombre Usuario -->
+                                    <div class="col-md-3">
+                                        <label for="nombreUsuario" class="form-label">
+                                            <i class="fas fa-user"></i> Nombre de Usuario
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control" 
+                                               id="nombreUsuario" 
+                                               name="nombreUsuario" 
+                                               value="@Model.NombreUsuario"
+                                               placeholder="Buscar por nombre o email">
+                                    </div>
+
+                                    <!-- Acción -->
+                                    <div class="col-md-2">
+                                        <label for="accion" class="form-label">
+                                            <i class="fas fa-tasks"></i> Acción
+                                        </label>  
+                                        <select class="form-select" id="accion" name="accion">
+                                            <option value="">-- Todas --</option>
+
+                                            @foreach (var a in Model.Acciones)
+                                            {
+                                                var isSelected = Model.Accion == a.Valor ? "selected" : "";
+
+                                                @:<option value="@a.Valor" @isSelected>@a.Texto</option>
+                                            }
+                                        </select>
+
+                                    </div>
+
+                                    <!-- Módulo -->
+                                    <div class="col-md-3">
+                                        <label for="modulo" class="form-label">
+                                            <i class="fas fa-cube"></i> Módulo
+                                        </label>
+                                        <select class="form-select" id="modulo" name="modulo">
+                                            <option value="">-- Todos --</option>
+
+                                            @foreach (var m in Model.Modulos)
+                                            {
+                                                var selected = Model.Modulo == m.Valor ? "selected" : "";
+
+                                                @:<option value="@m.Valor" @selected>@m.Texto</option>
+                                            }
+                                        </select>
+
+                                    </div>
+
+                                    <!-- Fecha Inicio -->
+                                    <div class="col-md-2">
+                                        <label for="fechaInicio" class="form-label">
+                                            <i class="fas fa-calendar"></i> Desde
+                                        </label>
+                                        <input type="date" 
+                                               class="form-control" 
+                                               id="fechaInicio" 
+                                               name="fechaInicio" 
+                                               value="@(Model.FechaInicio?.ToString("yyyy-MM-dd"))">
+                                    </div>
+
+                                    <!-- Fecha Fin -->
+                                    <div class="col-md-2">
+                                        <label for="fechaFin" class="form-label">
+                                            <i class="fas fa-calendar"></i> Hasta
+                                        </label>
+                                        <input type="date" 
+                                               class="form-control" 
+                                               id="fechaFin" 
+                                               name="fechaFin" 
+                                               value="@(Model.FechaFin?.ToString("yyyy-MM-dd"))">
+                                    </div>
+                                </div>
+
+                                <div class="row mt-3">
+                                    <div class="col-12">
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="fas fa-search"></i> Buscar
+                                        </button>
+                                        <a href="@Url.Action("Index")" class="btn btn-secondary">
+                                            <i class="fas fa-eraser"></i> Limpiar Filtros
+                                        </a>
+                                    </div>
+                                </div>
+
+                                <!-- Campos ocultos para ordenamiento y paginación -->
+                                <input type="hidden" name="ordenarPor" id="ordenarPor" value="@Model.OrdenarPor">
+                                <input type="hidden" name="direccion" id="direccion" value="@Model.Direccion">
+                                <input type="hidden" name="pagina" id="pagina" value="@Model.PaginaActual">
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Información de Resultados -->
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <p class="mb-0">
+                                <strong>Total de registros:</strong> @Model.TotalRegistros
+                            </p>
+                            <p class="mb-0 text-muted">
+                                Mostrando 
+                                @((Model.PaginaActual - 1) * Model.RegistrosPorPagina + 1) 
+                                - 
+                                @Math.Min(Model.PaginaActual * Model.RegistrosPorPagina, Model.TotalRegistros)
+                                de @Model.TotalRegistros registros
+                            </p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <label for="registrosPorPagina" class="form-label me-2">Registros por página:</label>
+                            <select class="form-select d-inline-block w-auto"
+                                    id="registrosPorPagina"
+                                    name="registrosPorPagina"
+                                    onchange="cambiarRegistrosPorPagina(this.value)">
+
+                                @{
+                                    var selected25 = Model.RegistrosPorPagina == 25 ? "selected" : "";
+                                    var selected50 = Model.RegistrosPorPagina == 50 ? "selected" : "";
+                                    var selected100 = Model.RegistrosPorPagina == 100 ? "selected" : "";
+                                }
+
+                                <option value="25" selected="@selected25">25</option>
+                                <option value="50" selected="@selected50">50</option>
+                                <option value="100" selected="@selected100">100</option>
+                            </select>
+
+                        </div>
+                    </div>
+
+                    <!-- Tabla de Registros -->
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-bordered">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th style="width: 12%;">
+                                        <a href="javascript:void(0)" onclick="ordenar('Fec_Registro')" class="text-white text-decoration-none">
+                                            Fecha y Hora
+                                            @if (Model.OrdenarPor == "Fec_Registro")
+                                            {
+                                                <i class="fas fa-sort-@(Model.Direccion == "asc" ? "up" : "down")"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-sort text-muted"></i>
+                                            }
+                                        </a>
+                                    </th>
+                                    <th style="width: 15%;">
+                                        <a href="javascript:void(0)" onclick="ordenar('NombreUsuario')" class="text-white text-decoration-none">
+                                            Usuario
+                                            @if (Model.OrdenarPor == "NombreUsuario")
+                                            {
+                                                <i class="fas fa-sort-@(Model.Direccion == "asc" ? "up" : "down")"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-sort text-muted"></i>
+                                            }
+                                        </a>
+                                    </th>
+                                    <th style="width: 10%;">
+                                        <a href="javascript:void(0)" onclick="ordenar('Accion')" class="text-white text-decoration-none">
+                                            Acción
+                                            @if (Model.OrdenarPor == "Accion")
+                                            {
+                                                <i class="fas fa-sort-@(Model.Direccion == "asc" ? "up" : "down")"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-sort text-muted"></i>
+                                            }
+                                        </a>
+                                    </th>
+                                    <th style="width: 12%;">
+                                        <a href="javascript:void(0)" onclick="ordenar('Modulo')" class="text-white text-decoration-none">
+                                            Módulo
+                                            @if (Model.OrdenarPor == "Modulo")
+                                            {
+                                                <i class="fas fa-sort-@(Model.Direccion == "asc" ? "up" : "down")"></i>
+                                            }
+                                            else
+                                            {
+                                                <i class="fas fa-sort text-muted"></i>
+                                            }
+                                        </a>
+                                    </th>
+                                    <th style="width: 38%;">Descripción</th>
+                                    <th style="width: 13%;">IP</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @if (Model.Registros.Any())
+                                {
+                                    @foreach (var registro in Model.Registros)
+                                    {
+                                        <tr>
+                                            <td>
+                                                <small>
+                                                    @registro.Fec_Registro.ToString("dd/MM/yyyy")<br>
+                                                    <span class="text-muted">@registro.Fec_Registro.ToString("HH:mm:ss")</span>
+                                                </small>
+                                            </td>
+                                            <td>
+                                                <strong>@registro.NombreUsuario</strong><br>
+                                                <small class="text-muted">@registro.EmailUsuario</small>
+                                            </td>
+                                            <td>
+                                                @switch (registro.Accion)
+                                                {
+                                                    case "Login":
+                                                        <span class="badge bg-success">@registro.Accion</span>
+                                                        break;
+                                                    case "Crear":
+                                                        <span class="badge bg-primary">@registro.Accion</span>
+                                                        break;
+                                                    case "Editar":
+                                                        <span class="badge bg-warning text-dark">@registro.Accion</span>
+                                                        break;
+                                                    case "Eliminar":
+                                                        <span class="badge bg-danger">@registro.Accion</span>
+                                                        break;
+                                                    default:
+                                                        <span class="badge bg-secondary">@registro.Accion</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-info">@registro.Modulo</span>
+                                            </td>
+                                            <td>
+                                                <small>@registro.Descripcion</small>
+                                            </td>
+                                            <td>
+                                                <small class="text-muted">
+                                                    <i class="fas fa-network-wired"></i> @registro.DireccionIP
+                                                </small>
+                                            </td>
+                                        </tr>
+                                    }
+                                }
+                                else
+                                {
+                                    <tr>
+                                        <td colspan="6" class="text-center">
+                                            <em>No se encontraron registros con los filtros aplicados</em>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Paginación -->
+                    @if (Model.TotalPaginas > 1)
+                    {
+                        <nav aria-label="Paginación">
+                            <ul class="pagination justify-content-center">
+                                <!-- Primera página -->
+                                <li class="page-item @(Model.PaginaActual == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" onclick="irAPagina(1)">
+                                        <i class="fas fa-angle-double-left"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Página anterior -->
+                                <li class="page-item @(Model.PaginaActual == 1 ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" onclick="irAPagina(@(Model.PaginaActual - 1))">
+                                        <i class="fas fa-angle-left"></i>
+                                    </a>
+                                </li>
+
+                                @{
+                                    int inicio = Math.Max(1, Model.PaginaActual - 2);
+                                    int fin = Math.Min(Model.TotalPaginas, Model.PaginaActual + 2);
+                                }
+
+                                @for (int i = inicio; i <= fin; i++)
+                                {
+                                    <li class="page-item @(i == Model.PaginaActual ? "active" : "")">
+                                        <a class="page-link" href="javascript:void(0)" onclick="irAPagina(@i)">@i</a>
+                                    </li>
+                                }
+
+                                <!-- Página siguiente -->
+                                <li class="page-item @(Model.PaginaActual == Model.TotalPaginas ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" onclick="irAPagina(@(Model.PaginaActual + 1))">
+                                        <i class="fas fa-angle-right"></i>
+                                    </a>
+                                </li>
+
+                                <!-- Última página -->
+                                <li class="page-item @(Model.PaginaActual == Model.TotalPaginas ? "disabled" : "")">
+                                    <a class="page-link" href="javascript:void(0)" onclick="irAPagina(@Model.TotalPaginas)">
+                                        <i class="fas fa-angle-double-right"></i>
+                                    </a>
+                                </li>
+                            </ul>
+                        </nav>
+
+                        <p class="text-center text-muted">
+                            Página @Model.PaginaActual de @Model.TotalPaginas
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function ordenar(columna) {
+            const ordenActual = document.getElementById('ordenarPor').value;
+            const direccionActual = document.getElementById('direccion').value;
+            
+            // Si se hace clic en la misma columna, alternar dirección
+            if (ordenActual === columna) {
+                document.getElementById('direccion').value = direccionActual === 'asc' ? 'desc' : 'asc';
+            } else {
+                // Nueva columna, empezar con descendente
+                document.getElementById('ordenarPor').value = columna;
+                document.getElementById('direccion').value = 'desc';
+            }
+            
+            // Resetear a página 1 al ordenar
+            document.getElementById('pagina').value = 1;
+            document.getElementById('formFiltros').submit();
+        }
+
+        function irAPagina(numeroPagina) {
+            document.getElementById('pagina').value = numeroPagina;
+            document.getElementById('formFiltros').submit();
+        }
+
+        function cambiarRegistrosPorPagina(cantidad) {
+            // Agregar el campo si no existe
+            let input = document.querySelector('input[name="registrosPorPagina"]');
+            if (!input) {
+                input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = 'registrosPorPagina';
+                document.getElementById('formFiltros').appendChild(input);
+            }
+            input.value = cantidad;
+            
+            // Resetear a página 1
+            document.getElementById('pagina').value = 1;
+            document.getElementById('formFiltros').submit();
+        }
+
+        function exportarExcel() {
+            // Obtener parámetros actuales
+            const form = document.getElementById('formFiltros');
+            const formData = new FormData(form);
+            const params = new URLSearchParams(formData);
+            
+            // TODO: Implementar exportación a Excel
+            alert('Funcionalidad de exportación a Excel - Por implementar');
+            // window.location.href = '/Bitacora/Exportar?' + params.toString();
+        }
+
+        // Limpiar fechas si están vacías al enviar
+        document.getElementById('formFiltros').addEventListener('submit', function(e) {
+            const fechaInicio = document.getElementById('fechaInicio');
+            const fechaFin = document.getElementById('fechaFin');
+            
+            if (!fechaInicio.value) fechaInicio.disabled = true;
+            if (!fechaFin.value) fechaFin.disabled = true;
+        });
+    </script>
+}
+
+@section Styles {
+    <style>
+        .table th a {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .table th a:hover {
+            text-decoration: underline !important;
+        }
+
+        .badge {
+            font-size: 0.85em;
+            padding: 0.35em 0.65em;
+        }
+
+        .pagination .page-link {
+            cursor: pointer;
+        }
+
+        .table-responsive {
+            border: 1px solid #dee2e6;
+            border-radius: 0.25rem;
+        }
+    </style>
+}

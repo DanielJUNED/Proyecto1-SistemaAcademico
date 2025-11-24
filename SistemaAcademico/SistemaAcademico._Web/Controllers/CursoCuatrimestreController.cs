@@ -6,6 +6,7 @@ using SistemaAcademico.API.DTOs;
 using SistemaAcademico.Data.Repositories;
 using System.Text;
 using System.Text.Json;
+using SistemaAcademico.Data.Constantes;
 
 namespace AcademicSystem.Web.Controllers
 {
@@ -394,14 +395,24 @@ namespace AcademicSystem.Web.Controllers
             try
             {
                 var client = _httpClientFactory.CreateClient("API");
-
+                var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                dto.Bitacora = new BitacoraBaseDTO
+                {
+                    UserId = userId,
+                    Accion = AccionesBitacora.Crear,
+                    Modulo = ModulosBitacora.CursoCuatrimestre,
+                    Descripcion = "",
+                    DireccionIP = HttpContext.Connection.RemoteIpAddress?.ToString() ?? "Desconocida",
+                    Fec_Registro = DateTime.UtcNow
+                };
                 var jsonContent = JsonSerializer.Serialize(dto);
                 var content = new StringContent(jsonContent, Encoding.UTF8, "application/json");
-
+                //Registrar bitacora
+               
                 var response = await client.PostAsync("CursoCuatrimestre", content);
 
                 if (response.IsSuccessStatusCode)
-                {
+                { 
                     return Ok(new { success = true, message = "Curso-Cuatrimestre creado exitosamente" });
                 }
 

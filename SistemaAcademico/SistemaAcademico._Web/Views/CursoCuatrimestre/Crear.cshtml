@@ -162,5 +162,13 @@
 </div>
 
 @section Scripts {
-    <script src="~/js/cursocuatrimestre/crear.js"></script> 
+    <script>
+        const urlCrearCursoCuatrimestre = '@Url.Action("Crear", "CursoCuatrimestre")';
+        const urlIndexConParametro = '@Url.Action("Index", "CursoCuatrimestre")' + '?cuatrimestreId=';
+
+    </script>
+
+    <script src="~/js/CursoCuatrimestre/Crear.js"></script>
+
+    <script src="~/js/CursoCuatrimestre/Crear.js"></script> 
 }

@@ -50,13 +50,9 @@
                             Gestión de Cursos
                         </a>
                     </li>
-                    <li>
-                        <a class="dropdown-item" asp-controller="Cuatrimestre" asp-action="Index">
-                            Cuatrimestres
-                        </a>
-                    </li>
                 </ul>
             </li>
+            <li><a class="nav-link" asp-controller="Bitacora" asp-action="Index">Bitacora</a></li>
         }
         if (rolPrincipal == "Administrador" || rolPrincipal == "Docente")
         {

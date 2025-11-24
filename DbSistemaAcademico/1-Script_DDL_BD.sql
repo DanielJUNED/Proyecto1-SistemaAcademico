@@ -375,3 +375,19 @@ GO
 ALTER TABLE [dbo].[Bitacora] CHECK CONSTRAINT [FK_Bitacora_Usuario]
 GO
 
+-- Vista para consultas con información del usuario
+CREATE VIEW vw_BitacoraConsulta AS
+SELECT 
+    b.BitacoraId,
+    b.UserId,
+    u.Username,
+    d.Nombre + ' ' + d.Apellidos as NombreUsuario,
+    u.Email as EmailUsuario,
+    b.Accion,
+    b.Modulo,
+    b.Descripcion,
+    b.DireccionIP,
+    b.Fec_Registro
+FROM Bitacora b
+INNER JOIN Usuarios u ON b.UserId = u.Id
+left join Docente d on d.UserId = u.Id;
