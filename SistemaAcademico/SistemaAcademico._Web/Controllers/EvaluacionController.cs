@@ -178,7 +178,7 @@ namespace SistemaAcademico_Web.Controllers
         // =============================================
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> ActualizarEvaluacion([FromBody] ActualizarEvaluacionViewModel modelo)
+        public async Task<IActionResult> ActualizarEvaluacion(ActualizarEvaluacionViewModel modelo)
         {
             try
             {

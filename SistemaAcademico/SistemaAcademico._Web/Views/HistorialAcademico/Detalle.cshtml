@@ -1,0 +1,357 @@
+﻿@model SistemaAcademico._Web.Models.ViewModels.HistorialDetalleViewModel
+
+@{
+    ViewData["Title"] = "Historial Académico";
+}
+
+<!-- Cargar Chart.js desde CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+<div class="container-fluid mt-4">
+    <!-- Información del Estudiante -->
+    <div class="card mb-4">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">
+                <i class="fas fa-user-graduate"></i> Información del Estudiante
+            </h4>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-3">
+                    <strong>Identificación:</strong><br>
+                    <span class="fs-5">@Model.Estudiante.Identificacion</span>
+                </div>
+                <div class="col-md-4">
+                    <strong>Nombre Completo:</strong><br>
+                    <span class="fs-5">@Model.Estudiante.NombreCompleto</span>
+                </div>
+                <div class="col-md-3">
+                    <strong>Email:</strong><br>
+                    <span class="fs-6">@Model.Estudiante.Email</span>
+                </div>
+                <div class="col-md-2">
+                    <strong>Edad:</strong><br>
+                    <span class="fs-5">@Model.Estudiante.Edad años</span>
+                </div>
+            </div>
+            <div class="row mt-2">
+                <div class="col-md-6">
+                    <strong>Ubicación:</strong> @Model.Estudiante.Ubicacion
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Resumen Académico con Tarjetas -->
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-center border-primary">
+                <div class="card-body">
+                    <i class="fas fa-book fa-3x text-primary mb-2"></i>
+                    <h3 class="mb-0">@Model.Resumen.TotalCursos</h3>
+                    <p class="text-muted mb-0">Total Cursos</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-success">
+                <div class="card-body">
+                    <i class="fas fa-check-circle fa-3x text-success mb-2"></i>
+                    <h3 class="mb-0">@Model.Resumen.CursosAprobados</h3>
+                    <p class="text-muted mb-0">Cursos Aprobados</p>
+                    <small class="text-success">@Model.Resumen.PorcentajeAprobacion.ToString("F1")%</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-warning">
+                <div class="card-body">
+                    <i class="fas fa-chart-line fa-3x text-warning mb-2"></i>
+                    <h3 class="mb-0">@Model.Resumen.PromedioGeneral.ToString("F2")</h3>
+                    <p class="text-muted mb-0">Promedio General</p>
+                    <small>Máx: @Model.Resumen.NotaMasAlta | Mín: @Model.Resumen.NotaMasBaja</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-center border-info">
+                <div class="card-body">
+                    <i class="fas fa-graduation-cap fa-3x text-info mb-2"></i>
+                    <h3 class="mb-0">@Model.Resumen.CreditosAprobados</h3>
+                    <p class="text-muted mb-0">Créditos Aprobados</p>
+                    <small>de @Model.Resumen.TotalCreditos total</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Gráficos -->
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-info text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-line"></i> Evolución de Promedio</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoEvolucion" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0"><i class="fas fa-chart-pie"></i> Distribución de Estados</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="graficoDistribucion" style="height: 300px;"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Historial por Cuatrimestre -->
+    <div class="card">
+        <div class="card-header bg-dark text-white">
+            <h4 class="mb-0"><i class="fas fa-history"></i> Historial Académico Detallado</h4>
+        </div>
+        <div class="card-body">
+            @foreach (var cuatrimestre in Model.HistorialPorCuatrimestre)
+            {
+                <div class="card mb-3 border-secondary">
+                    <div class="card-header bg-light">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-calendar-alt"></i> @cuatrimestre.NombreCuatrimestre (@cuatrimestre.Anio)
+                                </h5>
+                            </div>
+                            <div class="col-md-6 text-end">
+                                <span class="badge bg-primary me-2">Promedio: @cuatrimestre.PromedioDelCuatrimestre.ToString("F2")</span>
+                                <span class="badge bg-success me-2">Aprobados: @cuatrimestre.CursosAprobados</span>
+                                <span class="badge bg-danger">Reprobados: @cuatrimestre.CursosReprobados</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover table-striped">
+                                <thead class="table-secondary">
+                                    <tr>
+                                        <th style="width: 10%;">Código</th>
+                                        <th style="width: 30%;">Curso</th>
+                                        <th style="width: 8%;">Créditos</th>
+                                        <th style="width: 8%;">Nota</th>
+                                        <th style="width: 10%;">Estado</th>
+                                        <th style="width: 12%;">Participación</th>
+                                        <th style="width: 22%;">Docente</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var curso in cuatrimestre.Cursos)
+                                    {
+                                        <tr>
+                                            <td><strong>@curso.CodigoCurso</strong></td>
+                                            <td>@curso.NombreCurso</td>
+                                            <td class="text-center">@curso.Creditos</td>
+                                            <td class="text-center">
+                                                <strong class="@(curso.Nota >= 70 ? "text-success" : "text-danger")">
+                                                    @curso.Nota.ToString("F2")
+                                                </strong>
+                                            </td>
+                                            <td>
+                                                @switch (curso.Estado)
+                                                {
+                                                    case "Aprobado":
+                                                        <span class="badge bg-success">Aprobado</span>
+                                                        break;
+                                                    case "Reprobado":
+                                                        <span class="badge bg-danger">Reprobado</span>
+                                                        break;
+                                                    case "En Proceso":
+                                                        <span class="badge bg-warning text-dark">En Proceso</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                @switch (curso.TipoParticipacion)
+                                                {
+                                                    case "Excelente":
+                                                        <span class="badge bg-success">Excelente</span>
+                                                        break;
+                                                    case "Buena":
+                                                        <span class="badge bg-info">Buena</span>
+                                                        break;
+                                                    case "Regular":
+                                                        <span class="badge bg-warning text-dark">Regular</span>
+                                                        break;
+                                                    case "Baja":
+                                                        <span class="badge bg-danger">Baja</span>
+                                                        break;
+                                                    case "Ninguna":
+                                                        <span class="badge bg-secondary">Ninguna</span>
+                                                        break;
+                                                }
+                                            </td>
+                                            <td>
+                                                <small>
+                                                    <i class="fas fa-chalkboard-teacher"></i> @curso.NombreDocente
+                                                </small>
+                                            </td>
+                                        </tr>
+                                        @if (!string.IsNullOrEmpty(curso.Observaciones))
+                                        {
+                                            <tr class="table-light">
+                                                <td colspan="7">
+                                                    <small><strong>Observaciones:</strong> @curso.Observaciones</small>
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            }
+
+            @if (!Model.HistorialPorCuatrimestre.Any())
+            {
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle"></i> Este estudiante aún no tiene historial académico registrado.
+                </div>
+            }
+        </div>
+    </div>
+
+    <!-- Botones de Acción -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <a href="@Url.Action("Index")" class="btn btn-secondary">
+                <i class="fas fa-arrow-left"></i> Volver a Búsqueda
+            </a>
+            <button class="btn btn-primary" onclick="window.print()">
+                <i class="fas fa-print"></i> Imprimir
+            </button>
+            <button class="btn btn-success" onclick="exportarPDF()">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        // Datos del gráfico desde el servidor
+        const datosGrafico = @Html.Raw(Model.DatosGraficoJson);
+
+        // Gráfico de Evolución de Promedio
+        const ctxEvolucion = document.getElementById('graficoEvolucion').getContext('2d');
+        new Chart(ctxEvolucion, {
+            type: 'line',
+            data: {
+                labels: datosGrafico.map(d => d.etiqueta),
+                datasets: [{
+                    label: 'Promedio',
+                    data: datosGrafico.map(d => d.promedio),
+                    borderColor: 'rgb(75, 192, 192)',
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Evolución del Promedio por Cuatrimestre'
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value.toFixed(0);
+                            }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Gráfico de Distribución (Aprobados vs Reprobados)
+        const ctxDistribucion = document.getElementById('graficoDistribucion').getContext('2d');
+        new Chart(ctxDistribucion, {
+            type: 'doughnut',
+            data: {
+                labels: ['Aprobados', 'Reprobados', 'En Proceso'],
+                datasets: [{
+                    data: [
+                        @Model.Resumen.CursosAprobados,
+                        @Model.Resumen.CursosReprobados,
+                        @Model.Resumen.CursosEnProceso
+                    ],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(220, 53, 69, 0.8)',
+                        'rgba(255, 193, 7, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgb(40, 167, 69)',
+                        'rgb(220, 53, 69)',
+                        'rgb(255, 193, 7)'
+                    ],
+                    borderWidth: 2
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    },
+                    title: {
+                        display: true,
+                        text: 'Distribución de Cursos por Estado'
+                    }
+                }
+            }
+        });
+
+        function exportarPDF() {
+            alert('Funcionalidad de exportación a PDF - Por implementar');
+            // TODO: Implementar exportación usando librería como jsPDF
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        @@media print {
+            .btn, .card-header {
+                display: none;
+            }
+        }
+
+        .card {
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .badge {
+            font-size: 0.85em;
+            padding: 0.35em 0.65em;
+        }
+
+        canvas {
+            max-height: 300px;
+        }
+    </style>
+}

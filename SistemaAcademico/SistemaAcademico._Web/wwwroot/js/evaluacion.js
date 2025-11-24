@@ -110,7 +110,7 @@ function buscarEstudiantes(criterio) {
 }
 
 function mostrarResultadosBusqueda(estudiantes) {
-  const $lista = $('#listaEstudiantes');
+    const $lista = $('#listaEstudiantes');
     $lista.empty();
 
     if (estudiantes.length === 0) {
@@ -203,7 +203,7 @@ function mostrarInformacionEstudiante(estudiante) {
     $('#cardEstudiante').fadeIn();
 }
 
-function mostrarCursosMatriculados(cursos,permiteEvaluar) {
+function mostrarCursosMatriculados(cursos, permiteEvaluar) {
     const $lista = $('#listaCursos');
     $lista.empty();
 
@@ -270,7 +270,7 @@ function mostrarCursosMatriculados(cursos,permiteEvaluar) {
 // =============================================
 // FORMULARIO DE EVALUACIÓN
 // =============================================
-function abrirFormularioEvaluacion(estudianteCursoId, esEdicion,evaluacionId) {
+function abrirFormularioEvaluacion(estudianteCursoId, esEdicion, evaluacionId) {
     // Buscar el curso seleccionado
     cursoSeleccionado = estudianteSeleccionado.cursosMatriculados.find(
         c => c.estudianteCursoID === estudianteCursoId
@@ -406,7 +406,7 @@ function guardarEvaluacion() {
                 }, 300);
             }
         },
-        error: function () {
+        error: function (e) {
             mostrarAlerta('danger', 'Error de conexión. Por favor, intente nuevamente.');
         },
         complete: function () {
@@ -438,45 +438,45 @@ function mostrarModalConfirmacion(evaluacion) {
                     <div class="col-md-6">
                         <p class="mb-2">
                             <strong><i class="fas fa-user text-primary"></i> Estudiante:</strong><br>
-                            ${evaluacion.NombreEstudiante}
+                            ${evaluacion.nombreEstudiante}
                         </p>
                         <p class="mb-2">
                             <strong><i class="fas fa-id-card text-primary"></i> Identificación:</strong><br>
-                            ${evaluacion.IdentificacionEstudiante}
+                            ${evaluacion.identificacionEstudiante}
                         </p>
                         <p class="mb-2">
                             <strong><i class="fas fa-book text-primary"></i> Curso:</strong><br>
-                            ${evaluacion.CodigoCurso} - ${evaluacion.NombreCurso}
+                            ${evaluacion.codigoCurso} - ${evaluacion.nombreCurso}
                         </p>
                     </div>
                     <div class="col-md-6">
                         <p class="mb-2">
                             <strong><i class="fas fa-calendar text-primary"></i> Cuatrimestre:</strong><br>
-                            ${evaluacion.NombreCuatrimestre}
+                            ${evaluacion.nombreCuatrimestre}
                         </p>
                         <p class="mb-2">
                             <strong><i class="fas fa-star text-primary"></i> Nota:</strong><br>
-                            <span class="badge badge-xl badge-primary">${evaluacion.Nota} / 100</span>
+                            <span class="badge badge-xl badge-primary">${evaluacion.nota} / 100</span>
                         </p>
                         <p class="mb-2">
                             <strong><i class="fas fa-${iconoEstado} text-primary"></i> Estado:</strong><br>
-                            <span class="badge badge-xl badge-${colorEstado}">${evaluacion.Estado}</span>
+                            <span class="badge badge-xl badge-${colorEstado}">${evaluacion.estado}</span>
                         </p>
                     </div>
                 </div>
 
-                ${evaluacion.Observaciones ? `
+                ${evaluacion.observaciones ? `
                     <hr>
                     <p class="mb-0">
                         <strong><i class="fas fa-comment text-primary"></i> Observaciones:</strong><br>
-                        ${evaluacion.Observaciones}
+                        ${evaluacion.observaciones}
                     </p>
                 ` : ''}
 
                 <hr>
                 <p class="mb-0 small text-muted text-center">
                     <i class="fas fa-clock"></i> 
-                    Evaluado por ${evaluacion.NombreDocente} el ${formatearFecha(evaluacion.FechaEvaluacion)}
+                    Evaluado por ${evaluacion.nombreDocente} el ${formatearFecha(evaluacion.fechaEvaluacion)}
                 </p>
             </div>
         </div>
@@ -641,20 +641,29 @@ function obtenerColorEstado(estado) {
 }
 
 function formatearFecha(fecha) {
-
-    // Extraer el número entre paréntesis
-    const timestamp = parseInt(fecha.replace(/\/Date\((\d+)\)\//, '$1'));
-    const date = new Date(timestamp);
-    // Opciones de formato
-    const opciones = {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-        hour: '2-digit',
-        minute: '2-digit'
+    if (!fecha) return ""; // Maneja null o undefined 
+    let date;
+    // Caso 1: formato /Date(1234567890)/
+    if (fecha.toString().includes("/Date(")) {
+        const timestamp = parseInt(fecha.replace(/\/Date\((\d+)\)\//, "$1"));
+        date = new Date(timestamp);
+    }
+    // Caso 2: formato ISO 2025-10-20T10:00:00
+    else {
+        date = new Date(fecha);
     };
-    return date.toLocaleDateString('es-ES', opciones);
+
+    const opciones = {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit"
+    };
+
+    return date.toLocaleDateString("es-ES", opciones);
 }
+
 
 // Hacer funciones globales accesibles
 window.abrirFormularioEvaluacion = abrirFormularioEvaluacion;

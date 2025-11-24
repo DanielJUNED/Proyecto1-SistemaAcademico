@@ -1,15 +1,18 @@
 ﻿// Web/Controllers/CursoCuatrimestreController.cs
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SistemaAcademico._Web.Controllers;
 using SistemaAcademico._Web.Models.ViewModels;
 using SistemaAcademico.API.DTOs;
+using SistemaAcademico.Data.Constantes;
 using SistemaAcademico.Data.Repositories;
 using System.Text;
 using System.Text.Json;
-using SistemaAcademico.Data.Constantes;
 
 namespace AcademicSystem.Web.Controllers
 {
+
+    [Authorize]
     public class CursoCuatrimestreController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;

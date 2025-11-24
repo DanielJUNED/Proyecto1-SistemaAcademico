@@ -1,6 +1,6 @@
 ﻿// Scripts/evaluaciones.js
 // Sistema de Evaluación de Estudiantes con AJAX
-
+/*
 // Variables globales
 let estudianteSeleccionado = null;
 let cursoSeleccionado = null;
@@ -657,4 +657,4 @@ function formatearFecha(fecha) {
 }
 
 // Hacer funciones globales accesibles
-window.abrirFormularioEvaluacion = abrirFormularioEvaluacion;
+window.abrirFormularioEvaluacion = abrirFormularioEvaluacion;*/

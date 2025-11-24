@@ -107,31 +107,32 @@ namespace SistemaAcademico._Web.Repository
             var cursos = new List<CursoMatriculadoViewModel>();
 
             string query = @"
-                SELECT 
-                    ec.EstudianteCursoId,
-                    cc.CursoId,
-                    c.Codigo,
-                    c.Nom_Curso,
-                    cu.Nombre AS NombreCuatrimestre,
-                    cu.CuatrimestreId,
-                    c.Num_Creditos,
-                    d.DocenteId,
-                    d.Nombre + ' ' + d.Apellidos AS NombreDocente,
-                    cc.CursoCuatrimestreId,
-                    ev.EvaluacionId,
-                    ev.Nota,
-                    ev.Estado,
-                    ev.TipoParticipacion,
-                    ev.Observaciones
-                FROM EstudianteCurso ec
-                INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
-                INNER JOIN Curso c ON cc.CursoId = c.CursoId
-                INNER JOIN Cuatrimestre cu ON cc.CuatrimestreId = cu.CuatrimestreId
-                INNER JOIN Docente d ON cc.DocenteId = d.DocenteId
-                LEFT JOIN Evaluacion ev ON ec.EstudianteCursoId = ev.EstudianteCursoId
-                WHERE ec.EstudianteId = @EstudianteId
-                AND ec.Ind_Estado = 'A'
-                ORDER BY cu.Anio DESC, cu.Numero DESC, c.Codigo";
+               SELECT 
+                  ec.EstudianteCursoId,
+                  cc.CursoId,
+                  c.Codigo,
+                  c.Nom_Curso,
+                  cu.Nombre AS NombreCuatrimestre,
+                  cu.CuatrimestreId,
+                  c.Num_Creditos,
+                  ccd.DocenteId,
+                  d.Nombre + ' ' + d.Apellidos AS NombreDocente,
+                  cc.CursoCuatrimestreId,
+                  ev.EvaluacionId,
+                  ev.Nota,
+                  ev.Estado,
+                  ev.TipoParticipacion,
+                  ev.Observaciones
+              FROM EstudianteCurso ec
+              INNER JOIN CursoCuatrimestre cc ON ec.CursoCuatrimestreId = cc.CursoCuatrimestreId
+              inner join CursoCuatrimestreDocente ccd on ec.CursoCuatrimestreId = ccd.CursoCuatrimestreId
+              INNER JOIN Curso c ON cc.CursoId = c.CursoId
+              INNER JOIN Cuatrimestre cu ON cc.CuatrimestreId = cu.CuatrimestreId
+              INNER JOIN Docente d ON ccd.DocenteId = d.DocenteId
+              LEFT JOIN Evaluacion ev ON ec.EstudianteCursoId = ev.EstudianteCursoId
+              WHERE ec.EstudianteId = 1
+              AND ec.Ind_Estado = 'A'
+              ORDER BY cu.Anio DESC, cu.Numero DESC, c.Codigo";
 
             using (SqlCommand cmd = new SqlCommand(query, conn))
             {
@@ -525,10 +526,11 @@ namespace SistemaAcademico._Web.Repository
                 conn.Open();
 
                 string query = @"
-                    SELECT COUNT(*) 
-                    FROM CursoCuatrimestre 
-                    WHERE CursoCuatrimestreId = @CursoCuatrimestreId 
-                    AND DocenteId = @DocenteId";
+                    SELECT COUNT(ec.CursoCuatrimestreId) 
+                    FROM CursoCuatrimestre  ec
+                    inner join CursoCuatrimestreDocente ccd on ec.CursoCuatrimestreId = ccd.CursoCuatrimestreId
+                    WHERE ec.CursoCuatrimestreId = @CursoCuatrimestreId 
+                    AND ccd.DocenteId = @DocenteId";
 
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {

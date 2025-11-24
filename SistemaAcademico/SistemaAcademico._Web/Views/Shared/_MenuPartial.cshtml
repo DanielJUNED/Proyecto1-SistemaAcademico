@@ -18,47 +18,75 @@
     <li><a class="nav-link" asp-controller="Home" asp-action="Index">Inicio</a></li>
     
     @if (SignInManager.IsSignedIn(User))
-    {
-        if (rolPrincipal == "Administrador" )
+    { 
+        if (rolPrincipal == "Administrador" || rolPrincipal == "Docente")
         {
-            <!-- Dropdown Catálogo-->
-            <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
-                    Catálogo
-                </a>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a class="dropdown-item" asp-controller="Curso" asp-action="Index">
-                            Cursos
-                        </a>
-                    </li>
-                    <li>
-                        <a class="dropdown-item" asp-controller="Cuatrimestre" asp-action="Index">
-                            Cuatrimestres
-                        </a>
-                    </li>
-                </ul>
-            </li>
+            if (rolPrincipal == "Administrador")
+            {
+                <!-- Dropdown Catálogo-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Catálogo
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="dropdown-item" asp-controller="Curso" asp-action="Index">
+                                Cursos
+                            </a>
+                        </li>
+                        <li>
+                            <a class="dropdown-item" asp-controller="Cuatrimestre" asp-action="Index">
+                                Cuatrimestres
+                            </a>
+                        </li>
+                    </ul>
+                </li>
+                <!-- Dropdown Catálogo-->
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                        Gestion administrativa
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" asp-controller="Bitacora" asp-action="Index">Bitacora</a></li>
+                    </ul>
+                </li>
+
+            }
             <!-- Dropdown Gestión Académica -->
             <li class="nav-item dropdown">
                 <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
                     Gestión Académica
                 </a>
                 <ul class="dropdown-menu">
+                    @if (rolPrincipal == "Administrador")
+                    {
+                        <li>
+                            <a class="dropdown-item" asp-controller="CursoCuatrimestre" asp-action="Index">
+                                Gestión de Cursos
+                            </a>
+                        </li>
+                    }
+                    <li><a class="dropdown-item" asp-controller="Estudiante" asp-action="Registrar">Matrícula</a></li>
+                    <li><a class="dropdown-item" asp-controller="Evaluacion" asp-action="Index">Evaluación</a></li>
+                    </ul>
+                </li> 
+            <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">
+                    Consulta
+                </a>
+                <ul class="dropdown-menu">
                     <li>
-                        <a class="dropdown-item" asp-controller="CursoCuatrimestre" asp-action="Index">
-                            Gestión de Cursos
+                        <a class="dropdown-item" asp-controller="Estadistica" asp-action="Index">
+                            Estadísticas
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" asp-controller="HistorialAcademico" asp-action="Index">
+                            Historial Academico
                         </a>
                     </li>
                 </ul>
             </li>
-            <li><a class="nav-link" asp-controller="Bitacora" asp-action="Index">Bitacora</a></li>
-        }
-        if (rolPrincipal == "Administrador" || rolPrincipal == "Docente")
-        {
-            <li><a class="nav-link" asp-controller="Estadistica" asp-action="Index">Estadísticas</a></li>
-            <li><a class="nav-link" asp-controller="Estudiante" asp-action="Registrar">Matrícula</a></li>
-            <li><a class="nav-link" asp-controller="Evaluacion" asp-action="Index">Evaluación</a></li>
         }
     }
 </ul>

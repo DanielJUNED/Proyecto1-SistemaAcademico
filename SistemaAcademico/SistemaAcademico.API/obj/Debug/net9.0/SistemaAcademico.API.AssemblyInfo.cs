@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("SistemaAcademico.API")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+b7b19cb4e1f635868b91076fd6c8dce45bc08922")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+5ed5883c1a13c7e5514d898bec8fabcedcd497b8")]
 [assembly: System.Reflection.AssemblyProductAttribute("SistemaAcademico.API")]
 [assembly: System.Reflection.AssemblyTitleAttribute("SistemaAcademico.API")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

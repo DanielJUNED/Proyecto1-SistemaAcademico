@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using SistemaAcademico._Web.Models.ViewModels;
 using SistemaAcademico.API.DTOs;
 using System;
@@ -10,6 +11,8 @@ using System.Threading.Tasks;
 
 namespace SistemaAcademico._Web.Controllers
 {
+
+    [Authorize]
     public class CursoController : Controller
     {
         private readonly IHttpClientFactory _httpClientFactory;

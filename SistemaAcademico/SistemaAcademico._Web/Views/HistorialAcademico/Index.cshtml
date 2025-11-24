@@ -1,0 +1,288 @@
+﻿@model SistemaAcademico._Web.Models.ViewModels.HistorialAcademicoIndexViewModel
+
+@{
+    ViewData["Title"] = "Historial Académico - Búsqueda de Estudiantes";
+}
+
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">
+                        <i class="fas fa-search"></i> Búsqueda de Estudiantes
+                    </h4>
+                    <small>Buscar por nombre, apellidos o número de identificación (matrícula)</small>
+                </div>
+                <div class="card-body">
+                    @if (TempData["Error"] != null)
+                    {
+                        <div class="alert alert-danger alert-dismissible fade show">
+                            <i class="fas fa-exclamation-triangle"></i> @TempData["Error"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    @if (TempData["Success"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show">
+                            <i class="fas fa-check-circle"></i> @TempData["Success"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    }
+
+                    <!-- Formulario de Búsqueda -->
+                    <div class="row mb-4">
+                        <div class="col-md-8 offset-md-2">
+                            <div class="input-group input-group-lg">
+                                <span class="input-group-text">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text"
+                                       class="form-control"
+                                       id="terminoBusqueda"
+                                       placeholder="Ingrese nombre, apellidos o número de identificación..."
+                                       autocomplete="off">
+                                <button class="btn btn-primary" type="button" id="btnBuscar">
+                                    <i class="fas fa-search"></i> Buscar
+                                </button>
+                            </div>
+                            <small class="text-muted">
+                                <i class="fas fa-info-circle"></i>
+                                Ingrese al menos 2 caracteres para buscar
+                            </small>
+                        </div>
+                    </div>
+
+                    <!-- Indicador de Carga -->
+                    <div id="loadingIndicator" class="text-center" style="display: none;">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Buscando...</span>
+                        </div>
+                        <p class="mt-2">Buscando estudiantes...</p>
+                    </div>
+
+                    <!-- Mensaje de Error -->
+                    <div id="errorMessage" class="alert alert-danger" style="display: none;">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <span id="errorText"></span>
+                    </div>
+
+                    <!-- Resultados de Búsqueda -->
+                    <div id="resultadosBusqueda" style="display: none;">
+                        <div class="card border-info">
+                            <div class="card-header bg-info text-white">
+                                <h5 class="mb-0">
+                                    <i class="fas fa-list"></i> Resultados de Búsqueda
+                                    <span class="badge bg-light text-dark ms-2" id="totalResultados">0</span>
+                                </h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover table-striped">
+                                        <thead class="table-light">
+                                            <tr>
+                                                <th style="width: 15%;">Identificación</th>
+                                                <th style="width: 35%;">Nombre Completo</th>
+                                                <th style="width: 30%;">Email</th>
+                                                <th style="width: 10%;">Historial</th>
+                                                <th style="width: 10%;">Acciones</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="tablaResultados">
+                                            <!-- Se llenará dinámicamente con JavaScript -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Mensaje cuando no hay resultados -->
+                    <div id="noResultados" class="alert alert-info text-center" style="display: none;">
+                        <i class="fas fa-info-circle fa-3x mb-3"></i>
+                        <h5>No se encontraron estudiantes</h5>
+                        <p>Intente con otro término de búsqueda</p>
+                    </div>
+
+                    <!-- Instrucciones iniciales -->
+                    <div id="instruccionesIniciales" class="text-center py-5">
+                        <i class="fas fa-user-graduate fa-5x text-muted mb-3"></i>
+                        <h4 class="text-muted">Buscar Historial Académico</h4>
+                        <p class="text-muted">
+                            Utilice el campo de búsqueda para encontrar un estudiante<br>
+                            por su nombre, apellidos o número de identificación
+                        </p>
+                        <div class="mt-4">
+                            <span class="badge bg-primary me-2">
+                                <i class="fas fa-user"></i> Por Nombre
+                            </span>
+                            <span class="badge bg-info me-2">
+                                <i class="fas fa-id-card"></i> Por Identificación
+                            </span>
+                            <span class="badge bg-success">
+                                <i class="fas fa-envelope"></i> Por Email
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Búsqueda al presionar Enter
+            $('#terminoBusqueda').on('keypress', function(e) {
+                if (e.which === 13) {
+                    e.preventDefault();
+                    realizarBusqueda();
+                }
+            });
+
+            // Búsqueda al hacer clic en el botón
+            $('#btnBuscar').click(function() {
+                realizarBusqueda();
+            });
+
+            // Limpiar resultados al cambiar el texto
+            $('#terminoBusqueda').on('input', function() {
+                const valor = $(this).val();
+                if (valor.length === 0) {
+                    limpiarResultados();
+                }
+            });
+        });
+
+        function realizarBusqueda() {
+            const termino = $('#terminoBusqueda').val().trim();
+
+            // Validar longitud mínima
+            if (termino.length < 2) {
+                mostrarError('El término de búsqueda debe tener al menos 2 caracteres');
+                return;
+            }
+
+            // Ocultar elementos
+            $('#instruccionesIniciales').hide();
+            $('#resultadosBusqueda').hide();
+            $('#noResultados').hide();
+            $('#errorMessage').hide();
+
+            // Mostrar indicador de carga
+            $('#loadingIndicator').show();
+
+            // Realizar búsqueda
+            $.ajax({
+                url: '@Url.Action("Buscar")',
+                type: 'GET',
+                data: { termino: termino },
+                success: function(response) {
+                    $('#loadingIndicator').hide();
+
+                    if (response.success) {
+                        if (response.data && response.data.length > 0) {
+                            mostrarResultados(response.data);
+                        } else {
+                            $('#noResultados').show();
+                        }
+                    } else {
+                        mostrarError(response.message || 'Error al buscar estudiantes');
+                    }
+                },
+                error: function(xhr) {
+                    $('#loadingIndicator').hide();
+                    const error = xhr.responseJSON?.message || 'Error al realizar la búsqueda';
+                    mostrarError(error);
+                }
+            });
+        }
+
+        function mostrarResultados(estudiantes) {
+            const tbody = $('#tablaResultados');
+            tbody.empty();
+
+            estudiantes.forEach(function(estudiante) {
+                const row = `
+                    <tr>
+                        <td><strong>${estudiante.identificacion}</strong></td>
+                        <td>
+                            <i class="fas fa-user text-primary"></i> ${estudiante.nombreCompleto}
+                        </td>
+                        <td>
+                            <small><i class="fas fa-envelope text-muted"></i> ${estudiante.email}</small>
+                        </td>
+                        <td class="text-center">
+                            ${estudiante.tieneHistorial
+                                ? '<span class="badge bg-success"><i class="fas fa-check"></i> Sí</span>'
+                                : '<span class="badge bg-warning text-dark"><i class="fas fa-exclamation"></i> No</span>'}
+                        </td>
+                        <td class="text-center">
+                            ${estudiante.tieneHistorial
+                                ? `<a href="@Url.Action("Detalle")/${estudiante.estudianteId}"
+                                      class="btn btn-sm btn-primary"
+                                      title="Ver historial académico">
+                                      <i class="fas fa-eye"></i> Ver
+                                   </a>`
+                                : `<button class="btn btn-sm btn-secondary" disabled title="Sin historial académico">
+                                      <i class="fas fa-ban"></i> N/A
+                                   </button>`}
+                        </td>
+                    </tr>
+                `;
+                tbody.append(row);
+            });
+
+            $('#totalResultados').text(estudiantes.length);
+            $('#resultadosBusqueda').show();
+        }
+
+        function mostrarError(mensaje) {
+            $('#errorText').text(mensaje);
+            $('#errorMessage').show();
+        }
+
+        function limpiarResultados() {
+            $('#resultadosBusqueda').hide();
+            $('#noResultados').hide();
+            $('#errorMessage').hide();
+            $('#instruccionesIniciales').show();
+        }
+    </script>
+}
+
+@section Styles {
+    <style>
+        .input-group-lg .form-control {
+            font-size: 1.1rem;
+        }
+
+        .table tbody tr {
+            cursor: default;
+        }
+
+            .table tbody tr:hover {
+                background-color: #f8f9fa;
+            }
+
+        #instruccionesIniciales i {
+            opacity: 0.3;
+        }
+
+        .badge {
+            font-size: 0.85em;
+            padding: 0.4em 0.7em;
+        }
+
+        #loadingIndicator {
+            padding: 3rem 0;
+        }
+
+        .spinner-border {
+            width: 3rem;
+            height: 3rem;
+        }
+    </style>
+}

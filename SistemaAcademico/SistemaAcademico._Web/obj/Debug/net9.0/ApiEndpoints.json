@@ -505,6 +505,58 @@
     "ReturnTypes": []
   },
   {
+    "ContainingType": "SistemaAcademico.API.Controllers.HistorialAcademicoController",
+    "Method": "GetHistorial",
+    "RelativePath": "api/HistorialAcademico/{estudianteId}",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "estudianteId",
+        "Type": "System.Int32",
+        "IsRequired": true
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "SistemaAcademico.API.DTOs.HistorialAcademicoCompletoDto",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
+    "ContainingType": "SistemaAcademico.API.Controllers.HistorialAcademicoController",
+    "Method": "BuscarEstudiantes",
+    "RelativePath": "api/HistorialAcademico/buscar",
+    "HttpMethod": "GET",
+    "IsController": true,
+    "Order": 0,
+    "Parameters": [
+      {
+        "Name": "termino",
+        "Type": "System.String",
+        "IsRequired": false
+      }
+    ],
+    "ReturnTypes": [
+      {
+        "Type": "System.Collections.Generic.IEnumerable\u00601[[SistemaAcademico.API.DTOs.EstudianteBusquedaResultDto, SistemaAcademico.API, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]",
+        "MediaTypes": [
+          "text/plain",
+          "application/json",
+          "text/json"
+        ],
+        "StatusCode": 200
+      }
+    ]
+  },
+  {
     "ContainingType": "SistemaAcademico.API.Controllers.WeatherForecastController",
     "Method": "Get",
     "RelativePath": "WeatherForecast",
