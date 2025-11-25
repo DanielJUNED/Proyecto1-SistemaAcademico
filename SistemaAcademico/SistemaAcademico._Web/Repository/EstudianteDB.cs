@@ -1,4 +1,4 @@
-﻿using SistemaAcademico._Web.Models;
+﻿using SistemaAcademico.Data.Entities;
 using SistemaAcademico._Web.Models.ViewModels;
 using System;
 using System.Collections.Generic;
@@ -15,17 +15,6 @@ namespace SistemaAcademico._Web.Repository
         {
             _connectionString = configuration.GetConnectionString("DefaultConnection");
         }
-        /* private readonly string _connectionString;
-
-         public EstudianteDB()
-         {
-             _connectionString = ConfigurationManager.ConnectionStrings["DefaultConnection"].ConnectionString;
-         }
-
-         public EstudianteDB(string connectionString)
-         {
-             _connectionString = connectionString;
-         }*/
 
         // =============================================
         // REGISTRAR ESTUDIANTE

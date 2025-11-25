@@ -71,7 +71,7 @@ namespace SistemaAcademico._Web.Controllers
                 model.Apellidos = estudiante.Apellidos;
                 model.FechaCreacion = estudiante.Fec_Registro;
             }
-            if (User.IsInRole("Admin") && user.NormalizedUserName == "Admin")
+            if (User.IsInRole("Administrador") && user.NormalizedUserName == "ADMIN")
             {
                 // Código solo para administradores
                 model.Nombre = "Admin";
