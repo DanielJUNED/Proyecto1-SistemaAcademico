@@ -198,7 +198,8 @@ namespace SistemaAcademico._Web.Controllers
                  {
                      // Verificar que tenga el rol de Docente o Administrador
                      if (!await _userManager.IsInRoleAsync(user, "Docente") &&
-                         !await _userManager.IsInRoleAsync(user, "Administrador"))
+                         !await _userManager.IsInRoleAsync(user, "Administrador") &&
+                         !await _userManager.IsInRoleAsync(user, "Estudiante"))
                      {
                          await _signInManager.SignOutAsync();
 

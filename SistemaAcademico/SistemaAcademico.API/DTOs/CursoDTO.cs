@@ -1,6 +1,12 @@
 ﻿
 namespace SistemaAcademico.API.DTOs
 {
+    public class CursoSimpleDTO
+    {
+        public int CursoId { get; set; }
+        public string Codigo { get; set; }
+        public string Nom_Curso { get; set; }
+    }
     public class CursoDTO
     {
         public int CursoId { get; set; }

@@ -79,4 +79,94 @@
         public string Email { get; set; }
         public bool TieneHistorial { get; set; }
     }
+    //Rendimiento academico del estudiante
+    public class EstudianteSimpleDTO
+    {
+        public int EstudianteId { get; set; }
+        public string Identificacion { get; set; }
+        public string NombreCompleto { get; set; }
+        public string Email { get; set; }
+    }
+
+    // DTOs/NotaCursoDTO.cs
+    public class NotaCursoDTO
+    {
+        public int CursoId { get; set; }
+        public string CodigoCurso { get; set; }
+        public string NombreCurso { get; set; }
+        public int CuatrimestreId { get; set; }
+        public string NombreCuatrimestre { get; set; }
+        public decimal Nota { get; set; }
+        public string Estado { get; set; }
+        public DateTime FechaEvaluacion { get; set; }
+        public string TipoParticipacion { get; set; }
+    }
+
+    // DTOs/RendimientoCuatrimestreDTO.cs
+    public class RendimientoCuatrimestreDTO
+    {
+        public int CuatrimestreId { get; set; }
+        public string NombreCuatrimestre { get; set; }
+        public int Anio { get; set; }
+        public int Numero { get; set; }
+        public decimal PromedioNotas { get; set; }
+        public int CursosAprobados { get; set; }
+        public int CursosReprobados { get; set; }
+        public int TotalCursos { get; set; }
+    }
+
+    // DTOs/EstadisticasDTO.cs
+    public class EstadisticasDTO
+    {
+        public decimal PromedioGeneral { get; set; }
+        public int TotalCursosAprobados { get; set; }
+        public int TotalCursosReprobados { get; set; }
+        public int TotalCursosCursados { get; set; }
+        public decimal PorcentajeAprobacion { get; set; }
+        public decimal NotaMasAlta { get; set; }
+        public decimal NotaMasBaja { get; set; }
+        public string CursoMejorNota { get; set; }
+        public string CursoPeorNota { get; set; }
+    }
+
+    // DTOs/RendimientoCompletoDTO.cs - DTO principal para la respuesta
+    public class RendimientoCompletoDTO
+    {
+        public EstudianteDTO Estudiante { get; set; }
+        public List<NotaCursoDTO> NotasPorCurso { get; set; }
+        public List<RendimientoCuatrimestreDTO> NotasPorCuatrimestre { get; set; }
+        public EstadisticasDTO EstadisticasGenerales { get; set; }
+    }
+
+    // DTOs/FiltrosRendimientoDTO.cs - DTO para recibir filtros
+    public class FiltrosRendimientoDTO
+    {
+        public DateTime? FechaDesde { get; set; }
+        public DateTime? FechaHasta { get; set; }
+        public List<int> CursosIds { get; set; }
+        public List<int> CuatrimestresIds { get; set; }
+
+        public FiltrosRendimientoDTO()
+        {
+            CursosIds = new List<int>();
+            CuatrimestresIds = new List<int>();
+        }
+    }
+
+    // DTOs/CuatrimestreDTO.cs - DTO simplificado para filtros
+   /* public class CuatrimestreDTO
+    {
+        public int CuatrimestreId { get; set; }
+        public string Nombre { get; set; }
+        public int Anio { get; set; }
+        public int Numero { get; set; }
+    }*/
+     
+    // DTOs/ActualizacionDTO.cs - DTO para verificación de actualizaciones
+    public class ActualizacionDTO
+    {
+        public bool HayActualizaciones { get; set; }
+        public DateTime FechaConsulta { get; set; }
+        public int NumeroNuevasEvaluaciones { get; set; }
+    }
 }

@@ -46,24 +46,6 @@ builder.Services.ConfigureApplicationCookie(options =>
     options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
     options.Cookie.SameSite = SameSiteMode.Strict;
 });
-/*
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultSignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = CookieAuthenticationDefaults.AuthenticationScheme;
-})
-.AddCookie(options =>
-{
-    options.Cookie.Name = "AppAuth";      // cookie de sesión MVC
-    options.LoginPath = "/Account/Login";
-    options.AccessDeniedPath = "/Account/AccessDenied";
-    options.ExpireTimeSpan = TimeSpan.FromMinutes(1); 
-    options.SlidingExpiration = true;
-    options.Cookie.HttpOnly = true;
-    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
-    options.Cookie.SameSite = SameSiteMode.Strict;
-});*/
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpClient("API", client =>
@@ -85,15 +67,6 @@ builder.Services.AddSession(options =>
 builder.Services.AddTransient<SistemaAcademico._Web.Repository.EstadisticaDB>();
 builder.Services.AddTransient<SistemaAcademico._Web.Repository.EstudianteDB>();
 builder.Services.AddTransient<SistemaAcademico._Web.Repository.EvaluacionDB>();
-/*builder.Services.AddControllersWithViews();
-builder.Services.AddTransient<EstadisticaDB>();
-builder.Services.AddTransient<EstudianteDB>();
-builder.Services.AddTransient<EvaluacionDB>();*/
-
-
-/*builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
-    .AddDefaultTokenProviders();*/
 
 var app = builder.Build();
 

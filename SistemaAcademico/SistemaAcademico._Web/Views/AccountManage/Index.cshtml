@@ -1,7 +1,7 @@
 ﻿@model SistemaAcademico._Web.Models.ViewModels.ManageProfileViewModel
 @{
     ViewBag.Title = "Mi Perfil";
-    bool esDocente = Model.Rol == "Docente";
+    bool esDocenteOrEstudiante = Model.Rol == "Docente" || Model.Rol == "Estudiante";
 }
 <div class="container mt-4">
     <div class="row">
@@ -52,7 +52,7 @@
                                            class="form-control"
                                            value="@Model.Nombre"
                                            maxlength="100"
-                                           @(esDocente ? "" : "readonly=\"readonly\"") />
+                                       @(esDocenteOrEstudiante ? "" : "readonly=\"readonly\"") />
                                     <span class="text-danger field-validation" data-valmsg-for="Nombre"></span>
                                 </div>
                             </div>
@@ -68,7 +68,7 @@
                                            id="Apellidos"
                                            class="form-control"
                                            value="@Model.Apellidos"
-                                           @(esDocente ? "" : "readonly=\"readonly\"") />
+                                       @(esDocenteOrEstudiante ? "" : "readonly=\"readonly\"") />
                                     <span class="text-danger field-validation" data-valmsg-for="Apellidos"></span>
                                 </div>
                             </div>
@@ -83,7 +83,6 @@
                                     <input type="email"
                                            class="form-control"
                                            value="@Model.Email"
-                                           disabled
                                            readonly />
                                     <small class="form-text text-muted">
                                         El correo electrónico no puede ser modificado
@@ -98,7 +97,6 @@
                                     <input type="text"
                                            class="form-control"
                                            value="@Model.Rol"
-                                           disabled
                                            readonly />
                                     <small class="form-text text-muted">
                                         El rol no puede ser modificado
@@ -115,7 +113,7 @@
                                     </label>
                                     <input type="text"
                                            class="form-control"
-                                           value="@(esDocente ? Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm") : "Sin fecha de creación")"
+                                       value="@(esDocenteOrEstudiante? Model.FechaCreacion.ToString("dd/MM/yyyy HH:mm") : "Sin fecha de creación")"
                                            disabled
                                            readonly />
                                 </div>
@@ -134,7 +132,7 @@
                                 </div>
                             </div>
                         </div>
-                        @Html.Raw(esDocente
+                    @Html.Raw(esDocenteOrEstudiante
         ? @"<div class=""text-right mt-3"">
                 <button type=""submit"" class=""btn btn-primary"" id=""btnUpdateProfile"">
                     <i class=""fas fa-save""></i> Guardar Cambios

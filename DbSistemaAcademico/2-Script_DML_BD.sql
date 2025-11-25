@@ -329,6 +329,23 @@ VALUES
     NULL,
     1,
     0
+),
+(
+    'ebd0e083-3ac7-4f4d-a132-bdc98d1b60af',
+    'MariaG',
+    'MARIAG',
+    'mgonzalez@estudiante.com',
+    'MGONZALEZ@ESTUDIANTE.COM',
+    0,
+    'AQAAAAIAAYagAAAAEGreijFBF+lBhD8c/FyAUciUQBUce/ZgUHF/ZhqAlfFLO7bZx8w4WW9LF1p5kK41KA==',
+    'W2MPUBXXB6252354GW24D4QJWCUOMGYL',
+    NEWID(),
+    NULL,
+    0,
+    0,
+    NULL,
+    1,
+    0
 );
 
 
@@ -351,16 +368,19 @@ VALUES
     'Administrador',
     'ADMINISTRADOR',
     NEWID()
+),
+(   'ESTUD',
+    'Estudiante',
+    'ESTUDIANTE',
+    NEWID()
 );
-
-
-
-
+  
 
       INSERT INTO UsuarioRoles(UserId,RoleId)
 VALUES('7e9f33d5-ed39-4c60-ac9a-0157f85fe7de','DOCEN'),--DanielG
       ('d0efef33-6ea7-4380-9a47-2916c411c655','DOCEN'),--NorberthB
-      ('e64be105-16a8-4830-b6c7-0a71df6f0ef7','ADMIN');--Admin
+      ('e64be105-16a8-4830-b6c7-0a71df6f0ef7','ADMIN'),--Admin
+      ('ebd0e083-3ac7-4f4d-a132-bdc98d1b60af','ESTUD');--Estudiante
  
 
  -- =============================================
@@ -397,18 +417,18 @@ GO
 -- =============================================
 -- ESTUDIANTES (10 registros)
 -- =============================================
-INSERT INTO Estudiante (Identificacion, Nombre, Apellidos, Fec_Nacimiento, Email, DistritoId, Ind_Estado, Fec_Registro)
+INSERT INTO Estudiante (Identificacion, Nombre, Apellidos, Fec_Nacimiento, Email, DistritoId, Ind_Estado, Fec_Registro,UserId)
 VALUES
-('1-0234-0567', 'María', 'González Ramírez', '2000-03-15', 'mgonzalez@estudiante.com', 1, 'A', '2024-12-10 08:30:00'),
-('1-0345-0678', 'Carlos', 'Mora Solís', '1999-07-22', 'cmora@estudiante.com', 4, 'A', '2024-12-10 09:15:00'),
-('1-0456-0789', 'Ana', 'Vargas Castro', '2001-01-10', 'avargas@estudiante.com', 7, 'A', '2024-12-10 10:00:00'),
-('1-0567-0890', 'José', 'Rodríguez Pérez', '2000-11-05', 'jrodriguez@estudiante.com', 10, 'A', '2024-12-10 11:20:00'),
-('1-0678-0901', 'Laura', 'Fernández Jiménez', '1998-05-18', 'lfernandez@estudiante.com', 13, 'A', '2024-12-10 14:00:00'),
-('1-0789-0012', 'Diego', 'Alvarado Muñoz', '2001-09-30', 'dalvarado@estudiante.com', 16, 'A', '2024-12-11 08:45:00'),
-('1-0890-0123', 'Sofía', 'Quesada Hernández', '2000-02-14', 'squesada@estudiante.com', 19, 'A', '2024-12-11 09:30:00'),
-('1-0901-0234', 'Andrés', 'Chaves Monge', '1999-12-20', 'achaves@estudiante.com', 22, 'A', '2024-12-11 10:15:00'),
-('1-1012-0345', 'Gabriela', 'Salas Araya', '2001-06-08', 'gsalas@estudiante.com', 25, 'A', '2024-12-11 11:00:00'),
-('1-1123-0456', 'Roberto', 'Campos Villalobos', '2000-04-25', 'rcampos@estudiante.com', 28, 'A', '2024-12-11 13:30:00');
+('1-0234-0567', 'María', 'González Ramírez', '2000-03-15', 'mgonzalez@estudiante.com', 1, 'A', '2024-12-10 08:30:00','ebd0e083-3ac7-4f4d-a132-bdc98d1b60af'),
+('1-0345-0678', 'Carlos', 'Mora Solís', '1999-07-22', 'cmora@estudiante.com', 4, 'A', '2024-12-10 09:15:00',''),
+('1-0456-0789', 'Ana', 'Vargas Castro', '2001-01-10', 'avargas@estudiante.com', 7, 'A', '2024-12-10 10:00:00',''),
+('1-0567-0890', 'José', 'Rodríguez Pérez', '2000-11-05', 'jrodriguez@estudiante.com', 10, 'A', '2024-12-10 11:20:00',''),
+('1-0678-0901', 'Laura', 'Fernández Jiménez', '1998-05-18', 'lfernandez@estudiante.com', 13, 'A', '2024-12-10 14:00:00',''),
+('1-0789-0012', 'Diego', 'Alvarado Muñoz', '2001-09-30', 'dalvarado@estudiante.com', 16, 'A', '2024-12-11 08:45:00',''),
+('1-0890-0123', 'Sofía', 'Quesada Hernández', '2000-02-14', 'squesada@estudiante.com', 19, 'A', '2024-12-11 09:30:00',''),
+('1-0901-0234', 'Andrés', 'Chaves Monge', '1999-12-20', 'achaves@estudiante.com', 22, 'A', '2024-12-11 10:15:00',''),
+('1-1012-0345', 'Gabriela', 'Salas Araya', '2001-06-08', 'gsalas@estudiante.com', 25, 'A', '2024-12-11 11:00:00',''),
+('1-1123-0456', 'Roberto', 'Campos Villalobos', '2000-04-25', 'rcampos@estudiante.com', 28, 'A', '2024-12-11 13:30:00','');
 
 -- =============================================
 -- CURSO-CUATRIMESTRE (Asignación de cursos a cuatrimestres con docentes)

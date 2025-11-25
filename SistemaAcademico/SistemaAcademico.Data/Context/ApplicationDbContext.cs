@@ -99,6 +99,12 @@ namespace SistemaAcademico.Data.Context
                 .HasForeignKey(ec => ec.EstudianteId)
                 .OnDelete(DeleteBehavior.Restrict);
 
+            modelBuilder.Entity<Estudiante>()
+                .HasOne(d => d.User)
+                .WithMany(u => u.Estudiante)
+                .HasForeignKey(d => d.UserId)
+                .HasPrincipalKey(u => u.Id)
+                .OnDelete(DeleteBehavior.Restrict);
             // -------------------------
             // ESTUDIANTE CURSO
             // -------------------------

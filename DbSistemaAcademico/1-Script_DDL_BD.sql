@@ -391,3 +391,14 @@ SELECT
 FROM Bitacora b
 INNER JOIN Usuarios u ON b.UserId = u.Id
 left join Docente d on d.UserId = u.Id;
+
+
+go
+
+-- Vincular usuarios con la tabla Estudiante
+ALTER TABLE Estudiante ADD UserId NVARCHAR(128) NULL;
+
+/*ALTER TABLE Estudiante  
+ADD CONSTRAINT FK_Estudiante_Usuario 
+FOREIGN KEY (UserId) REFERENCES Usuarios(Id);*/
+

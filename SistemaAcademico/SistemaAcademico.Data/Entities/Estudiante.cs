@@ -53,9 +53,14 @@ namespace SistemaAcademico.Data.Entities
         public DateTime Fec_Registro { get; set; }
 
         public virtual Distrito Distrito { get; set; }
+         
+        public string UserId { get; set; }
+        public ApplicationUser User { get; set; } 
 
         public virtual ICollection<EstudianteCurso> EstudianteCurso { get; set; }
         [NotMapped]
         public string NombreCompleto => $"{Nombre} {Apellidos}";
+
+
     }
 }

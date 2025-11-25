@@ -49,11 +49,36 @@ namespace SistemaAcademico._Web.Controllers
             var roleNames = await _userManager.GetRolesAsync(user);
 
             var model = new ManageProfileViewModel();
-            var docente = await _db.Docente
+            
+
+            if (User.IsInRole("Docente"))
+            {
+                var docente = await _db.Docente
                 .AsNoTracking()
                 .FirstOrDefaultAsync(d => d.UserId == userId);
-
-            if (docente != null)
+                // Código solo para docentes
+                model.Nombre = docente.Nombre;
+                model.Apellidos = docente.Apellidos;
+                model.FechaCreacion = docente.Fec_Registro;
+            }
+            if (User.IsInRole("Estudiante"))
+            {
+                // Código solo para estudiantes
+                var estudiante = await _db.Estudiante
+               .AsNoTracking()
+               .FirstOrDefaultAsync(d => d.UserId == userId);
+                model.Nombre = estudiante.Nombre;
+                model.Apellidos = estudiante.Apellidos;
+                model.FechaCreacion = estudiante.Fec_Registro;
+            }
+            if (User.IsInRole("Admin") && user.NormalizedUserName == "Admin")
+            {
+                // Código solo para administradores
+                model.Nombre = "Admin";
+                model.Apellidos = "Sin apellidos";
+                model.FechaCreacion = DateTime.Now;
+            }
+           /* if (docente != null)
             {
                 model.Nombre = docente.Nombre;
                 model.Apellidos = docente.Apellidos;
@@ -64,7 +89,7 @@ namespace SistemaAcademico._Web.Controllers
                 model.Nombre = "Admin";
                 model.Apellidos = "Sin apellidos";
                 model.FechaCreacion = DateTime.Now;
-            }
+            }*/
 
             model.Email = user.Email ?? string.Empty;
             //model.UltimaConexion = user.UltimaConexion ?? DateTime.Now;

@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36414.22
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaAcademico", "SistemaAcademico.csproj", "{E22B6D28-AA5B-427D-ABCF-F3810A9CE0A6}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaAcademico(Proyecto1)", "SistemaAcademico(Proyecto1).csproj", "{E22B6D28-AA5B-427D-ABCF-F3810A9CE0A6}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SistemaAcademico.Data", "SistemaAcademico.Data\SistemaAcademico.Data.csproj", "{AB401A91-3BF4-0179-8F8E-A89DFACD1B63}"
 EndProject

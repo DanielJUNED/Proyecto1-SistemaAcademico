@@ -15,8 +15,10 @@ namespace SistemaAcademico.Data.Entities
         public ApplicationUser()
         {
             Docente = new HashSet<Docente>();
+            Estudiante = new HashSet<Estudiante>();
         }
         public virtual ICollection<Docente> Docente { get; set; }
+        public virtual ICollection<Estudiante> Estudiante { get; set; }
         /*public async Task<ClaimsIdentity> GenerateUserIdentityAsync(UserManager<ApplicationUser> manager)
         {
             // Tenga en cuenta que authenticationType debe coincidir con el valor definido en CookieAuthenticationOptions.AuthenticationType
